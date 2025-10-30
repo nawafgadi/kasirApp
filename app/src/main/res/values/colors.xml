@@ -2,4 +2,11 @@
 <resources>
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
+
+    <color name="bg_main">#FAF8E6</color>
+    <color name="bg_header">#A2C873</color>
+    <color name="bg_card_light">#F0F8C8</color>
+    <color name="accent_green">#4CAF50</color>
+    <color name="rating_star">#FFC107</color>
+    <color name="fab_orange">#F5B93E</color>
 </resources>

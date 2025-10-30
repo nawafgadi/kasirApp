@@ -36,6 +36,8 @@ class LoginActivity : AppCompatActivity() {
 
             if (email == savedEmail && password == savedPassword) {
                 Toast.makeText(this, "Login berhasil! (belum diarahkan ke halaman utama)", Toast.LENGTH_SHORT).show()
+                val intent = Intent(this, HomeActivity::class.java)
+                startActivity(intent)
             } else {
                 Toast.makeText(this, "Email atau kata sandi salah", Toast.LENGTH_SHORT).show()
             }
