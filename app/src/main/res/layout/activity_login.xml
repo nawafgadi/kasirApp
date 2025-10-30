@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFF8D6"
+    tools:context=".LoginActivity">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Logo -->
+        <ImageView
+            android:id="@+id/imgLogo"
+            android:src="@drawable/logo_toko"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_marginBottom="12dp" />
+
+        <!-- Judul -->
+        <TextView
+            android:text="E-Cashier"
+            android:textColor="#2E7D32"
+            android:textStyle="bold"
+            android:textSize="26sp"
+            android:layout_marginTop="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:text="Silakan masuk ke akun Anda"
+            android:textColor="#1B5E20"
+            android:textSize="16sp"
+            android:layout_marginBottom="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <!-- Container Hijau -->
+        <LinearLayout
+            android:orientation="vertical"
+            android:background="#4CAF50"
+            android:padding="24dp"
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:elevation="3dp">
+
+            <!-- Email -->
+            <LinearLayout
+                android:orientation="horizontal"
+                android:background="#FFF8D6"
+                android:padding="6dp"
+                android:layout_marginBottom="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:src="@drawable/ic_user"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center_vertical" />
+
+                <EditText
+                    android:id="@+id/etEmail"
+                    android:hint="Email"
+                    android:inputType="textEmailAddress"
+                    android:background="@android:color/transparent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:paddingVertical="12dp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:textColorHint="#888" />
+            </LinearLayout>
+
+            <!-- Password -->
+            <LinearLayout
+                android:orientation="horizontal"
+                android:background="#FFF8D6"
+                android:padding="6dp"
+                android:layout_marginBottom="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:src="@drawable/ic_cart"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center_vertical" />
+
+                <EditText
+                    android:id="@+id/etPassword"
+                    android:hint="Kata sandi"
+                    android:inputType="textPassword"
+                    android:background="@android:color/transparent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:paddingVertical="12dp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:textColorHint="#888" />
+            </LinearLayout>
+
+            <!-- Tombol masuk -->
+            <Button
+                android:id="@+id/btnMasuk"
+                android:text="Masuk"
+                android:background="#004D40"
+                android:textColor="#FFF8D6"
+                android:layout_marginTop="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <!-- Lupa sandi -->
+            <TextView
+                android:id="@+id/tvLupaSandi"
+                android:text="Lupa kata sandi?"
+                android:textColor="#FFF8D6"
+                android:gravity="center"
+                android:layout_marginTop="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <!-- Link daftar -->
+            <TextView
+                android:id="@+id/tvDaftar"
+                android:text="Belum punya akun? Daftar disini"
+                android:textColor="#FFF8D6"
+                android:gravity="center"
+                android:layout_marginTop="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

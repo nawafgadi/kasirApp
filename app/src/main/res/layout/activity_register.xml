@@ -1,0 +1,229 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFF8D6"
+    tools:context=".RegisterActivity">
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:padding="24dp"
+        android:gravity="center_horizontal"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <!-- Logo -->
+        <ImageView
+            android:id="@+id/imgLogo"
+            android:src="@drawable/logo_toko"
+            android:layout_width="120dp"
+            android:layout_height="120dp"
+            android:layout_marginBottom="12dp" />
+
+        <!-- Judul -->
+        <TextView
+            android:text="E-Cashier"
+            android:textColor="#2E7D32"
+            android:textStyle="bold"
+            android:textSize="26sp"
+            android:layout_marginTop="8dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <TextView
+            android:text="Selamat datang,"
+            android:textColor="#1B5E20"
+            android:textSize="16sp"
+            android:layout_marginBottom="16dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content" />
+
+        <!-- Container Hijau -->
+        <LinearLayout
+            android:orientation="vertical"
+            android:background="#4CAF50"
+            android:padding="24dp"
+            android:layout_marginTop="8dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center_horizontal"
+            android:clipToOutline="true"
+            android:layout_gravity="center"
+            android:elevation="3dp">
+
+            <!-- Nama -->
+            <LinearLayout
+                android:orientation="horizontal"
+                android:background="#FFF8D6"
+                android:padding="6dp"
+                android:layout_marginBottom="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:src="@drawable/ic_profile"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center_vertical" />
+
+                <EditText
+                    android:id="@+id/etNama"
+                    android:hint="Nama"
+                    android:background="@android:color/transparent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:paddingVertical="12dp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:textColorHint="#888" />
+            </LinearLayout>
+
+            <!-- Email -->
+            <LinearLayout
+                android:orientation="horizontal"
+                android:background="#FFF8D6"
+                android:padding="6dp"
+                android:layout_marginBottom="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:src="@drawable/ic_user"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center_vertical" />
+
+                <EditText
+                    android:id="@+id/etEmail"
+                    android:hint="Email"
+                    android:inputType="textEmailAddress"
+                    android:background="@android:color/transparent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:paddingVertical="12dp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:textColorHint="#888" />
+            </LinearLayout>
+
+            <!-- Telepon -->
+            <LinearLayout
+                android:orientation="horizontal"
+                android:background="#FFF8D6"
+                android:padding="6dp"
+                android:layout_marginBottom="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:src="@drawable/ic_phone"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center_vertical" />
+
+                <EditText
+                    android:id="@+id/etTelepon"
+                    android:hint="No telepon"
+                    android:inputType="phone"
+                    android:background="@android:color/transparent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:paddingVertical="12dp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:textColorHint="#888" />
+            </LinearLayout>
+
+            <!-- Kata sandi -->
+            <LinearLayout
+                android:orientation="horizontal"
+                android:background="#FFF8D6"
+                android:padding="6dp"
+                android:layout_marginBottom="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:src="@drawable/ic_cart"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center_vertical" />
+
+                <EditText
+                    android:id="@+id/etPassword"
+                    android:hint="Kata sandi"
+                    android:inputType="textPassword"
+                    android:background="@android:color/transparent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:paddingVertical="12dp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:textColorHint="#888" />
+            </LinearLayout>
+
+            <!-- Ulangi kata sandi -->
+            <LinearLayout
+                android:orientation="horizontal"
+                android:background="#FFF8D6"
+                android:padding="6dp"
+                android:layout_marginBottom="10dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <ImageView
+                    android:src="@drawable/ic_cart"
+                    android:layout_width="24dp"
+                    android:layout_height="24dp"
+                    android:layout_gravity="center_vertical" />
+
+                <EditText
+                    android:id="@+id/etConfirmPassword"
+                    android:hint="Ulangi kata sandi"
+                    android:inputType="textPassword"
+                    android:background="@android:color/transparent"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:minHeight="48dp"
+                    android:paddingVertical="12dp"
+                    android:paddingStart="8dp"
+                    android:paddingEnd="8dp"
+                    android:textColorHint="#888" />
+            </LinearLayout>
+
+            <!-- Checkbox -->
+            <CheckBox
+                android:id="@+id/cbAgreement"
+                android:text="Saya setuju dengan kebijakan aplikasi"
+                android:textColor="#FFF8D6"
+                android:layout_marginTop="8dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <!-- Tombol daftar -->
+            <Button
+                android:id="@+id/btnDaftar"
+                android:text="Daftar"
+                android:background="#004D40"
+                android:textColor="#FFF8D6"
+                android:layout_marginTop="16dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+
+            <!-- Link login -->
+            <TextView
+                android:id="@+id/tvLogin"
+                android:text="Sudah punya akun?  Masuk disini"
+                android:textColor="#FFF8D6"
+                android:gravity="center"
+                android:layout_marginTop="12dp"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content" />
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>
