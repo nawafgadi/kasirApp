@@ -3,7 +3,8 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/main" android:layout_width="match_parent"
+    android:id="@+id/main"
+    android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="#ecf39e"
     tools:context=".HomeActivity">
@@ -13,17 +14,18 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:padding="16dp"
-        app:layout_constraintTop_toTopOf="parent"
-        android:background="#4CAF50">
+        android:background="#4CAF50"
+        app:layout_constraintTop_toTopOf="parent">
+
         <TextView
-        android:id="@+id/welcomeText"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Selamat Datang"
-        android:textSize="20sp"
-        android:textColor="@android:color/white"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+            android:id="@+id/welcomeText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Selamat Datang"
+            android:textSize="20sp"
+            android:textColor="@android:color/white"
+            app:layout_constraintStart_toStartOf="parent"
+            app:layout_constraintTop_toTopOf="parent" />
 
         <TextView
             android:id="@+id/userName"
@@ -46,13 +48,13 @@
             app:layout_constraintBottom_toBottomOf="parent"
             app:shapeAppearanceOverlay="@style/RoundedImageView"/>
 
-
     </androidx.constraintlayout.widget.ConstraintLayout>
 
+    <!-- Search Card dengan EditText yang bisa diketik -->
     <androidx.cardview.widget.CardView
         android:id="@+id/searchCard"
         android:layout_width="0dp"
-        android:layout_height="40dp"
+        android:layout_height="wrap_content"
         android:layout_marginStart="16dp"
         android:layout_marginEnd="16dp"
         android:layout_marginTop="16dp"
@@ -61,29 +63,48 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         android:backgroundTint="#4CAF50">
+
         <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:paddingStart="8dp"
-        android:paddingEnd="8dp">
-
-        <ImageView
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@android:drawable/ic_search_category_default"
-            android:contentDescription="Search Icon"
-            app:tint="@android:color/white"/>
-
-        <TextView
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="Cari..."
-            android:textColor="@android:color/white"
-            android:textSize="16sp" />
-    </LinearLayout>
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:padding="12dp">
+
+            <ImageView
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@android:drawable/ic_search_category_default"
+                android:contentDescription="Search Icon"
+                android:tint="@android:color/white"/>
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/searchEditText"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:layout_marginStart="8dp"
+                android:hint="Cari restoran..."
+                android:textColor="@android:color/white"
+                android:textColorHint="@android:color/white"
+                android:textSize="16sp"
+                android:background="@android:color/transparent"
+                android:padding="8dp"
+                android:imeOptions="actionSearch"
+                android:maxLines="1"/>
+
+            <!-- Tombol clear text (opsional) -->
+            <ImageButton
+                android:id="@+id/clearSearchButton"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@android:drawable/ic_menu_close_clear_cancel"
+                android:contentDescription="Clear Search"
+                android:tint="@android:color/white"
+                android:background="?android:attr/selectableItemBackgroundBorderless"
+                android:visibility="gone"/>
+
+        </LinearLayout>
 
     </androidx.cardview.widget.CardView>
 
@@ -99,81 +120,85 @@
         app:layout_constraintTop_toBottomOf="@id/searchCard"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        android:backgroundTint="#4CAF50"> <androidx.constraintlayout.widget.ConstraintLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:padding="8dp">
+        android:backgroundTint="#4CAF50">
 
-        <ImageView
-            android:id="@+id/bowlIcon"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:src="@drawable/restaurant_icon" android:contentDescription="Bowl Icon"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:tint="@android:color/white"/>
+        <androidx.constraintlayout.widget.ConstraintLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="8dp">
 
-        <TextView
-            android:id="@+id/restaurantName"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="Rumah Makan A"
-            android:textSize="16sp"
-            android:textStyle="bold"
-            android:textColor="@android:color/white"
-            app:layout_constraintStart_toEndOf="@id/bowlIcon"
-            app:layout_constraintTop_toTopOf="@id/bowlIcon"
-            app:layout_constraintEnd_toStartOf="@id/arrowIcon" />
+            <ImageView
+                android:id="@+id/bowlIcon"
+                android:layout_width="48dp"
+                android:layout_height="48dp"
+                android:src="@drawable/restaurant_icon"
+                android:contentDescription="Bowl Icon"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                android:tint="@android:color/white"/>
 
-        <TextView
-            android:id="@+id/restaurantLocation"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="8dp"
-            android:text="Lokasi rumah makan A ..."
-            android:textSize="12sp"
-            android:textColor="@android:color/white"
-            app:layout_constraintStart_toEndOf="@id/bowlIcon"
-            app:layout_constraintTop_toBottomOf="@id/restaurantName"
-            app:layout_constraintEnd_toStartOf="@id/arrowIcon" />
+            <TextView
+                android:id="@+id/restaurantName"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="Rumah Makan A"
+                android:textSize="16sp"
+                android:textStyle="bold"
+                android:textColor="@android:color/white"
+                app:layout_constraintStart_toEndOf="@id/bowlIcon"
+                app:layout_constraintTop_toTopOf="@id/bowlIcon"
+                app:layout_constraintEnd_toStartOf="@id/arrowIcon" />
 
-        <RatingBar
-            android:id="@+id/ratingBar"
-            style="?android:attr/ratingBarStyleSmall"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="4dp"
-            android:numStars="5"
-            android:rating="4.8"
-            android:stepSize="0.1"
-            android:progressTint="@android:color/white"
-            android:secondaryProgressTint="@android:color/white"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@id/bowlIcon" />
+            <TextView
+                android:id="@+id/restaurantLocation"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="8dp"
+                android:text="Lokasi rumah makan A ..."
+                android:textSize="12sp"
+                android:textColor="@android:color/white"
+                app:layout_constraintStart_toEndOf="@id/bowlIcon"
+                app:layout_constraintTop_toBottomOf="@id/restaurantName"
+                app:layout_constraintEnd_toStartOf="@id/arrowIcon" />
 
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="4.8"
-            android:textSize="12sp"
-            android:textColor="@android:color/white"
-            android:layout_marginStart="8dp"
-            app:layout_constraintStart_toEndOf="@id/ratingBar"
-            app:layout_constraintTop_toTopOf="@id/ratingBar"
-            app:layout_constraintBottom_toBottomOf="@id/ratingBar"/>
+            <RatingBar
+                android:id="@+id/ratingBar"
+                style="?android:attr/ratingBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:numStars="5"
+                android:rating="4.8"
+                android:stepSize="0.1"
+                android:progressTint="@android:color/white"
+                android:secondaryProgressTint="@android:color/white"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@id/bowlIcon" />
 
-        <ImageView
-            android:id="@+id/arrowIcon"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:src="@drawable/arrow_icon" android:contentDescription="Arrow Icon"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintTop_toTopOf="parent"
-            app:layout_constraintBottom_toBottomOf="parent"
-            app:tint="@android:color/white"/>
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="4.8"
+                android:textSize="12sp"
+                android:textColor="@android:color/white"
+                android:layout_marginStart="8dp"
+                app:layout_constraintStart_toEndOf="@id/ratingBar"
+                app:layout_constraintTop_toTopOf="@id/ratingBar"
+                app:layout_constraintBottom_toBottomOf="@id/ratingBar"/>
 
-    </androidx.constraintlayout.widget.ConstraintLayout>
+            <ImageView
+                android:id="@+id/arrowIcon"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:src="@drawable/arrow_icon"
+                android:contentDescription="Arrow Icon"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintTop_toTopOf="parent"
+                app:layout_constraintBottom_toBottomOf="parent"
+                android:tint="@android:color/white"/>
+
+        </androidx.constraintlayout.widget.ConstraintLayout>
 
     </androidx.cardview.widget.CardView>
 
@@ -184,15 +209,17 @@
         android:layout_marginEnd="16dp"
         android:layout_marginBottom="16dp"
         android:contentDescription="Scan QR"
-        app:srcCompat="@drawable/scan_icon" app:layout_constraintBottom_toTopOf="@id/bottomNav"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:backgroundTint="#FF9800"/>
+        android:backgroundTint="#FF9800"
+        app:srcCompat="@drawable/scan_icon"
+        app:layout_constraintBottom_toTopOf="@id/bottomNav"
+        app:layout_constraintEnd_toEndOf="parent"/>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/bottomNav"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:background="#f0f0f0"
         app:layout_constraintBottom_toBottomOf="parent"
-        app:menu="@menu/bottom_nav_menu" android:background="#f0f0f0" />
+        app:menu="@menu/bottom_nav_menu" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
