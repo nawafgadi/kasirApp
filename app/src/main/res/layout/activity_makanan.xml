@@ -1,0 +1,177 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#F6F6AE"
+    tools:context=".ActivityMakanan">
+
+    <!-- Bagian Gambar Atas -->
+    <androidx.cardview.widget.CardView
+        android:id="@+id/imageCard"
+        android:layout_width="match_parent"
+        android:layout_height="220dp"
+        android:layout_marginBottom="8dp"
+        app:cardCornerRadius="0dp"
+        app:cardBackgroundColor="#5D9B63"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent">
+
+        <ImageView
+            android:id="@+id/foodImage"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:scaleType="centerCrop"
+            android:contentDescription="@string/gambar_makanan"
+            android:src="@drawable/nasigoreng"/>
+
+    </androidx.cardview.widget.CardView>
+
+    <!-- Nama Makanan -->
+    <TextView
+        android:id="@+id/foodName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/nasi_goreng"
+        android:textColor="#355834"
+        android:textStyle="bold"
+        android:textSize="16sp"
+        app:layout_constraintTop_toBottomOf="@id/imageCard"
+        app:layout_constraintStart_toStartOf="parent"
+        android:layout_marginStart="24dp"
+        android:layout_marginTop="8dp"/>
+
+    <!-- Rating -->
+    <LinearLayout
+        android:id="@+id/ratingLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        app:layout_constraintTop_toTopOf="@id/foodName"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="24dp">
+
+        <ImageView
+            android:layout_width="18dp"
+            android:layout_height="18dp"
+            android:src="@drawable/nasigoreng"
+            android:contentDescription="@string/rating_icon"
+            app:tint="#355834" />
+
+        <TextView
+            android:id="@+id/foodRating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/rating_value"
+            android:textColor="#355834"
+            android:textSize="14sp"
+            android:layout_marginStart="4dp"/>
+    </LinearLayout>
+
+    <!-- Harga -->
+    <TextView
+        android:id="@+id/foodPrice"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/harga"
+        android:textColor="#355834"
+        android:textSize="22sp"
+        android:textStyle="bold"
+        app:layout_constraintTop_toBottomOf="@id/foodName"
+        app:layout_constraintStart_toStartOf="@id/foodName"
+        android:layout_marginTop="8dp"/>
+
+    <!-- Pilihan Rasa -->
+    <TextView
+        android:id="@+id/pilihanLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/pilihan"
+        android:textColor="#355834"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@id/foodPrice"
+        app:layout_constraintStart_toStartOf="@id/foodName"
+        android:layout_marginTop="16dp"/>
+
+    <Button
+        android:id="@+id/pilihanButton"
+        android:layout_width="0dp"
+        android:layout_height="40dp"
+        android:text="@string/pedas"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        android:backgroundTint="#5D9B63"
+        app:drawableEndCompat="@drawable/ic_chevron_right"
+        app:layout_constraintTop_toBottomOf="@id/pilihanLabel"
+        app:layout_constraintStart_toStartOf="@id/foodName"
+        app:layout_constraintEnd_toEndOf="parent"
+        android:layout_marginEnd="24dp"
+        android:layout_marginTop="8dp"/>
+
+
+    <!-- Porsi -->
+    <TextView
+        android:id="@+id/porsiLabel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/porsi"
+        android:textColor="#355834"
+        android:textSize="14sp"
+        app:layout_constraintTop_toBottomOf="@id/pilihanButton"
+        app:layout_constraintStart_toStartOf="@id/foodName"
+        android:layout_marginTop="16dp"/>
+
+    <!-- Tombol Bawah -->
+
+    <Button
+        android:id="@+id/porsiButton"
+        android:layout_width="359dp"
+        android:layout_height="48dp"
+        android:backgroundTint="#5D9B63"
+        android:text="@string/sedang"
+        android:textAllCaps="false"
+        android:textColor="@android:color/white"
+        app:drawableEndCompat="@drawable/ic_chevron_right"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_bias="0.62" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="16dp"
+        android:gravity="center"
+        android:orientation="horizontal"
+        app:layout_constraintBottom_toBottomOf="parent"
+        tools:layout_editor_absoluteX="16dp">
+
+        <ImageView
+            android:id="@+id/cartIcon"
+            android:layout_width="28dp"
+            android:layout_height="28dp"
+            android:layout_marginEnd="16dp"
+            android:contentDescription="@string/keranjang"
+            android:src="@drawable/keranjang"
+            app:tint="#355834" />
+
+        <com.google.android.material.button.MaterialButton
+            android:id="@+id/addButton"
+            android:layout_width="0dp"
+            android:layout_height="48dp"
+            android:layout_weight="1"
+            android:backgroundTint="#E4C46A"
+            android:text="@string/tambahkan"
+            android:textAllCaps="false"
+            android:textColor="#355834"
+            android:textStyle="bold"
+            app:cornerRadius="25dp" />
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

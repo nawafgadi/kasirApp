@@ -1,3 +1,14 @@
 <resources>
     <string name="app_name">kasirPAS</string>
+    <string name="gambar_makanan">Gambar Makanan</string>
+    <string name="nasi_goreng">nasi goreng</string>
+    <string name="rating_icon">Rating Icon</string>
+    <string name="rating_value">(4.0)</string>
+    <string name="harga">Rp15.000</string>
+    <string name="pilihan">Pilihan</string>
+    <string name="pedas">Pedas</string>
+    <string name="porsi">Porsi</string>
+    <string name="sedang">Sedang</string>
+    <string name="keranjang">Keranjang</string>
+    <string name="tambahkan">+ Tambahkan</string>
 </resources>
