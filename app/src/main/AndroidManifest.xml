@@ -11,9 +11,26 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.KasirPAS">
         <activity
-            android:name=".HomeActivity"
+            android:name=".GrafikpenjualanActivity"
             android:exported="false" />
-        <!-- RegisterActivity = Halaman awal -->
+        <activity
+            android:name=".KonfirmasiPembayaranActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PembayaranActivity"
+            android:exported="false" />
+        <activity
+            android:name=".PesananActivity"
+            android:exported="false" />
+        <activity
+            android:name=".MakananActivity"
+            android:exported="false" />
+        <activity
+            android:name=".KeranjangActivity"
+            android:exported="false" />
+        <activity
+            android:name=".HomeActivity"
+            android:exported="false" /> <!-- RegisterActivity = Halaman awal -->
         <activity
             android:name=".RegisterActivity"
             android:exported="true">

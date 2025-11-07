@@ -11,4 +11,45 @@
     <string name="sedang">Sedang</string>
     <string name="keranjang">Keranjang</string>
     <string name="tambahkan">+ Tambahkan</string>
+
+    <!-- Activity Keranjang -->
+    <string name="action_kembali">Kembali</string>
+    <string name="title_keranjang">Keranjang</string>
+    <string name="desc_gambar_item">Gambar item</string>
+    <string name="label_makanan">Makanan</string>
+    <string name="desc_item_keranjang">Pedas | Sedang</string>
+    <string name="harga_item_keranjang">Rp15.000</string>
+    <string name="action_kurangi_jumlah">Kurangi jumlah</string>
+    <string name="jumlah_item">2</string>
+    <string name="action_tambah_jumlah">Tambah jumlah</string>
+    <string name="label_total">Total</string>
+    <string name="harga_total">Rp30.000</string>
+    <string name="action_pesan">Pesan</string>
+
+    <!-- Activity Pesanan -->
+    <string name="title_pesanan">Pesanan</string>
+    <string name="label_bayar_sekarang">Bayar Sekarang</string>
+
+    <!-- Activity Pembayaran -->
+    <string name="title_metode_pembayaran">Metode Pembayaran</string>
+    <string name="label_pilih_metode_pembayaran">Pilih Metode Pembayaran</string>
+    <string name="desc_ikon_tunai">Ikon bayar tunai</string>
+    <string name="label_bayar_tunai">Bayar Tunai (Cash)</string>
+    <string name="desc_ikon_transfer">Ikon transfer bank</string>
+    <string name="label_transfer_bank">Transfer Bank</string>
+    <string name="label_nomor_rekening">Nomor Rekening:</string>
+    <string name="nomor_rekening_toko">BCA 1234567890 a.n. Toko Makmur</string>
+    <string name="info_transfer">Silakan transfer sesuai total dan kirim bukti pembayaran.</string>
+    <string name="label_konfirmasi_pembayaran">Konfirmasi Pembayaran</string>
+
+    <!-- Activity Konfirmasi Pembayaran -->
+    <string name="title_detail_transaksi">Detail Transaksi</string>
+    <string name="tanggal_transaksi_dummy">25 Februari 2025 20:38</string>
+    <string name="status_transaksi_berhasil">Transaksi Berhasil</string>
+    <string name="nama_barang_dummy">Beras</string>
+    <string name="order_id_dummy">Order ID: 91036</string>
+    <string name="total_pembayaran_dummy">Total Pembayaran: Rp30.000</string>
+    <string name="metode_pembayaran_dummy">Metode Pembayaran: Cash</string>
+    <string name="label_berhasil_menyimpan">Berhasil Menyimpan</string>
+    <string name="action_selesai">Selesai</string>
 </resources>

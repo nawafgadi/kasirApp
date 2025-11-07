@@ -11,6 +11,8 @@ dependencyResolutionManagement {
     repositories {
         google()
         mavenCentral()
+        // Sintaks yang benar untuk Kotlin DSL (.kts)
+        maven { url = uri("https://jitpack.io") }
         gradlePluginPortal()
     }
 }

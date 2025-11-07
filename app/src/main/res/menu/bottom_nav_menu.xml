@@ -2,15 +2,18 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
     <item
         android:id="@+id/nav_home"
-        android:icon="@drawable/home_icon" android:title="Beranda" />
+        android:icon="@drawable/home_icon"
+        android:title="Home" />
     <item
-        android:id="@+id/nav_history"
-        android:icon="@drawable/history_icon" android:title="Riwayat" />
+        android:id="@+id/nav_laporan"
+        android:icon="@drawable/logo_toko"
+        android:title="Laporan" />
     <item
-        android:id="@+id/nav_settings"
-        android:icon="@drawable/setting_icon" android:title="Pengaturan" />
-
+        android:id="@+id/nav_grafik"
+        android:icon="@drawable/ic_user"
+        android:title="Grafik" />
     <item
-        android:id="@+id/nav_katalog"
-        android:icon="@drawable/setting_icon" android:title="Pengaturan" />
+        android:id="@+id/nav_profil"
+        android:icon="@drawable/ic_profile"
+        android:title="Profil" />
 </menu>

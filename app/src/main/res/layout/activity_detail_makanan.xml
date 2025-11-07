@@ -1,0 +1,185 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="#FFF7B3"
+    tools:context=".detailMakananActivity">
+
+    <!-- Tombol kembali -->
+    <ImageButton
+        android:id="@+id/btnBack"
+        android:layout_width="32dp"
+        android:layout_height="32dp"
+        android:layout_margin="8dp"
+        android:src="@android:drawable/ic_media_previous"
+        android:background="?android:attr/selectableItemBackgroundBorderless"
+        android:contentDescription="@string/action_kembali"
+        app:tint="#2E7D32"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <!-- Gambar makanan -->
+    <ImageView
+        android:id="@+id/imgMakanan"
+        android:layout_width="0dp"
+        android:layout_height="200dp"
+        android:src="@drawable/nasigoreng"
+        android:scaleType="centerCrop"
+        android:background="#7CB342"
+        android:contentDescription="@string/gambar_makanan"
+        app:layout_constraintTop_toBottomOf="@id/btnBack"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Nama dan rating -->
+    <TextView
+        android:id="@+id/txtNamaMakanan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Nama Makanan"
+        android:textStyle="bold"
+        android:textSize="18sp"
+        android:textColor="#2E7D32"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="16dp"
+        app:layout_constraintTop_toBottomOf="@id/imgMakanan"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <LinearLayout
+        android:id="@+id/ratingLayout"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:gravity="center_vertical"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="@id/txtNamaMakanan"
+        android:layout_marginEnd="16dp">
+
+        <ImageView
+            android:layout_width="20dp"
+            android:layout_height="20dp"
+            android:src="@android:drawable/btn_star_big_on"
+            android:contentDescription="@string/rating_icon"
+            app:tint="#FFD54F"/>
+
+        <TextView
+            android:id="@+id/txtRating"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="(4.8)"
+            android:textColor="#2E7D32"
+            android:textSize="14sp"
+            android:layout_marginStart="4dp"/>
+    </LinearLayout>
+
+    <!-- Harga -->
+    <TextView
+        android:id="@+id/txtHarga"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Rp15.000"
+        android:textStyle="bold"
+        android:textSize="20sp"
+        android:textColor="#2E7D32"
+        android:layout_marginStart="16dp"
+        android:layout_marginTop="8dp"
+        app:layout_constraintTop_toBottomOf="@id/txtNamaMakanan"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <!-- Pilihan rasa -->
+    <TextView
+        android:id="@+id/labelPilihan"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Pilihan"
+        android:textColor="#2E7D32"
+        android:textSize="14sp"
+        android:layout_marginTop="16dp"
+        android:layout_marginStart="16dp"
+        app:layout_constraintTop_toBottomOf="@id/txtHarga"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <Button
+        android:id="@+id/btnPilihan"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Pedas"
+        android:textAllCaps="false"
+        android:textColor="#2E7D32"
+        app:drawableEndCompat="@drawable/ic_chevron_right"
+        android:backgroundTint="#DFFFB0"
+        android:layout_marginTop="4dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintTop_toBottomOf="@id/labelPilihan"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Pilihan porsi -->
+    <TextView
+        android:id="@+id/labelPorsi"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Porsi"
+        android:textColor="#2E7D32"
+        android:textSize="14sp"
+        android:layout_marginTop="12dp"
+        android:layout_marginStart="16dp"
+        app:layout_constraintTop_toBottomOf="@id/btnPilihan"
+        app:layout_constraintStart_toStartOf="parent"/>
+
+    <Button
+        android:id="@+id/btnPorsi"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:text="Sedang"
+        android:textAllCaps="false"
+        android:textColor="#2E7D32"
+        app:drawableEndCompat="@drawable/ic_chevron_right"
+        android:backgroundTint="#DFFFB0"
+        android:layout_marginTop="4dp"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp"
+        app:layout_constraintTop_toBottomOf="@id/labelPorsi"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"/>
+
+    <!-- Footer dengan keranjang dan tombol tambah -->
+    <LinearLayout
+        android:id="@+id/footer"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:background="#4CAF50"
+        android:padding="12dp"
+        android:gravity="center_vertical"
+        app:layout_constraintBottom_toBottomOf="parent">
+
+        <ImageButton
+            android:id="@+id/btnKeranjang"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:background="?android:attr/selectableItemBackgroundBorderless"
+            android:src="@drawable/keranjang"
+            android:contentDescription="@string/keranjang"
+            app:tint="@android:color/white" />
+
+        <Space
+            android:layout_width="0dp"
+            android:layout_height="0dp"
+            android:layout_weight="1" />
+
+        <Button
+            android:id="@+id/btnTambahkan"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="+ Tambahkan"
+            android:backgroundTint="#FFD54F"
+            android:textColor="#000000"
+            android:textStyle="bold"/>
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>
