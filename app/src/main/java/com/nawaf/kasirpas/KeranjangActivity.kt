@@ -1,10 +1,8 @@
 package com.nawaf.kasirpas
 
 import android.os.Bundle
-import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.ViewCompat
-import androidx.core.view.WindowInsetsCompat
+import com.nawaf.kasirpas.databinding.ActivityKeranjangBinding
 
 class KeranjangActivity : AppCompatActivity() {
     private lateinit var binding: ActivityKeranjangBinding

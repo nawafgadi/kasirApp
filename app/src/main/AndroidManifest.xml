@@ -11,6 +11,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.KasirPAS">
         <activity
+            android:name=".BerandaActivity"
+            android:exported="false" />
+        <activity
             android:name=".GrafikpenjualanActivity"
             android:exported="false" />
         <activity
