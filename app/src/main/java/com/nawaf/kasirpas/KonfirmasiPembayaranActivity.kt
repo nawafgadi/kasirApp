@@ -1,38 +1,58 @@
 package com.nawaf.kasirpas
 
+import android.content.Intent
 import android.os.Bundle
-import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.nawaf.kasirpas.databinding.ActivityKonfirmasiPembayaranBinding
+import java.text.NumberFormat
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class KonfirmasiPembayaranActivity : AppCompatActivity() {
-
-    // Deklarasikan variabel binding untuk mengakses view dengan aman
-    private lateinit var binding: ActivityKonfirmasiPembayaranBinding
+    private var binding: ActivityKonfirmasiPembayaranBinding? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        // Inflate layout menggunakan View Binding
         binding = ActivityKonfirmasiPembayaranBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+        setContentView(binding!!.root)
 
-        // Mengisi tampilan dengan data dari string resources
-        setupViews()
+        // Ambil data dari Intent
+        val intent = intent
+        val totalHarga = intent.getIntExtra("TOTAL_HARGA", 0)
+        val metodePembayaran = intent.getStringExtra("METODE_PEMBAYARAN")
 
-        // Mengatur listener untuk tombol selesai
-        binding.btnSelesai.setOnClickListener {
-            Toast.makeText(this, "Transaksi selesai!", Toast.LENGTH_SHORT).show()
-            finish() // Menutup activity saat ini
+        setupViews(totalHarga, metodePembayaran)
+
+        binding!!.btnSelesai.setOnClickListener { v ->
+            // Kembali ke halaman utama (Home) setelah selesai
+            val homeIntent = Intent(
+                this,
+                HomeActivity::class.java
+            )
+            homeIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP or Intent.FLAG_ACTIVITY_NEW_TASK)
+            startActivity(homeIntent)
+            finish() // Tutup semua activity di atas Home
         }
     }
 
-    private fun setupViews() {
-        // Menggunakan binding untuk mengakses elemen UI, lebih aman dari findViewById
-        binding.tanggalTransaksi.text = getString(R.string.tanggal_transaksi_dummy)
-        binding.statusTransaksi.text = getString(R.string.status_transaksi_berhasil)
-        binding.namaBarang.text = getString(R.string.nama_barang_dummy)
-        binding.orderId.text = getString(R.string.order_id_dummy)
-        binding.totalPembayaran.text = getString(R.string.total_pembayaran_dummy)
-        binding.metodePembayaran.text = getString(R.string.metode_pembayaran_dummy)
+    private fun setupViews(totalHarga: Int, metode: String?) {
+        // Format Rupiah
+        val formatRupiah = NumberFormat.getCurrencyInstance(Locale("in", "ID"))
+        val hargaFormatted = formatRupiah.format(totalHarga.toLong()).replace(",00", "")
+
+        // Format Tanggal
+        val sdf = SimpleDateFormat("dd MMMM yyyy, HH:mm", Locale("in", "ID"))
+        val tanggalFormatted = sdf.format(Date())
+
+        // Set data ke TextViews
+        binding!!.tanggalTransaksi.text = tanggalFormatted
+        binding!!.totalPembayaran.text = hargaFormatted
+        binding!!.metodePembayaran.text = "Metode: " + (metode ?: "N/A")
+
+        // Mengisi data dummy lainnya
+        binding!!.statusTransaksi.text = getString(R.string.status_transaksi_berhasil)
+        binding!!.namaBarang.text = getString(R.string.nama_barang_dummy)
+        binding!!.orderId.text = getString(R.string.order_id_dummy)
     }
 }

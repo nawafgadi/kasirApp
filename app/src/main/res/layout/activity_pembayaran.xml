@@ -1,19 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="#F6F6AE"
+    android:background="#F4EEA9"
     tools:context=".PembayaranActivity">
 
-    <!-- Header -->
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#F6F6AE"
+        android:background="#519259"
         app:elevation="0dp"
         app:layout_constraintTop_toTopOf="parent">
 
@@ -21,67 +19,64 @@
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
             android:layout_height="?attr/actionBarSize"
-            app:navigationIcon="@drawable/back_icon"
-            app:navigationIconTint="#355834"
+            app:navigationIcon="@android:drawable/ic_menu_close_clear_cancel"
+            app:navigationIconTint="@android:color/white"
             app:title="@string/title_metode_pembayaran"
             app:titleCentered="true"
-            app:titleTextColor="#355834" />
+            app:titleTextColor="@android:color/white" />
+
+        <TextView
+            android:id="@+id/labelPilihMetode"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginStart="24dp"
+            android:layout_marginBottom="16dp"
+            android:text="@string/label_pilih_metode_pembayaran"
+            android:textColor="#F4EEA9"
+            android:textSize="18sp"
+            android:textStyle="bold" />
 
     </com.google.android.material.appbar.AppBarLayout>
 
-    <TextView
-        android:id="@+id/labelPilihMetode"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        android:text="@string/label_pilih_metode_pembayaran"
-        android:textColor="#355834"
-        android:textSize="16sp"
-        android:textStyle="bold"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/appBarLayout" />
-
-    <!-- Card Cash -->
     <androidx.cardview.widget.CardView
         android:id="@+id/cardCash"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="24dp"
         android:clickable="true"
         android:focusable="true"
-        android:foreground="?android:attr/selectableItemBackground"
-        app:cardBackgroundColor="#FFFFFF"
-        app:cardCornerRadius="12dp"
-        app:cardElevation="2dp"
+        android:foreground="?attr/selectableItemBackground"
+        app:cardBackgroundColor="@android:color/white"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="6dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/labelPilihMetode">
+        app:layout_constraintTop_toBottomOf="@id/appBarLayout">
 
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp">
+            android:padding="20dp">
 
             <ImageView
                 android:id="@+id/iconCash"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
                 android:contentDescription="@string/desc_ikon_tunai"
-                android:src="@drawable/ic_user"
+                android:src="@android:drawable/ic_dialog_email"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:tint="#5D9B63" />
+                app:tint="#519259" />
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:text="@string/label_bayar_tunai"
-                android:textColor="#355834"
-                android:textSize="16sp"
+                android:textColor="#519259"
+                android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/checkCash"
@@ -90,32 +85,31 @@
 
             <ImageView
                 android:id="@+id/checkCash"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_cart"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@android:drawable/checkbox_on_background"
                 android:visibility="gone"
-                tools:visibility="visible"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:tint="#5D9B63" />
+                app:tint="#519259"
+                tools:visibility="visible" />
 
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
-    <!-- Card Transfer Bank -->
     <androidx.cardview.widget.CardView
         android:id="@+id/cardTransfer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="12dp"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="16dp"
         android:clickable="true"
         android:focusable="true"
-        android:foreground="?android:attr/selectableItemBackground"
-        app:cardBackgroundColor="#FFFFFF"
-        app:cardCornerRadius="12dp"
-        app:cardElevation="2dp"
+        android:foreground="?attr/selectableItemBackground"
+        app:cardBackgroundColor="@android:color/white"
+        app:cardCornerRadius="16dp"
+        app:cardElevation="6dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cardCash">
@@ -123,26 +117,26 @@
         <androidx.constraintlayout.widget.ConstraintLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:padding="16dp">
+            android:padding="20dp">
 
             <ImageView
                 android:id="@+id/iconTransfer"
-                android:layout_width="32dp"
-                android:layout_height="32dp"
+                android:layout_width="36dp"
+                android:layout_height="36dp"
                 android:contentDescription="@string/desc_ikon_transfer"
-                android:src="@drawable/restaurant_icon"
+                android:src="@android:drawable/ic_menu_share"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
-                app:tint="#5D9B63" />
+                app:tint="#519259" />
 
             <TextView
                 android:layout_width="0dp"
                 android:layout_height="wrap_content"
                 android:layout_marginStart="16dp"
                 android:text="@string/label_transfer_bank"
-                android:textColor="#355834"
-                android:textSize="16sp"
+                android:textColor="#519259"
+                android:textSize="18sp"
                 android:textStyle="bold"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toStartOf="@id/checkTransfer"
@@ -151,9 +145,9 @@
 
             <ImageView
                 android:id="@+id/checkTransfer"
-                android:layout_width="24dp"
-                android:layout_height="24dp"
-                android:src="@drawable/ic_cart"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:src="@android:drawable/checkbox_on_background"
                 android:visibility="gone"
                 app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
@@ -163,34 +157,33 @@
         </androidx.constraintlayout.widget.ConstraintLayout>
     </androidx.cardview.widget.CardView>
 
-    <!-- Card detail transfer (muncul setelah pilih transfer) -->
     <androidx.cardview.widget.CardView
         android:id="@+id/cardDetailTransfer"
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:layout_marginHorizontal="16dp"
-        android:layout_marginTop="8dp"
+        android:layout_marginHorizontal="24dp"
+        android:layout_marginTop="12dp"
         android:visibility="gone"
-        tools:visibility="visible"
         app:cardBackgroundColor="#E8F5E9"
-        app:cardCornerRadius="12dp"
+        app:cardCornerRadius="16dp"
         app:cardElevation="0dp"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/cardTransfer">
+        app:layout_constraintTop_toBottomOf="@id/cardTransfer"
+        tools:visibility="visible">
 
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="vertical"
-            android:padding="16dp">
+            android:padding="20dp">
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/label_nomor_rekening"
-                android:textColor="#355834"
-                android:textSize="14sp"
+                android:textColor="#519259"
+                android:textSize="15sp"
                 android:textStyle="bold" />
 
             <TextView
@@ -199,33 +192,36 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="4dp"
                 android:text="@string/nomor_rekening_toko"
-                android:textColor="#355834"
-                android:textSize="14sp" />
+                android:textColor="#519259"
+                android:textSize="15sp"
+                android:textStyle="normal" />
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="8dp"
+                android:layout_marginTop="12dp"
+                android:lineSpacingExtra="2dp"
                 android:text="@string/info_transfer"
                 android:textColor="#5D9B63"
-                android:textSize="12sp" />
+                android:textSize="13sp" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
-    <!-- Tombol Bayar Sekarang -->
     <com.google.android.material.button.MaterialButton
         android:id="@+id/btnBayarSekarang"
         android:layout_width="0dp"
-        android:layout_height="56dp"
-        android:layout_margin="16dp"
+        android:layout_height="58dp"
+        android:layout_margin="24dp"
         android:text="@string/label_konfirmasi_pembayaran"
+        android:textColor="#064635"
         android:textAllCaps="false"
-        android:textSize="16sp"
+        android:textSize="17sp"
         android:textStyle="bold"
-        app:backgroundTint="#5D9B63"
+        app:backgroundTint="#F0BB62"
         app:cornerRadius="28dp"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent" />
+        app:layout_constraintStart_toStartOf="parent"
+        app:rippleColor="#8BC34A" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

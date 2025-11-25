@@ -1,12 +1,12 @@
 package com.nawaf.kasirpas;
 
+import android.content.Intent; // PERBAIKAN 1: Import kelas Intent
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Toast;
 import androidx.appcompat.app.AppCompatActivity;
 import com.nawaf.kasirpas.databinding.ActivityPembayaranBinding;
 
-// Enum untuk mengelola state pembayaran dengan lebih aman. Bisa diletakkan di file yang sama.
 enum PaymentMethod {
     CASH,
     TRANSFER
@@ -16,6 +16,7 @@ public class PembayaranActivity extends AppCompatActivity {
 
     private ActivityPembayaranBinding binding;
     private PaymentMethod selectedMethod;
+    private int totalHarga = 0; // Tambahkan variabel untuk menampung total harga
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -23,55 +24,39 @@ public class PembayaranActivity extends AppCompatActivity {
         binding = ActivityPembayaranBinding.inflate(getLayoutInflater());
         setContentView(binding.getRoot());
 
+        // Ambil total harga yang dikirim dari PesananActivity
+        totalHarga = getIntent().getIntExtra("TOTAL_HARGA", 0);
+
         setupListeners();
-        // Atur metode tunai sebagai pilihan default saat halaman dibuka
         selectPaymentMethod(PaymentMethod.CASH);
     }
 
     private void setupListeners() {
-        // Listener untuk tombol kembali di toolbar
-        binding.toolbar.setNavigationOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                finish();
-            }
-        });
+        binding.toolbar.setNavigationOnClickListener(v -> finish());
 
-        // Listener untuk memilih metode Bayar Tunai
-        binding.cardCash.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectPaymentMethod(PaymentMethod.CASH);
-            }
-        });
+        binding.cardCash.setOnClickListener(v -> selectPaymentMethod(PaymentMethod.CASH));
 
-        // Listener untuk memilih metode Transfer Bank
-        binding.cardTransfer.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                selectPaymentMethod(PaymentMethod.TRANSFER);
-            }
-        });
+        binding.cardTransfer.setOnClickListener(v -> selectPaymentMethod(PaymentMethod.TRANSFER));
 
-        // Listener untuk tombol konfirmasi pembayaran
-        binding.btnBayarSekarang.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if (selectedMethod == null) {
-                    Toast.makeText(PembayaranActivity.this, "Silakan pilih metode pembayaran terlebih dahulu.", Toast.LENGTH_SHORT).show();
-                    return;
-                }
-
-                switch (selectedMethod) {
-                    case CASH:
-                        // Notifikasi khusus jika metode tunai dipilih
-                        Toast.makeText(PembayaranActivity.this, "Silakan segera ke kasir untuk melakukan pembayaran.", Toast.LENGTH_LONG).show();
-                        break;
-                    case TRANSFER:
-                        Toast.makeText(PembayaranActivity.this, "Pembayaran berhasil! Silakan tunggu konfirmasi.", Toast.LENGTH_LONG).show();
-                        break;
-                }
+        // --- INI BAGIAN YANG DIPERBAIKI ---
+        binding.btnBayarSekarang.setOnClickListener(v -> {
+            if (selectedMethod == null) {
+                Toast.makeText(PembayaranActivity.this, "Silakan pilih metode pembayaran terlebih dahulu.", Toast.LENGTH_SHORT).show();
+                return;
             }
+
+            // PERBAIKAN 2: Buat Intent untuk pindah ke KonfirmasiPembayaranActivity
+            Intent intent = new Intent(PembayaranActivity.this, KonfirmasiPembayaranActivity.class);
+
+            // (Opsional tapi penting) Kirim data yang relevan ke halaman konfirmasi
+            intent.putExtra("TOTAL_HARGA", totalHarga);
+            intent.putExtra("METODE_PEMBAYARAN", selectedMethod.name()); // Mengirim "CASH" atau "TRANSFER"
+
+            // PERBAIKAN 3: Jalankan perintah pindah halaman
+            startActivity(intent);
+
+            // Tampilkan Toast setelah pindah halaman (opsional)
+            Toast.makeText(PembayaranActivity.this, "Pembayaran dikonfirmasi!", Toast.LENGTH_SHORT).show();
         });
     }
 
@@ -80,7 +65,6 @@ public class PembayaranActivity extends AppCompatActivity {
         updateUi();
     }
 
-    // Fungsi untuk memperbarui tampilan berdasarkan metode yang dipilih
     private void updateUi() {
         if (selectedMethod == null) {
             binding.checkCash.setVisibility(View.GONE);

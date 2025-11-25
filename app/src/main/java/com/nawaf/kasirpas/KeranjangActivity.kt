@@ -1,8 +1,11 @@
 package com.nawaf.kasirpas
 
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.nawaf.kasirpas.databinding.ActivityKeranjangBinding
+import java.text.NumberFormat
+import java.util.Locale
 
 class KeranjangActivity : AppCompatActivity() {
     private lateinit var binding: ActivityKeranjangBinding
@@ -29,7 +32,10 @@ class KeranjangActivity : AppCompatActivity() {
         }
 
         binding.btnPesan.setOnClickListener {
-            // Logika pemesanan, misal ke halaman pembayaran
+            val intent = Intent(this, PesananActivity::class.java)
+            val total = quantity * hargaSatuan
+            intent.putExtra("TOTAL_HARGA", total)
+            startActivity(intent)
         }
 
         binding.btnBack.setOnClickListener {
@@ -40,6 +46,10 @@ class KeranjangActivity : AppCompatActivity() {
     private fun updateTotal() {
         binding.txtQuantity.text = quantity.toString()
         val total = quantity * hargaSatuan
-        binding.totalPrice.text = "Rp${String.format("%,d", total).replace(',', '.')}"
+
+        val formatRupiah = NumberFormat.getCurrencyInstance(Locale("in", "ID"))
+        val hargaRupiah = formatRupiah.format(total.toLong()).replace(",00", "")
+
+        binding.totalPrice.text = hargaRupiah
     }
 }

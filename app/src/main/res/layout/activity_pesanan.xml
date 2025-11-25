@@ -20,22 +20,22 @@
 
         <ImageButton
             android:id="@+id/btnBack"
-            android:layout_width="32dp"
-            android:layout_height="32dp"
+            android:layout_width="64dp"
+            android:layout_height="56dp"
             android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:src="@android:drawable/ic_media_previous"
             android:contentDescription="@string/action_kembali"
-            app:tint="#2E7D32"/>
+            android:src="@android:drawable/ic_media_previous"
+            app:tint="#2E7D32" />
 
         <TextView
             android:id="@+id/txtTitle"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:gravity="center"
             android:text="@string/title_pesanan"
-            android:textStyle="bold"
+            android:textColor="#519259"
             android:textSize="18sp"
-            android:textColor="#2E7D32"
-            android:gravity="center"/>
+            android:textStyle="bold" />
     </LinearLayout>
 
     <!-- Card total pesanan -->
@@ -45,26 +45,26 @@
         android:layout_height="wrap_content"
         android:layout_margin="16dp"
         app:cardCornerRadius="8dp"
-        android:backgroundTint="#A5D6A7"
+        android:backgroundTint="#519259"
         app:layout_constraintTop_toBottomOf="@id/header"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintEnd_toEndOf="parent">
 
         <LinearLayout
             android:layout_width="match_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="80dp"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
-            android:padding="16dp"
-            android:gravity="center_vertical">
+            android:padding="16dp">
 
             <TextView
                 android:id="@+id/labelTotal"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/label_total"
-                android:textColor="@android:color/white"
-                android:textStyle="bold"
-                android:textSize="16sp"/>
+                android:textColor="#F4EEA9"
+                android:textSize="16sp"
+                android:textStyle="bold" />
 
             <Space
                 android:layout_width="0dp"
@@ -76,9 +76,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/harga_total"
-                android:textColor="@android:color/white"
-                android:textStyle="bold"
-                android:textSize="16sp"/>
+                android:textColor="#F4EEA9"
+                android:textSize="16sp"
+                android:textStyle="bold" />
         </LinearLayout>
     </androidx.cardview.widget.CardView>
 
@@ -87,7 +87,7 @@
         android:id="@+id/footer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="#4CAF50"
+        android:background="#519259"
         android:padding="12dp"
         android:orientation="vertical"
         app:layout_constraintBottom_toBottomOf="parent">
@@ -101,11 +101,11 @@
 
             <TextView
                 android:id="@+id/labelTotalFooter"
-                android:layout_width="wrap_content"
+                android:layout_width="60dp"
                 android:layout_height="wrap_content"
                 android:text="@string/label_total"
-                android:textColor="@android:color/white"
-                android:textSize="16sp"/>
+                android:textColor="#F4EEA9"
+                android:textSize="16sp" />
 
             <Space
                 android:layout_width="0dp"
@@ -117,7 +117,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="@string/harga_total"
-                android:textColor="@android:color/white"
+                android:textColor="#F4EEA9"
                 android:textStyle="bold"
                 android:textSize="16sp"/>
         </LinearLayout>
@@ -126,10 +126,10 @@
             android:id="@+id/btnBayar"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
+            android:backgroundTint="#F0BB62"
             android:text="@string/label_bayar_sekarang"
-            android:textStyle="bold"
-            android:backgroundTint="#FFD54F"
-            android:textColor="#000000"/>
+            android:textColor="#064635"
+            android:textStyle="bold" />
     </LinearLayout>
 
 </androidx.constraintlayout.widget.ConstraintLayout>

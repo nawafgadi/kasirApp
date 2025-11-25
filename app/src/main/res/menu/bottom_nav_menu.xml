@@ -1,19 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
+
     <item
         android:id="@+id/nav_home"
-        android:icon="@drawable/home_icon"
-        android:title="Home" />
+        android:title="Home"
+        android:icon="@drawable/ic_home" />
+
     <item
-        android:id="@+id/nav_laporan"
-        android:icon="@drawable/logo_toko"
-        android:title="Laporan" />
+        android:id="@+id/nav_report"
+        android:title="Laporan"
+        android:icon="@drawable/ic_laporan" />
+
     <item
-        android:id="@+id/nav_grafik"
-        android:icon="@drawable/ic_user"
-        android:title="Grafik" />
+        android:id="@+id/nav_chart"
+        android:title="Grafik"
+        android:icon="@drawable/ic_grafik" />
+
     <item
-        android:id="@+id/nav_profil"
-        android:icon="@drawable/ic_profile"
-        android:title="Profil" />
+        android:id="@+id/nav_profile"
+        android:title="Profile"
+        android:icon="@drawable/ic_settings" />
+
 </menu>

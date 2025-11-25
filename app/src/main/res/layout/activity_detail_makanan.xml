@@ -1,171 +1,144 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout
+<LinearLayout
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:orientation="vertical"
     android:background="#FFF7B3"
     tools:context=".detailMakananActivity">
 
-    <!-- Tombol kembali -->
+    <!-- BAGIAN ATAS: Tombol Kembali -->
     <ImageButton
         android:id="@+id/btnBack"
-        android:layout_width="32dp"
-        android:layout_height="32dp"
+        android:layout_width="104dp"
+        android:layout_height="60dp"
         android:layout_margin="8dp"
-        android:src="@android:drawable/ic_media_previous"
         android:background="?android:attr/selectableItemBackgroundBorderless"
-        android:contentDescription="@string/action_kembali"
-        app:tint="#2E7D32"
-        app:layout_constraintTop_toTopOf="parent"
-        app:layout_constraintStart_toStartOf="parent"/>
+        android:contentDescription="Tombol Kembali"
+        android:padding="10dp"
+        android:src="@drawable/ic_arrow_back"
+        app:tint="#2E7D32" />
 
-    <!-- Gambar makanan -->
-    <ImageView
-        android:id="@+id/imgMakanan"
-        android:layout_width="0dp"
-        android:layout_height="200dp"
-        android:src="@drawable/nasigoreng"
-        android:scaleType="centerCrop"
-        android:background="#7CB342"
-        android:contentDescription="@string/gambar_makanan"
-        app:layout_constraintTop_toBottomOf="@id/btnBack"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+    <!-- BAGIAN TENGAH: KONTEN YANG BISA DI-SCROLL -->
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:layout_weight="1">
 
-    <!-- Nama dan rating -->
-    <TextView
-        android:id="@+id/txtNamaMakanan"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Nama Makanan"
-        android:textStyle="bold"
-        android:textSize="18sp"
-        android:textColor="#2E7D32"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="16dp"
-        app:layout_constraintTop_toBottomOf="@id/imgMakanan"
-        app:layout_constraintStart_toStartOf="parent"/>
-
-    <LinearLayout
-        android:id="@+id/ratingLayout"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:gravity="center_vertical"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="@id/txtNamaMakanan"
-        android:layout_marginEnd="16dp">
-
-        <ImageView
-            android:layout_width="20dp"
-            android:layout_height="20dp"
-            android:src="@android:drawable/btn_star_big_on"
-            android:contentDescription="@string/rating_icon"
-            app:tint="#FFD54F"/>
-
-        <TextView
-            android:id="@+id/txtRating"
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="(4.8)"
-            android:textColor="#2E7D32"
-            android:textSize="14sp"
-            android:layout_marginStart="4dp"/>
-    </LinearLayout>
+            android:orientation="vertical"
+            android:padding="16dp">
 
-    <!-- Harga -->
-    <TextView
-        android:id="@+id/txtHarga"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Rp15.000"
-        android:textStyle="bold"
-        android:textSize="20sp"
-        android:textColor="#2E7D32"
-        android:layout_marginStart="16dp"
-        android:layout_marginTop="8dp"
-        app:layout_constraintTop_toBottomOf="@id/txtNamaMakanan"
-        app:layout_constraintStart_toStartOf="parent"/>
+            <!-- Gambar Makanan -->
+            <ImageView
+                android:id="@+id/imgMakanan"
+                android:layout_width="194dp"
+                android:layout_height="228dp"
+                android:layout_gravity="center_horizontal"
+                android:contentDescription="Gambar Makanan"
+                android:scaleType="centerCrop"
+                android:src="@drawable/ic_beras" />
 
-    <!-- Pilihan rasa -->
-    <TextView
-        android:id="@+id/labelPilihan"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Pilihan"
-        android:textColor="#2E7D32"
-        android:textSize="14sp"
-        android:layout_marginTop="16dp"
-        android:layout_marginStart="16dp"
-        app:layout_constraintTop_toBottomOf="@id/txtHarga"
-        app:layout_constraintStart_toStartOf="parent"/>
+            <!-- Nama Makanan -->
+            <TextView
+                android:id="@+id/txtNamaMakanan"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Beras Premium"
+                android:textColor="#519259"
+                android:textSize="18sp"
+                android:textStyle="bold" />
 
-    <Button
-        android:id="@+id/btnPilihan"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Pedas"
-        android:textAllCaps="false"
-        android:textColor="#2E7D32"
-        app:drawableEndCompat="@drawable/ic_chevron_right"
-        android:backgroundTint="#DFFFB0"
-        android:layout_marginTop="4dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintTop_toBottomOf="@id/labelPilihan"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+            <!-- Harga -->
+            <TextView
+                android:id="@+id/txtHarga"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:text="Rp15.000"
+                android:textColor="#519259"
+                android:textSize="20sp"
+                android:textStyle="bold" />
 
-    <!-- Pilihan porsi -->
-    <TextView
-        android:id="@+id/labelPorsi"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Porsi"
-        android:textColor="#2E7D32"
-        android:textSize="14sp"
-        android:layout_marginTop="12dp"
-        android:layout_marginStart="16dp"
-        app:layout_constraintTop_toBottomOf="@id/btnPilihan"
-        app:layout_constraintStart_toStartOf="parent"/>
+            <!-- Rating (Disembunyikan karena sering menyebabkan masalah di preview) -->
+            <TextView
+                android:id="@+id/txtRating"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="★ 5.0"
+                android:textColor="#2E7D32"
+                android:textSize="14sp"
+                android:visibility="gone"
+                tools:visibility="visible"/>
 
-    <Button
-        android:id="@+id/btnPorsi"
-        android:layout_width="0dp"
-        android:layout_height="wrap_content"
-        android:text="Sedang"
-        android:textAllCaps="false"
-        android:textColor="#2E7D32"
-        app:drawableEndCompat="@drawable/ic_chevron_right"
-        android:backgroundTint="#DFFFB0"
-        android:layout_marginTop="4dp"
-        android:layout_marginStart="16dp"
-        android:layout_marginEnd="16dp"
-        app:layout_constraintTop_toBottomOf="@id/labelPorsi"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintEnd_toEndOf="parent"/>
+            <!-- Label Pilihan -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="16dp"
+                android:text="Merek/Jenis"
+                android:textColor="#2E7D32"
+                android:textSize="14sp" />
 
-    <!-- Footer dengan keranjang dan tombol tambah -->
+            <!-- Tombol Pilihan -->
+            <Button
+                android:id="@+id/btnPilihan"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="Sania"
+                android:textColor="#519259"
+                app:strokeColor="#519259"/>
+
+            <!-- Label Porsi -->
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="12dp"
+                android:text="Kemasan/Berat"
+                android:textColor="#2E7D32"
+                android:textSize="14sp" />
+
+            <!-- Tombol Porsi -->
+            <Button
+                android:id="@+id/btnPorsi"
+                style="@style/Widget.Material3.Button.OutlinedButton"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="4dp"
+                android:text="5 Kg"
+                android:textColor="#519259"
+                app:strokeColor="#519259"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+    <!-- BAGIAN BAWAH: FOOTER -->
     <LinearLayout
         android:id="@+id/footer"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:background="#4CAF50"
-        android:padding="12dp"
+        android:background="#519259"
         android:gravity="center_vertical"
-        app:layout_constraintBottom_toBottomOf="parent">
+        android:orientation="horizontal"
+        android:padding="12dp">
 
         <ImageButton
             android:id="@+id/btnKeranjang"
-            android:layout_width="40dp"
-            android:layout_height="40dp"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
             android:background="?android:attr/selectableItemBackgroundBorderless"
-            android:src="@drawable/keranjang"
-            android:contentDescription="@string/keranjang"
-            app:tint="@android:color/white" />
+            android:padding="16dp"
+            android:contentDescription="Keranjang"
+            android:src="@drawable/ic_shopping_cart"
+            app:tint="#F4EEA9" />
 
         <Space
             android:layout_width="0dp"
@@ -176,10 +149,10 @@
             android:id="@+id/btnTambahkan"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="+ Tambahkan"
             android:backgroundTint="#FFD54F"
+            android:text="+ Tambahkan"
             android:textColor="#000000"
-            android:textStyle="bold"/>
+            android:textStyle="bold" />
     </LinearLayout>
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+</LinearLayout>
