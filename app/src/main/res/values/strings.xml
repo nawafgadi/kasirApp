@@ -52,4 +52,48 @@
     <string name="metode_pembayaran_dummy">Metode Pembayaran: Cash</string>
     <string name="label_berhasil_menyimpan">Berhasil Menyimpan</string>
     <string name="action_selesai">Selesai</string>
+
+    <!-- HomeActivity Strings -->
+    <string name="default_user_name">Pengguna</string>
+    <string name="toast_navigating_beranda">Berpindah ke Halaman Beranda (Katalog Produk)</string>
+    <string name="toast_quick_add">Aksi Tambah Cepat (Quick Add)</string>
+    <string name="toast_navigating_laporan">Navigasi ke Laporan/Grafik</string>
+    <string name="toast_navigating_pesanan">Navigasi ke Pesanan/Order</string>
+    <string name="toast_navigating_profil">Navigasi ke Profil</string>
+    <string name="restaurant_name_src">Toko SRC</string>
+    <string name="search_query_prefix">Mencari: %1$s</string>
+
+    <!-- Splash Screen Strings -->
+    <string name="brand_name">LuxePOS</string>
+    <string name="tagline">PREMIUM RETAIL SYSTEMS</string>
+    <string name="initializing">INITIALIZING ENVIRONMENT</string>
+
+    <!-- Login Activity Strings -->
+    <string name="welcome_back">Welcome Back</string>
+    <string name="signin_details">Please enter your details to sign in</string>
+    <string name="email_address">Email address</string>
+    <string name="password">Password</string>
+    <string name="forgot_password">Forgot Password?</string>
+    <string name="sign_in">Sign In</string>
+    <string name="or_continue_with">or continue with</string>
+    <string name="google">Google</string>
+    <string name="biometric">Biometric</string>
+    <string name="dont_have_account">Don\'t have an account?</string>
+    <string name="sign_up">Sign Up</string>
+    <string name="pci_compliant">PCI COMPLIANT</string>
+    <string name="aes_256">AES-256</string>
+
+    <!-- Onboarding Strings -->
+    <string name="skip">Lewati</string>
+    <string name="next">Lanjut</string>
+    <string name="start_now">Mulai Sekarang</string>
+
+    <string name="onboarding_title_1">Transaksi Lebih Cepat</string>
+    <string name="onboarding_desc_1">Proses pembayaran pelanggan Anda hanya dalam hitungan detik dengan interface yang intuitif.</string>
+
+    <string name="onboarding_title_2">Kelola Stok Mudah</string>
+    <string name="onboarding_desc_2">Pantau ketersediaan barang secara real-time dan dapatkan notifikasi saat stok menipis.</string>
+
+    <string name="onboarding_title_3">Laporan Real-time</string>
+    <string name="onboarding_desc_3">Analisis performa bisnis Anda kapan saja dan di mana saja langsung dari genggaman.</string>
 </resources>

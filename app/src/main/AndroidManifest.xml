@@ -13,31 +13,19 @@
         android:theme="@style/Theme.KasirPAS"
         tools:targetApi="31">
         <activity
-            android:name=".TambahMenuActivity"
+            android:name=".activity.RegisterActivity"
             android:exported="false" />
         <activity
-            android:name=".BerandaActivity"
+            android:name=".activity.HomeActivity"
             android:exported="false" />
         <activity
-            android:name=".detailMakananActivity"
+            android:name=".activity.OnboardingActivity"
             android:exported="false" />
         <activity
-            android:name=".KeranjangActivity"
+            android:name=".activity.LoginActivity"
             android:exported="false" />
         <activity
-            android:name=".PesananActivity"
-            android:exported="false" />
-        <activity
-            android:name=".PembayaranActivity"
-            android:exported="false" />
-        <activity
-            android:name=".KonfirmasiPembayaranActivity"
-            android:exported="false" />
-        <activity
-            android:name=".HomeActivity"
-            android:exported="true" />
-        <activity
-            android:name=".RegisterActivity"
+            android:name=".MainActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -45,9 +33,6 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity
-            android:name=".LoginActivity"
-            android:exported="false" />
     </application>
 
 </manifest>

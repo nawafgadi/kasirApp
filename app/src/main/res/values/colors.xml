@@ -9,4 +9,22 @@
     <color name="accent_green">#4CAF50</color>
     <color name="rating_star">#FFC107</color>
     <color name="fab_orange">#F5B93E</color>
+
+    <!-- LuxePOS Splash & Login Colors -->
+    <color name="primary">#653da7</color>
+    <color name="primary_container">#7e57c2</color>
+    <color name="on_primary">#FFFFFF</color>
+    <color name="on_primary_container">#f6ecff</color>
+    <color name="background">#fcf9f8</color>
+    <color name="secondary_fixed_dim">#cfc2d2</color>
+    <color name="surface_variant">#e5e2e1</color>
+    <color name="outline">#7b7483</color>
+    <color name="primary_fixed">#ebdcff</color>
+    <color name="tertiary_fixed">#98f0ff</color>
+    <color name="on_surface">#1c1b1b</color>
+    <color name="on_surface_variant">#4a4452</color>
+    <color name="outline_variant">#ccc3d3</color>
+    <color name="surface_container_lowest">#ffffff</color>
+    <color name="primary_fixed_dim">#d4bbff</color>
+    <color name="tertiary_fixed_dim">#45d8ed</color>
 </resources>
