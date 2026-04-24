@@ -1,20 +1,28 @@
 package com.nawaf.kasirpas.activity
 
+import android.animation.ValueAnimator
 import android.content.Intent
 import android.os.Bundle
+import android.view.animation.LinearInterpolator
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
+import androidx.lifecycle.lifecycleScope
+import com.nawaf.kasirpas.MainActivity
+import com.nawaf.kasirpas.api.RetrofitClient
 import com.nawaf.kasirpas.databinding.ActivitySplashBinding
+import com.nawaf.kasirpas.utils.PreferenceManager
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 class SplashActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivitySplashBinding
+    private lateinit var prefManager: PreferenceManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
-        // Memaksa status bar transparan dan ikon berwarna gelap agar terlihat di background terang
         enableEdgeToEdge(
             statusBarStyle = SystemBarStyle.light(
                 android.graphics.Color.TRANSPARENT,
@@ -25,15 +33,78 @@ class SplashActivity : AppCompatActivity() {
         binding = ActivitySplashBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        prefManager = PreferenceManager(this)
+
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
-            // Berikan padding samping dan bawah saja, biarkan atas (status bar) tetap menyatu dengan body
             v.setPadding(systemBars.left, 0, systemBars.right, systemBars.bottom)
             insets
         }
 
-        binding.btnGoToLogin.setOnClickListener {
-            startActivity(Intent(this, LoginActivity::class.java))
+        startAppFlow()
+    }
+
+    private fun startAppFlow() {
+        // Jalankan animasi progress bar
+        val animator = ValueAnimator.ofInt(0, 100)
+        animator.duration = 2000
+        animator.interpolator = LinearInterpolator()
+        animator.addUpdateListener { animation ->
+            binding.loadingProgress.progress = animation.animatedValue as Int
         }
+        animator.start()
+
+        lifecycleScope.launch {
+            // Tunggu minimal durasi animasi agar splash terlihat
+            delay(2000)
+            checkSessionAndNavigate()
+        }
+    }
+
+    private suspend fun checkSessionAndNavigate() {
+        // 1. Cek Onboarding
+        if (!prefManager.isOnboarded()) {
+            startActivity(Intent(this, OnboardingActivity::class.java))
+            finish()
+            return
+        }
+
+        // 2. Cek apakah ada token dan status login di local
+        val token = prefManager.getToken()
+        if (token == null || !prefManager.isLogin()) {
+            startActivity(Intent(this, LoginActivity::class.java))
+            finish()
+            return
+        }
+
+        // 3. Verifikasi Session ke Backend
+        try {
+            val response = RetrofitClient.authApi.getSession("Bearer $token")
+            
+            if (response.isSuccessful) {
+                val body = response.body()
+                if (body?.user != null) {
+                    // Update data user terbaru dari session
+                    prefManager.saveUser(body.user)
+                    startActivity(Intent(this, MainActivity::class.java))
+                } else {
+                    navigateToLogin()
+                }
+            } else {
+                // Token mungkin expired atau tidak valid
+                navigateToLogin()
+            }
+        } catch (e: Exception) {
+            // Jika error koneksi, kita bisa tetap ke MainActivity jika ingin mode offline
+            // atau tetap ke Login. Di sini kita coba tetap ke Main jika token ada.
+            startActivity(Intent(this, MainActivity::class.java))
+        } finally {
+            finish()
+        }
+    }
+
+    private fun navigateToLogin() {
+        prefManager.setLogin(false)
+        startActivity(Intent(this, LoginActivity::class.java))
     }
 }

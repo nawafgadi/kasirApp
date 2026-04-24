@@ -37,7 +37,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:orientation="vertical"
-        app:layout_constraintBottom_toTopOf="@id/btnGoToLogin"
+        app:layout_constraintBottom_toTopOf="@id/statusContainer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent"
@@ -88,6 +88,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:text="Go to Login (Temp)"
+        android:visibility="gone"
         app:layout_constraintBottom_toTopOf="@id/statusContainer"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
@@ -107,10 +108,11 @@
 
         <!-- Aesthetic Loading Bar -->
         <com.google.android.material.progressindicator.LinearProgressIndicator
+            android:id="@+id/loadingProgress"
             android:layout_width="48dp"
             android:layout_height="wrap_content"
             android:layout_marginBottom="8dp"
-            android:progress="33"
+            android:progress="0"
             app:indicatorColor="@color/primary"
             app:trackColor="@color/surface_variant"
             app:trackCornerRadius="4dp"
