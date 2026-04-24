@@ -53,4 +53,7 @@ dependencies {
     // Converter GSON (untuk ubah JSON jadi Object secara otomatis)
     implementation("com.squareup.retrofit2:converter-gson:2.9.0")
     implementation("androidx.lifecycle:lifecycle-runtime-ktx:2.6.2")
+    
+    // Coil for image loading
+    implementation("io.coil-kt:coil:2.6.0")
 }

@@ -15,14 +15,17 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.recyclerview.widget.RecyclerView
 import androidx.viewpager2.widget.ViewPager2
+import com.nawaf.kasirpas.MainActivity
 import com.nawaf.kasirpas.R
 import com.nawaf.kasirpas.databinding.ActivityOnboardingBinding
 import com.nawaf.kasirpas.databinding.ItemOnboardingBinding
+import com.nawaf.kasirpas.utils.PreferenceManager
 
 class OnboardingActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityOnboardingBinding
     private lateinit var onboardingAdapter: OnboardingAdapter
+    private lateinit var prefManager: PreferenceManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge(
@@ -34,6 +37,8 @@ class OnboardingActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityOnboardingBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        prefManager = PreferenceManager(this)
 
         ViewCompat.setOnApplyWindowInsetsListener(binding.main) { v, insets ->
             val systemBars = insets.getInsets(WindowInsetsCompat.Type.systemBars())
@@ -49,12 +54,12 @@ class OnboardingActivity : AppCompatActivity() {
             if (binding.viewPager.currentItem + 1 < onboardingAdapter.itemCount) {
                 binding.viewPager.currentItem += 1
             } else {
-                navigateToLogin()
+                navigateToMain()
             }
         }
 
         binding.btnSkip.setOnClickListener {
-            navigateToLogin()
+            navigateToMain()
         }
     }
 
@@ -137,8 +142,9 @@ class OnboardingActivity : AppCompatActivity() {
         }
     }
 
-    private fun navigateToLogin() {
-        startActivity(Intent(this, LoginActivity::class.java))
+    private fun navigateToMain() {
+        prefManager.setOnboarded(true)
+        startActivity(Intent(this, MainActivity::class.java))
         finish()
     }
 

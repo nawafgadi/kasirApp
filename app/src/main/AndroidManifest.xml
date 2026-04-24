@@ -34,6 +34,9 @@
             android:name=".activity.LoginActivity"
             android:exported="false" />
         <activity
+            android:name=".activity.BillingActivity"
+            android:exported="false" />
+        <activity
             android:name=".MainActivity"
             android:exported="false" />
     </application>

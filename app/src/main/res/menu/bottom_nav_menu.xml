@@ -1,6 +1,19 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
-
-
-
+    <item
+        android:id="@+id/nav_kasir"
+        android:icon="@drawable/ic_store"
+        android:title="Kasir" />
+    <item
+        android:id="@+id/nav_checkout"
+        android:icon="@drawable/ic_shopping_cart"
+        android:title="Checkout" />
+    <item
+        android:id="@+id/nav_laporan"
+        android:icon="@drawable/history_icon"
+        android:title="Laporan" />
+    <item
+        android:id="@+id/nav_pengaturan"
+        android:icon="@drawable/setting_icon"
+        android:title="Pengaturan" />
 </menu>

@@ -96,4 +96,6 @@
 
     <string name="onboarding_title_3">Laporan Real-time</string>
     <string name="onboarding_desc_3">Analisis performa bisnis Anda kapan saja dan di mana saja langsung dari genggaman.</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>
