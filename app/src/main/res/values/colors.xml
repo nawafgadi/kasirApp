@@ -27,4 +27,18 @@
     <color name="surface_container_lowest">#ffffff</color>
     <color name="primary_fixed_dim">#d4bbff</color>
     <color name="tertiary_fixed_dim">#45d8ed</color>
+    
+    <!-- Premium Colors -->
+    <color name="premium_gold">#FFD700</color>
+    <color name="on_premium">#4E342E</color>
+
+    <!-- Missing Colors for Billing & UI -->
+    <color name="secondary_container">#ecdeee</color>
+    <color name="on_secondary_container">#6b616e</color>
+    <color name="surface_container">#f0eded</color>
+    <color name="surface_container_low">#f6f3f2</color>
+    <color name="secondary_fixed">#ecdeee</color>
+    
+    <!-- SANGAT TRANSPARANT (10% Opacity = 1A) -->
+    <color name="primary_transparent">#1A653DA7</color>
 </resources>
