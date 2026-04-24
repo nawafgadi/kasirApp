@@ -14,7 +14,7 @@ class PreferenceManager(context: Context) {
         private const val KEY_TOKEN = "token"
         private const val KEY_USER = "user"
         private const val KEY_IS_LOGIN = "is_login"
-        private const val KEY_IS_FIRST_RUN = "is_first_run"
+        private const val KEY_IS_ONBOARDED = "is_onboarded"
     }
 
     fun saveToken(token: String) {
@@ -45,12 +45,12 @@ class PreferenceManager(context: Context) {
         return prefs.getBoolean(KEY_IS_LOGIN, false)
     }
 
-    fun setFirstRun(isFirstRun: Boolean) {
-        prefs.edit().putBoolean(KEY_IS_FIRST_RUN, isFirstRun).apply()
+    fun setOnboarded(isOnboarded: Boolean) {
+        prefs.edit().putBoolean(KEY_IS_ONBOARDED, isOnboarded).apply()
     }
 
-    fun isFirstRun(): Boolean {
-        return prefs.getBoolean(KEY_IS_FIRST_RUN, true)
+    fun isOnboarded(): Boolean {
+        return prefs.getBoolean(KEY_IS_ONBOARDED, false)
     }
 
     fun clear() {

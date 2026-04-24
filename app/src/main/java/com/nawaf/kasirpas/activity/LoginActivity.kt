@@ -55,7 +55,8 @@ class LoginActivity : AppCompatActivity() {
             val password = binding.etPassword.text.toString()
 
             if (email.isEmpty() || password.isEmpty()) {
-                Toast.makeText(this, "Email and Password cannot be empty", Toast.LENGTH_SHORT).show()
+                Toast.makeText(this, "Email and Password cannot be empty", Toast.LENGTH_SHORT)
+                    .show()
                 return@setOnClickListener
             }
 
@@ -69,27 +70,51 @@ class LoginActivity : AppCompatActivity() {
 
     private fun performLogin(email: String, password: String) {
         binding.btnSignIn.isEnabled = false
-        
+
         lifecycleScope.launch {
             try {
                 val response = RetrofitClient.authApi.login(AuthRequest(email, password))
-                
-                if (response.token != null && response.user != null) {
-                    Toast.makeText(this@LoginActivity, response.message, Toast.LENGTH_SHORT).show()
-                    
-                    // Simpan data ke SharedPreferences
-                    prefManager.saveToken(response.token)
-                    prefManager.saveUser(response.user)
-                    prefManager.setLogin(true)
-                    
-                    // Pindah ke MainActivity
-                    startActivity(Intent(this@LoginActivity, MainActivity::class.java))
-                    finish()
+
+                if (response.isSuccessful) {
+                    val body = response.body()
+
+                    if (body?.token != null && body.user != null) {
+                        Toast.makeText(this@LoginActivity, body.message, Toast.LENGTH_SHORT).show()
+
+                        // simpan
+                        prefManager.saveToken(body.token)
+                        prefManager.saveUser(body.user)
+                        prefManager.setLogin(true)
+
+                        startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+                        finish()
+                    } else {
+                        Toast.makeText(
+                            this@LoginActivity,
+                            body?.message ?: "Login gagal",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                    }
+
                 } else {
-                    Toast.makeText(this@LoginActivity, response.message, Toast.LENGTH_SHORT).show()
+                    // 🔥 ambil message dari JSON error Laravel
+                    val errorBody = response.errorBody()?.string()
+
+                    val message = try {
+                        org.json.JSONObject(errorBody ?: "").getString("message")
+                    } catch (e: Exception) {
+                        "Login gagal"
+                    }
+
+                    Toast.makeText(this@LoginActivity, message, Toast.LENGTH_SHORT).show()
                 }
+
             } catch (e: Exception) {
-                Toast.makeText(this@LoginActivity, "Login Failed: ${e.localizedMessage}", Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    this@LoginActivity,
+                    "Error: ${e.localizedMessage}",
+                    Toast.LENGTH_SHORT
+                ).show()
             } finally {
                 binding.btnSignIn.isEnabled = true
             }

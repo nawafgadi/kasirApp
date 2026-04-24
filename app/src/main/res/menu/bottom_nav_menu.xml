@@ -1,24 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item
-        android:id="@+id/nav_home"
-        android:title="Home"
-        android:icon="@drawable/ic_home" />
 
-    <item
-        android:id="@+id/nav_report"
-        android:title="Laporan"
-        android:icon="@drawable/ic_laporan" />
-
-    <item
-        android:id="@+id/nav_chart"
-        android:title="Grafik"
-        android:icon="@drawable/ic_grafik" />
-
-    <item
-        android:id="@+id/nav_profile"
-        android:title="Profile"
-        android:icon="@drawable/ic_settings" />
 
 </menu>
