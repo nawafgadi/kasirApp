@@ -34,9 +34,10 @@ class LoginActivity : AppCompatActivity() {
 
         prefManager = PreferenceManager(this)
 
-        // Check if user already logged in
+        // Jika sudah login, SplashActivity harusnya sudah menghandle navigasi.
+        // Tapi kita jaga-jaga di sini.
         if (prefManager.isLogin()) {
-            startActivity(Intent(this, MainActivity::class.java))
+            navigateToNext()
             finish()
         }
 
@@ -81,12 +82,13 @@ class LoginActivity : AppCompatActivity() {
                     if (body?.token != null && body.user != null) {
                         Toast.makeText(this@LoginActivity, body.message, Toast.LENGTH_SHORT).show()
 
-                        // simpan
+                        // simpan data session
                         prefManager.saveToken(body.token)
                         prefManager.saveUser(body.user)
                         prefManager.setLogin(true)
 
-                        startActivity(Intent(this@LoginActivity, MainActivity::class.java))
+                        // Navigasi ke Onboarding (jika belum) atau Main
+                        navigateToNext()
                         finish()
                     } else {
                         Toast.makeText(
@@ -97,15 +99,12 @@ class LoginActivity : AppCompatActivity() {
                     }
 
                 } else {
-                    // 🔥 ambil message dari JSON error Laravel
                     val errorBody = response.errorBody()?.string()
-
                     val message = try {
                         org.json.JSONObject(errorBody ?: "").getString("message")
                     } catch (e: Exception) {
                         "Login gagal"
                     }
-
                     Toast.makeText(this@LoginActivity, message, Toast.LENGTH_SHORT).show()
                 }
 
@@ -118,6 +117,14 @@ class LoginActivity : AppCompatActivity() {
             } finally {
                 binding.btnSignIn.isEnabled = true
             }
+        }
+    }
+
+    private fun navigateToNext() {
+        if (!prefManager.isOnboarded()) {
+            startActivity(Intent(this, OnboardingActivity::class.java))
+        } else {
+            startActivity(Intent(this, MainActivity::class.java))
         }
     }
 }

@@ -41,4 +41,7 @@
     
     <!-- SANGAT TRANSPARANT (10% Opacity = 1A) -->
     <color name="primary_transparent">#1A653DA7</color>
+
+    <!-- Error Color -->
+    <color name="error">#BA1A1A</color>
 </resources>
