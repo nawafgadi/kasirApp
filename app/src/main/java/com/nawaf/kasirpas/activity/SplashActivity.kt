@@ -45,7 +45,6 @@ class SplashActivity : AppCompatActivity() {
     }
 
     private fun startAppFlow() {
-        // Jalankan animasi progress bar
         val animator = ValueAnimator.ofInt(0, 100)
         animator.duration = 2000
         animator.interpolator = LinearInterpolator()
@@ -55,21 +54,13 @@ class SplashActivity : AppCompatActivity() {
         animator.start()
 
         lifecycleScope.launch {
-            // Tunggu minimal durasi animasi agar splash terlihat
             delay(2000)
             checkSessionAndNavigate()
         }
     }
 
     private suspend fun checkSessionAndNavigate() {
-        // 1. Cek Onboarding
-        if (!prefManager.isOnboarded()) {
-            startActivity(Intent(this, OnboardingActivity::class.java))
-            finish()
-            return
-        }
-
-        // 2. Cek apakah ada token dan status login di local
+        // 1. Cek apakah ada token dan status login
         val token = prefManager.getToken()
         if (token == null || !prefManager.isLogin()) {
             startActivity(Intent(this, LoginActivity::class.java))
@@ -77,29 +68,35 @@ class SplashActivity : AppCompatActivity() {
             return
         }
 
-        // 3. Verifikasi Session ke Backend
+        // 2. Verifikasi Session ke Backend
         try {
             val response = RetrofitClient.authApi.getSession("Bearer $token")
             
             if (response.isSuccessful) {
                 val body = response.body()
                 if (body?.user != null) {
-                    // Update data user terbaru dari session
                     prefManager.saveUser(body.user)
-                    startActivity(Intent(this, MainActivity::class.java))
+                    // Jika login valid, baru cek onboarding
+                    navigateToNext()
                 } else {
                     navigateToLogin()
                 }
             } else {
-                // Token mungkin expired atau tidak valid
                 navigateToLogin()
             }
         } catch (e: Exception) {
-            // Jika error koneksi, kita bisa tetap ke MainActivity jika ingin mode offline
-            // atau tetap ke Login. Di sini kita coba tetap ke Main jika token ada.
-            startActivity(Intent(this, MainActivity::class.java))
+            // Jika error koneksi, tetap lanjut ke halaman berikutnya (mode offline)
+            navigateToNext()
         } finally {
             finish()
+        }
+    }
+
+    private fun navigateToNext() {
+        if (!prefManager.isOnboarded()) {
+            startActivity(Intent(this, OnboardingActivity::class.java))
+        } else {
+            startActivity(Intent(this, MainActivity::class.java))
         }
     }
 

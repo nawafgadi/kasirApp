@@ -56,23 +56,39 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintTop_toTopOf="parent">
 
-                <com.google.android.material.button.MaterialButton
-                    android:id="@+id/btnUpgrade"
-                    style="@style/Widget.Material3.Button.TonalButton"
+                <FrameLayout
+                    android:id="@+id/containerUpgrade"
                     android:layout_width="wrap_content"
-                    android:layout_height="36dp"
+                    android:layout_height="wrap_content"
                     android:layout_marginEnd="12dp"
-                    android:paddingHorizontal="12dp"
-                    android:text="Upgrade"
-                    android:textAllCaps="false"
-                    android:textSize="11sp"
-                    android:textStyle="bold"
-                    android:textColor="@color/on_premium"
-                    app:backgroundTint="@color/premium_gold"
-                    app:cornerRadius="12dp"
-                    app:icon="@drawable/ic_bolt"
-                    app:iconSize="14dp"
-                    app:iconTint="@color/on_premium" />
+                    android:clipChildren="false"
+                    android:clipToPadding="false">
+
+                    <!-- Container untuk partikel debu -->
+                    <FrameLayout
+                        android:id="@+id/particleContainer"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:clipChildren="false"
+                        android:clipToPadding="false" />
+
+                    <com.google.android.material.button.MaterialButton
+                        android:id="@+id/btnUpgrade"
+                        style="@style/Widget.Material3.Button.TonalButton"
+                        android:layout_width="wrap_content"
+                        android:layout_height="36dp"
+                        android:paddingHorizontal="12dp"
+                        android:text="Upgrade"
+                        android:textAllCaps="false"
+                        android:textSize="11sp"
+                        android:textStyle="bold"
+                        android:textColor="@color/on_premium"
+                        app:backgroundTint="@color/premium_gold"
+                        app:cornerRadius="12dp"
+                        app:icon="@drawable/ic_diamond"
+                        app:iconSize="14dp"
+                        app:iconTint="@color/on_premium" />
+                </FrameLayout>
 
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="36dp"
