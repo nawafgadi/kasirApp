@@ -19,8 +19,9 @@
             android:background="@color/white"
             android:elevation="4dp"
             android:orientation="vertical"
-            android:paddingBottom="16dp">
+            android:paddingBottom="12dp">
 
+            <!-- Search Section -->
             <LinearLayout
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
@@ -28,57 +29,47 @@
                 android:orientation="horizontal"
                 android:paddingHorizontal="16dp"
                 android:paddingTop="16dp"
-                android:paddingBottom="12dp">
+                android:paddingBottom="16dp">
 
                 <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/tilSearch"
-                    style="@style/Widget.Material3.TextInputLayout.OutlinedBox"
-                    android:layout_width="0dp"
+                    style="@style/Widget.Material3.TextInputLayout.FilledBox"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    app:boxBackgroundColor="#F8F9FE"
-                    app:boxCornerRadiusBottomEnd="12dp"
-                    app:boxCornerRadiusBottomStart="12dp"
-                    app:boxCornerRadiusTopEnd="12dp"
-                    app:boxCornerRadiusTopStart="12dp"
+                    app:boxBackgroundColor="#F1F3F9"
+                    app:boxCornerRadiusBottomEnd="16dp"
+                    app:boxCornerRadiusBottomStart="16dp"
+                    app:boxCornerRadiusTopEnd="16dp"
+                    app:boxCornerRadiusTopStart="16dp"
+                    app:boxStrokeWidth="0dp"
+                    app:boxStrokeWidthFocused="0dp"
                     app:hintEnabled="false"
                     app:startIconDrawable="@drawable/ic_search"
-                    app:startIconTint="@color/outline">
+                    app:startIconTint="@color/primary">
 
                     <com.google.android.material.textfield.TextInputEditText
                         android:id="@+id/etSearch"
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:hint="Cari produk atau barcode..."
+                        android:hint="Cari produk impian Anda..."
                         android:inputType="text"
-                        android:paddingVertical="12dp"
+                        android:paddingVertical="14dp"
                         android:textColor="@color/on_surface"
-                        android:textSize="14sp" />
+                        android:textColorHint="@color/outline"
+                        android:textSize="15sp" />
                 </com.google.android.material.textfield.TextInputLayout>
-
-                <com.google.android.material.card.MaterialCardView
-                    android:id="@+id/btnScan"
-                    android:layout_width="48dp"
-                    android:layout_height="48dp"
-                    android:layout_marginStart="12dp"
-                    android:clickable="true"
-                    android:focusable="true"
-                    android:foreground="?attr/selectableItemBackground"
-                    app:cardBackgroundColor="@color/white"
-                    app:cardCornerRadius="12dp"
-                    app:cardElevation="2dp"
-                    app:strokeColor="@color/outline_variant"
-                    app:strokeWidth="1dp">
-
-                    <ImageView
-                        android:layout_width="match_parent"
-                        android:layout_height="match_parent"
-                        android:padding="12dp"
-                        android:src="@drawable/ic_scan"
-                        app:tint="@color/primary" />
-                </com.google.android.material.card.MaterialCardView>
             </LinearLayout>
 
+            <!-- Divider Samar -->
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="1dp"
+                android:layout_marginHorizontal="16dp"
+                android:layout_marginBottom="16dp"
+                android:alpha="0.4"
+                android:background="@color/outline_variant" />
+
+            <!-- Category Section -->
             <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/rvCategories"
                 android:layout_width="match_parent"
