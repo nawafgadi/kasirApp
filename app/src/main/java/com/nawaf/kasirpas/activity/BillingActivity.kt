@@ -1,9 +1,14 @@
 package com.nawaf.kasirpas.activity
 
+import android.app.Dialog
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import android.view.Window
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.SystemBarStyle
 import androidx.activity.enableEdgeToEdge
@@ -12,16 +17,19 @@ import androidx.core.view.ViewCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.updatePadding
 import androidx.lifecycle.lifecycleScope
+import com.nawaf.kasirpas.R
 import com.nawaf.kasirpas.api.RetrofitClient
 import com.nawaf.kasirpas.databinding.ActivityBillingBinding
 import com.nawaf.kasirpas.request.BillingRequest
 import com.nawaf.kasirpas.utils.PreferenceManager
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
 class BillingActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityBillingBinding
     private lateinit var preferenceManager: PreferenceManager
+    private var loadingDialog: Dialog? = null
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge(
@@ -60,10 +68,26 @@ class BillingActivity : AppCompatActivity() {
         }
     }
 
+    private fun showLoading(message: String) {
+        if (loadingDialog == null) {
+            loadingDialog = Dialog(this).apply {
+                requestWindowFeature(Window.FEATURE_NO_TITLE)
+                setCancelable(false)
+                setContentView(R.layout.layout_loading)
+                window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            }
+        }
+        loadingDialog?.findViewById<TextView>(R.id.tvLoadingMessage)?.text = message
+        loadingDialog?.show()
+    }
+
+    private fun hideLoading() {
+        loadingDialog?.dismiss()
+    }
+
     private fun fetchActiveSubscription() {
         val token = preferenceManager.getToken() ?: return
         
-        // Show progress bar and hide content to avoid flicker
         binding.progressBar.visibility = View.VISIBLE
         binding.layoutContent.visibility = View.INVISIBLE
         
@@ -73,7 +97,6 @@ class BillingActivity : AppCompatActivity() {
                 if (response.isSuccessful) {
                     val activeSub = response.body()?.data
                     if (activeSub != null && activeSub.status == "ACTIVE") {
-                        // Tampilkan Kartu Aktif dengan Detail
                         binding.cardActiveSubscription.visibility = View.VISIBLE
                         binding.layoutPlanSelection.visibility = View.GONE
                         binding.cardTrust.visibility = View.VISIBLE
@@ -81,14 +104,11 @@ class BillingActivity : AppCompatActivity() {
                         binding.tvActivePlanName.text = activeSub.planName
                         binding.tvActivePlanExpiry.text = formatExpiryDate(activeSub.endDate)
                         
-                        // Pesan manis
                         binding.tvSweetMessage.text = "Terima kasih telah mempercayai kami! ✨\nBisnis Anda kini semakin kuat."
                         
-                        // Ambil metode pembayaran dari transaksi terakhir
                         val paymentMethod = activeSub.payments?.firstOrNull()?.paymentType ?: "-"
                         binding.tvPaymentMethod.text = paymentMethod.uppercase()
                     } else {
-                        // Tidak ada langganan aktif, tampilkan pilihan paket
                         binding.cardActiveSubscription.visibility = View.GONE
                         binding.layoutPlanSelection.visibility = View.VISIBLE
                         binding.cardTrust.visibility = View.VISIBLE
@@ -104,7 +124,6 @@ class BillingActivity : AppCompatActivity() {
                 binding.layoutPlanSelection.visibility = View.VISIBLE
                 binding.cardTrust.visibility = View.VISIBLE
             } finally {
-                // Hide progress bar and show content after data is processed
                 binding.progressBar.visibility = View.GONE
                 binding.layoutContent.visibility = View.VISIBLE
             }
@@ -112,7 +131,6 @@ class BillingActivity : AppCompatActivity() {
     }
 
     private fun formatExpiryDate(dateStr: String): String {
-        // Contoh sederhana: 2026-05-28 -> 28 Mei 2026
         return try {
             val inputFormat = java.text.SimpleDateFormat("yyyy-MM-dd", java.util.Locale.US)
             val outputFormat = java.text.SimpleDateFormat("dd MMM yyyy", java.util.Locale("id", "ID"))
@@ -130,22 +148,33 @@ class BillingActivity : AppCompatActivity() {
             return
         }
 
+        showLoading("Menyiapkan pembayaran...")
+
         lifecycleScope.launch {
             try {
                 val request = BillingRequest(planName)
                 val response = RetrofitClient.billingApi.subscribe("Bearer $token", request)
                 
+                // Beri sedikit delay agar transisi tidak terlalu cepat (UX)
+                delay(1000)
+                hideLoading()
+
                 if (response.isSuccessful && response.body() != null) {
                     val paymentUrl = response.body()!!.paymentUrl
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(paymentUrl))
                     startActivity(intent)
-                    Toast.makeText(this@BillingActivity, "Membuka halaman pembayaran...", Toast.LENGTH_SHORT).show()
                 } else {
                     Toast.makeText(this@BillingActivity, "Gagal membuat pesanan", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
+                hideLoading()
                 Toast.makeText(this@BillingActivity, "Terjadi kesalahan: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        loadingDialog?.dismiss()
     }
 }

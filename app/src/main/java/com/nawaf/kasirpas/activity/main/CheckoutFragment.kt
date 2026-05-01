@@ -1,15 +1,21 @@
 package com.nawaf.kasirpas.activity.main
 
+import android.app.Dialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.view.Window
+import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.android.material.bottomsheet.BottomSheetDialog
+import com.nawaf.kasirpas.MainActivity
 import com.nawaf.kasirpas.R
 import com.nawaf.kasirpas.adapter.CheckoutAdapter
 import com.nawaf.kasirpas.api.RetrofitClient
@@ -33,6 +39,7 @@ class CheckoutFragment : Fragment() {
     private val viewModel: ProductViewModel by activityViewModels()
     private lateinit var checkoutAdapter: CheckoutAdapter
     private lateinit var preferenceManager: PreferenceManager
+    private var loadingDialog: Dialog? = null
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -56,6 +63,23 @@ class CheckoutFragment : Fragment() {
                 Toast.makeText(requireContext(), "Keranjang masih kosong", Toast.LENGTH_SHORT).show()
             }
         }
+    }
+
+    private fun showLoading(message: String) {
+        if (loadingDialog == null) {
+            loadingDialog = Dialog(requireContext()).apply {
+                requestWindowFeature(Window.FEATURE_NO_TITLE)
+                setCancelable(false)
+                setContentView(R.layout.layout_loading)
+                window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+            }
+        }
+        loadingDialog?.findViewById<TextView>(R.id.tvLoadingMessage)?.text = message
+        loadingDialog?.show()
+    }
+
+    private fun hideLoading() {
+        loadingDialog?.dismiss()
     }
 
     private fun showPaymentBottomSheet() {
@@ -122,17 +146,24 @@ class CheckoutFragment : Fragment() {
             items = itemsRequest
         )
 
+        showLoading("Sedang memproses transaksi...")
+        
         lifecycleScope.launch {
             try {
                 val response = RetrofitClient.transactionApi.storeTransaction("Bearer $token", request)
+                hideLoading()
                 if (response.isSuccessful) {
                     Toast.makeText(requireContext(), "Transaksi Berhasil!", Toast.LENGTH_SHORT).show()
-                    viewModel.clearCart() // Anda perlu menambahkan fungsi ini di ViewModel
+                    viewModel.clearCart() 
                     dialog.dismiss()
+                    
+                    // Navigate back to Kasir and sync BottomNav
+                    (activity as? MainActivity)?.setSelectedTab(R.id.nav_kasir)
                 } else {
                     Toast.makeText(requireContext(), "Gagal: ${response.message()}", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
+                hideLoading()
                 Toast.makeText(requireContext(), "Error: ${e.message}", Toast.LENGTH_SHORT).show()
             }
         }
@@ -175,6 +206,7 @@ class CheckoutFragment : Fragment() {
 
     override fun onDestroyView() {
         super.onDestroyView()
+        loadingDialog?.dismiss()
         _binding = null
     }
 }
