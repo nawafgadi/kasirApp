@@ -4,7 +4,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
 
 object RetrofitClient {
-    private const val BASE_URL = "http://10.59.40.40:8000/api/"
+    private const val BASE_URL = "http://192.168.196.30:8000/api/"//wifi hp nawaf
 
     // Satu mesin Retrofit untuk semua
     private val retrofit: Retrofit by lazy {
