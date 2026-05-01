@@ -78,7 +78,8 @@ class MainActivity : AppCompatActivity() {
         checkActiveSubscription()
         
         if (savedInstanceState == null) {
-            replaceFragment(KasirFragment(), false)
+            // Initial fragment
+            setSelectedTab(R.id.nav_kasir)
         }
     }
 
@@ -204,21 +205,24 @@ class MainActivity : AppCompatActivity() {
 
     private fun setupBottomNavigation() {
         binding.bottomNavigation.setOnItemSelectedListener { item ->
+            val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
+            
+            // Optimization: Only replace if it's a different fragment
             when (item.itemId) {
                 R.id.nav_kasir -> {
-                    replaceFragment(KasirFragment())
+                    if (currentFragment !is KasirFragment) replaceFragment(KasirFragment())
                     true
                 }
                 R.id.nav_checkout -> {
-                    replaceFragment(CheckoutFragment())
+                    if (currentFragment !is CheckoutFragment) replaceFragment(CheckoutFragment())
                     true
                 }
                 R.id.nav_laporan -> {
-                    replaceFragment(LaporanFragment())
+                    if (currentFragment !is LaporanFragment) replaceFragment(LaporanFragment())
                     true
                 }
                 R.id.nav_pengaturan -> {
-                    replaceFragment(PengaturanFragment())
+                    if (currentFragment !is PengaturanFragment) replaceFragment(PengaturanFragment())
                     true
                 }
                 else -> false
@@ -226,10 +230,37 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    /**
+     * Programmatically change the selected tab and update the fragment.
+     * This fixes Issue 1 (BottomNav state sync).
+     */
+    fun setSelectedTab(itemId: Int) {
+        if (binding.bottomNavigation.selectedItemId != itemId) {
+            binding.bottomNavigation.selectedItemId = itemId
+        } else {
+            // Force replace if it's the first load or same ID but fragment container is empty
+            val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
+            if (currentFragment == null) {
+                val fragment = when(itemId) {
+                    R.id.nav_kasir -> KasirFragment()
+                    R.id.nav_checkout -> CheckoutFragment()
+                    R.id.nav_laporan -> LaporanFragment()
+                    R.id.nav_pengaturan -> PengaturanFragment()
+                    else -> KasirFragment()
+                }
+                replaceFragment(fragment, false)
+            }
+        }
+    }
+
     private fun replaceFragment(fragment: Fragment, animate: Boolean = true) {
         val transaction = supportFragmentManager.beginTransaction()
         if (animate) {
-            transaction.setCustomAnimations(R.anim.fragment_fade_in, 0, 0, 0)
+            // Smooth fade transitions
+            transaction.setCustomAnimations(
+                R.anim.fragment_fade_in, 
+                R.anim.fragment_fade_out
+            )
         }
         transaction.replace(R.id.fragmentContainer, fragment)
         transaction.commit()

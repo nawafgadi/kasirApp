@@ -13,8 +13,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:background="@color/white"
-        app:liftOnScroll="false"
-        app:elevation="0dp">
+        app:elevation="0dp"
+        app:liftOnScroll="false">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
@@ -45,7 +45,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="12dp"
-                    android:text="Plans &amp; Billing"
+                    android:text="Upgrade &amp; Billing"
                     android:textColor="@color/on_surface"
                     android:textSize="16sp"
                     android:textStyle="bold"
@@ -72,31 +72,32 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="24dp"
-                android:visibility="invisible"> <!-- Hidden by default to avoid flicker -->
+                android:padding="20dp"
+                android:visibility="invisible">
 
                 <!-- Active Plan Section -->
                 <com.google.android.material.card.MaterialCardView
                     android:id="@+id/cardActiveSubscription"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
+                    android:layout_marginBottom="24dp"
                     android:visibility="gone"
                     app:cardBackgroundColor="@color/primary"
                     app:cardCornerRadius="24dp"
-                    app:cardElevation="12dp"
+                    app:cardElevation="8dp"
                     app:strokeWidth="0dp">
 
                     <LinearLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:orientation="vertical"
-                        android:padding="28dp">
+                        android:padding="24dp">
 
                         <TextView
                             android:id="@+id/tvSweetMessage"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:text="Terima kasih telah mempercayai kami! ✨"
+                            android:text="Langganan Anda Aktif ✨"
                             android:textColor="@color/on_primary"
                             android:textSize="14sp"
                             android:alpha="0.9" />
@@ -105,33 +106,16 @@
                             android:id="@+id/tvActivePlanName"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
-                            android:layout_marginTop="12dp"
+                            android:layout_marginTop="8dp"
                             android:text="PRO MAX"
                             android:textColor="@color/on_primary"
-                            android:textSize="32sp"
+                            android:textSize="28sp"
                             android:textStyle="bold" />
-
-                        <LinearLayout
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="8dp"
-                            android:background="@drawable/bg_status_active"
-                            android:paddingHorizontal="12dp"
-                            android:paddingVertical="4dp">
-                            
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="AKTIF"
-                                android:textColor="@color/white"
-                                android:textSize="10sp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
 
                         <View
                             android:layout_width="match_parent"
                             android:layout_height="1dp"
-                            android:layout_marginVertical="24dp"
+                            android:layout_marginVertical="20dp"
                             android:alpha="0.2"
                             android:background="@color/white" />
 
@@ -145,7 +129,6 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:orientation="vertical">
-                                
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
@@ -153,15 +136,12 @@
                                     android:textColor="@color/on_primary"
                                     android:textSize="11sp"
                                     android:alpha="0.7" />
-
                                 <TextView
                                     android:id="@+id/tvPaymentMethod"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginTop="4dp"
                                     android:text="QRIS"
                                     android:textColor="@color/on_primary"
-                                    android:textSize="14sp"
                                     android:textStyle="bold" />
                             </LinearLayout>
 
@@ -170,23 +150,19 @@
                                 android:layout_height="wrap_content"
                                 android:layout_weight="1"
                                 android:orientation="vertical">
-                                
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Berlaku Sampai"
+                                    android:text="Berlaku Hingga"
                                     android:textColor="@color/on_primary"
                                     android:textSize="11sp"
                                     android:alpha="0.7" />
-
                                 <TextView
                                     android:id="@+id/tvActivePlanExpiry"
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:layout_marginTop="4dp"
                                     android:text="28 Mei 2026"
                                     android:textColor="@color/on_primary"
-                                    android:textSize="14sp"
                                     android:textStyle="bold" />
                             </LinearLayout>
                         </LinearLayout>
@@ -205,9 +181,9 @@
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:gravity="center"
-                        android:text="Upgrade Bisnis Anda"
-                        android:textColor="@color/primary"
-                        android:textSize="32sp"
+                        android:text="Tingkatkan Performa Toko"
+                        android:textColor="@color/on_surface"
+                        android:textSize="26sp"
                         android:textStyle="bold" />
 
                     <TextView
@@ -215,17 +191,17 @@
                         android:layout_height="wrap_content"
                         android:layout_marginTop="8dp"
                         android:gravity="center"
-                        android:text="Pilih paket yang sesuai dengan skala operasional retail Anda."
+                        android:text="Pilih paket terbaik untuk mengoptimalkan operasional Anda."
                         android:textColor="@color/on_surface_variant"
                         android:textSize="14sp" />
 
-                    <!-- Pro Plan Card -->
+                    <!-- PRO PLAN (5RB) -->
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="32dp"
-                        app:cardBackgroundColor="@color/surface_container_lowest"
-                        app:cardCornerRadius="16dp"
+                        app:cardBackgroundColor="@color/white"
+                        app:cardCornerRadius="24dp"
                         app:cardElevation="2dp"
                         app:strokeColor="@color/outline_variant"
                         app:strokeWidth="1dp">
@@ -247,47 +223,87 @@
                             <LinearLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="16dp"
+                                android:layout_marginTop="8dp"
                                 android:gravity="bottom"
                                 android:orientation="horizontal">
-
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Rp 12.000"
+                                    android:text="Rp 5.000"
                                     android:textColor="@color/on_surface"
-                                    android:textSize="28sp"
+                                    android:textSize="32sp"
                                     android:textStyle="bold" />
-
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="4dp"
+                                    android:layout_marginBottom="4dp"
                                     android:text="/bulan"
                                     android:textColor="@color/on_surface_variant"
                                     android:textSize="14sp" />
+                            </LinearLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginVertical="20dp"
+                                android:background="@color/outline_variant"
+                                android:alpha="0.5" />
+
+                            <!-- Feature Pro -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:gravity="top"
+                                android:orientation="horizontal">
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:layout_marginTop="2dp"
+                                    android:src="@drawable/ic_verified"
+                                    app:tint="@color/primary" />
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="16dp"
+                                    android:orientation="vertical">
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Export Data CSV"
+                                        android:textColor="@color/on_surface"
+                                        android:textStyle="bold"
+                                        android:textSize="14sp" />
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="2dp"
+                                        android:text="Download laporan transaksi ke format Excel untuk pembukuan instan."
+                                        android:textColor="@color/on_surface_variant"
+                                        android:textSize="12sp" />
+                                </LinearLayout>
                             </LinearLayout>
 
                             <com.google.android.material.button.MaterialButton
                                 android:id="@+id/btnSubscribePro"
                                 android:layout_width="match_parent"
                                 android:layout_height="56dp"
-                                android:layout_marginTop="32dp"
-                                android:text="Pilih Paket"
+                                android:layout_marginTop="28dp"
+                                android:text="Pilih Paket Pro"
                                 android:textAllCaps="false"
-                                app:cornerRadius="12dp" />
-
+                                android:textStyle="bold"
+                                app:cornerRadius="16dp" />
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
 
-                    <!-- ProMax Plan Card -->
+                    <!-- PRO MAX PLAN (39RB) -->
                     <com.google.android.material.card.MaterialCardView
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
                         android:layout_marginTop="24dp"
                         app:cardBackgroundColor="@color/white"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="8dp"
+                        app:cardCornerRadius="24dp"
+                        app:cardElevation="12dp"
                         app:strokeColor="@color/primary"
                         app:strokeWidth="2dp">
 
@@ -297,93 +313,239 @@
                             android:orientation="vertical"
                             android:padding="24dp">
 
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="ProMax"
-                                android:textColor="@color/primary"
-                                android:textSize="18sp"
-                                android:textStyle="bold" />
+                            <RelativeLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content">
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:text="ProMax"
+                                    android:textColor="@color/primary"
+                                    android:textSize="20sp"
+                                    android:textStyle="bold" />
+                                <com.google.android.material.card.MaterialCardView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_alignParentEnd="true"
+                                    app:cardBackgroundColor="@color/primary_fixed"
+                                    app:cardCornerRadius="10dp"
+                                    app:cardElevation="0dp">
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:paddingHorizontal="12dp"
+                                        android:paddingVertical="6dp"
+                                        android:text="REKOMENDASI ✨"
+                                        android:textColor="@color/primary"
+                                        android:textSize="10sp"
+                                        android:textStyle="bold" />
+                                </com.google.android.material.card.MaterialCardView>
+                            </RelativeLayout>
 
                             <LinearLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="16dp"
+                                android:layout_marginTop="8dp"
                                 android:gravity="bottom"
                                 android:orientation="horizontal">
-
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
-                                    android:text="Rp 79.000"
+                                    android:text="Rp 39.000"
                                     android:textColor="@color/on_surface"
-                                    android:textSize="28sp"
+                                    android:textSize="36sp"
                                     android:textStyle="bold" />
-
                                 <TextView
                                     android:layout_width="wrap_content"
                                     android:layout_height="wrap_content"
                                     android:layout_marginStart="4dp"
+                                    android:layout_marginBottom="6dp"
                                     android:text="/bulan"
                                     android:textColor="@color/on_surface_variant"
                                     android:textSize="14sp" />
+                            </LinearLayout>
+
+                            <View
+                                android:layout_width="match_parent"
+                                android:layout_height="1dp"
+                                android:layout_marginVertical="20dp"
+                                android:background="@color/primary_fixed" />
+
+                            <!-- Feature 1: CSV -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="20dp"
+                                android:gravity="top"
+                                android:orientation="horizontal">
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:layout_marginTop="2dp"
+                                    android:src="@drawable/ic_verified"
+                                    app:tint="@color/primary" />
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="16dp"
+                                    android:orientation="vertical">
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="Export Data CSV"
+                                        android:textColor="@color/on_surface"
+                                        android:textStyle="bold"
+                                        android:textSize="14sp" />
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="2dp"
+                                        android:text="Termasuk semua fitur paket Pro."
+                                        android:textColor="@color/on_surface_variant"
+                                        android:textSize="12sp" />
+                                </LinearLayout>
+                            </LinearLayout>
+
+                            <!-- AI Feature 1: Analyze -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="20dp"
+                                android:gravity="top"
+                                android:orientation="horizontal">
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:layout_marginTop="2dp"
+                                    android:src="@drawable/ic_search"
+                                    app:tint="@color/primary" />
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="16dp"
+                                    android:orientation="vertical">
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="AI Transaction Analyze"
+                                        android:textColor="@color/on_surface"
+                                        android:textStyle="bold"
+                                        android:textSize="14sp" />
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="2dp"
+                                        android:text="Analisis cerdas pola transaksi &amp; prediksi tren produk."
+                                        android:textColor="@color/on_surface_variant"
+                                        android:textSize="12sp" />
+                                </LinearLayout>
+                            </LinearLayout>
+
+                            <!-- AI Feature 2: Stock -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="20dp"
+                                android:gravity="top"
+                                android:orientation="horizontal">
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:layout_marginTop="2dp"
+                                    android:src="@drawable/ic_inventory"
+                                    app:tint="@color/primary" />
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="16dp"
+                                    android:orientation="vertical">
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="AI Recommendation Stock"
+                                        android:textColor="@color/on_surface"
+                                        android:textStyle="bold"
+                                        android:textSize="14sp" />
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="2dp"
+                                        android:text="Saran restok otomatis berdasarkan data penjualan real-time."
+                                        android:textColor="@color/on_surface_variant"
+                                        android:textSize="12sp" />
+                                </LinearLayout>
+                            </LinearLayout>
+
+                            <!-- AI Feature 3: Busy Hours -->
+                            <LinearLayout
+                                android:layout_width="match_parent"
+                                android:layout_height="wrap_content"
+                                android:layout_marginBottom="8dp"
+                                android:gravity="top"
+                                android:orientation="horizontal">
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:layout_marginTop="2dp"
+                                    android:src="@drawable/history_icon"
+                                    app:tint="@color/primary" />
+                                <LinearLayout
+                                    android:layout_width="match_parent"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="16dp"
+                                    android:orientation="vertical">
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:text="AI Busy Hours Prediction"
+                                        android:textColor="@color/on_surface"
+                                        android:textStyle="bold"
+                                        android:textSize="14sp" />
+                                    <TextView
+                                        android:layout_width="wrap_content"
+                                        android:layout_height="wrap_content"
+                                        android:layout_marginTop="2dp"
+                                        android:text="Mapping jam tersibuk toko Anda untuk efisiensi shift karyawan."
+                                        android:textColor="@color/on_surface_variant"
+                                        android:textSize="12sp" />
+                                </LinearLayout>
                             </LinearLayout>
 
                             <com.google.android.material.button.MaterialButton
                                 android:id="@+id/btnSubscribeProMax"
                                 android:layout_width="match_parent"
                                 android:layout_height="56dp"
-                                android:layout_marginTop="32dp"
+                                android:layout_marginTop="28dp"
                                 android:text="Pilih ProMax"
                                 android:textAllCaps="false"
-                                app:cornerRadius="12dp" />
-
+                                android:textStyle="bold"
+                                app:cornerRadius="16dp" />
                         </LinearLayout>
                     </com.google.android.material.card.MaterialCardView>
                 </LinearLayout>
 
-                <!-- Trust Section -->
-                <com.google.android.material.card.MaterialCardView
+                <!-- Trust Badges -->
+                <LinearLayout
                     android:id="@+id/cardTrust"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="32dp"
-                    android:visibility="gone"
-                    app:cardBackgroundColor="@color/surface_container"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="0dp">
-
-                    <LinearLayout
-                        android:layout_width="match_parent"
+                    android:layout_marginTop="40dp"
+                    android:gravity="center"
+                    android:orientation="horizontal"
+                    android:alpha="0.6">
+                    <ImageView
+                        android:layout_width="16dp"
+                        android:layout_height="16dp"
+                        android:src="@drawable/ic_shield"
+                        app:tint="@color/on_surface_variant" />
+                    <TextView
+                        android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:gravity="center_vertical"
-                        android:orientation="horizontal"
-                        android:padding="20dp">
-
-                        <LinearLayout
-                            android:layout_width="0dp"
-                            android:layout_height="wrap_content"
-                            android:layout_weight="1"
-                            android:orientation="vertical">
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="Aman &amp; Terpercaya"
-                                android:textColor="@color/on_surface"
-                                android:textSize="16sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="4dp"
-                                android:text="Data transaksi Anda dilindungi."
-                                android:textColor="@color/on_surface_variant"
-                                android:textSize="12sp" />
-                        </LinearLayout>
-                    </LinearLayout>
-                </com.google.android.material.card.MaterialCardView>
+                        android:layout_marginStart="8dp"
+                        android:text="Pembayaran Aman &amp; Terenkripsi"
+                        android:textColor="@color/on_surface_variant"
+                        android:textSize="12sp" />
+                </LinearLayout>
 
             </LinearLayout>
 
@@ -392,7 +554,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_gravity="center"
-                android:layout_marginTop="100dp"
+                android:layout_marginTop="150dp"
                 android:visibility="visible" />
 
         </FrameLayout>
