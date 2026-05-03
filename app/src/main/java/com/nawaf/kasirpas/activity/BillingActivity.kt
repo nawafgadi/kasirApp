@@ -30,6 +30,7 @@ class BillingActivity : AppCompatActivity() {
     private lateinit var binding: ActivityBillingBinding
     private lateinit var preferenceManager: PreferenceManager
     private var loadingDialog: Dialog? = null
+    private var isFirstLoad = true
 
     override fun onCreate(savedInstanceState: Bundle?) {
         enableEdgeToEdge(
@@ -51,6 +52,15 @@ class BillingActivity : AppCompatActivity() {
         }
 
         setupListeners()
+        setupSwipeRefresh()
+    }
+
+    /**
+     * onResume dipanggil setiap kali user kembali ke activity.
+     * Sangat berguna untuk merefresh status langganan setelah user bayar di browser.
+     */
+    override fun onResume() {
+        super.onResume()
         fetchActiveSubscription()
     }
 
@@ -65,6 +75,13 @@ class BillingActivity : AppCompatActivity() {
 
         binding.btnSubscribeProMax.setOnClickListener {
             subscribe("PRO_MAX")
+        }
+    }
+
+    private fun setupSwipeRefresh() {
+        binding.swipeRefresh.setColorSchemeResources(R.color.primary)
+        binding.swipeRefresh.setOnRefreshListener {
+            fetchActiveSubscription()
         }
     }
 
@@ -88,8 +105,11 @@ class BillingActivity : AppCompatActivity() {
     private fun fetchActiveSubscription() {
         val token = preferenceManager.getToken() ?: return
         
-        binding.progressBar.visibility = View.VISIBLE
-        binding.layoutContent.visibility = View.INVISIBLE
+        // Hanya tampilkan ProgressBar full-screen jika ini pemuatan pertama
+        if (isFirstLoad) {
+            binding.progressBar.visibility = View.VISIBLE
+            binding.layoutContent.visibility = View.INVISIBLE
+        }
         
         lifecycleScope.launch {
             try {
@@ -116,16 +136,14 @@ class BillingActivity : AppCompatActivity() {
                 } else {
                     binding.cardActiveSubscription.visibility = View.GONE
                     binding.layoutPlanSelection.visibility = View.VISIBLE
-                    binding.cardTrust.visibility = View.VISIBLE
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
-                binding.cardActiveSubscription.visibility = View.GONE
-                binding.layoutPlanSelection.visibility = View.VISIBLE
-                binding.cardTrust.visibility = View.VISIBLE
             } finally {
                 binding.progressBar.visibility = View.GONE
                 binding.layoutContent.visibility = View.VISIBLE
+                binding.swipeRefresh.isRefreshing = false
+                isFirstLoad = false
             }
         }
     }
@@ -155,7 +173,6 @@ class BillingActivity : AppCompatActivity() {
                 val request = BillingRequest(planName)
                 val response = RetrofitClient.billingApi.subscribe("Bearer $token", request)
                 
-                // Beri sedikit delay agar transisi tidak terlalu cepat (UX)
                 delay(1000)
                 hideLoading()
 

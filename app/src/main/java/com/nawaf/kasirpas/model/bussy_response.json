@@ -1,0 +1,110 @@
+{
+  "success": true,
+  "message": "Latest AI BUSY hours run retrieved successfully",
+  "data": {
+    "id": 13,
+    "user_id": 1,
+    "type_ai": "BUSY",
+    "status": "COMPLETED",
+    "generated_at": "2026-05-03T10:17:18.000000Z",
+    "busy_hour_daily_forecasts": [
+      {
+        "id": 15,
+        "ai_run_id": 13,
+        "forecast_date": "2026-05-03T00:00:00.000000Z",
+        "day_name": "Sunday",
+        "day_of_week": 6,
+        "is_weekend": true,
+        "total_predicted_trx": "1.20",
+        "total_predicted_revenue": "15041.00",
+        "peak_hour": "19:00",
+        "peak_hour_trx": "0.94",
+        "busy_hours_count": 0,
+        "hourly_predictions": [
+          {
+            "id": 199,
+            "daily_forecast_id": 15,
+            "hour": "12:00",
+            "predicted_transactions": "0.95",
+            "predicted_revenue": "45000.00",
+            "busy_level": "MODERATE",
+            "emoji": "[~]",
+            "product_predictions": [
+              {
+                "id": 57,
+                "hourly_prediction_id": 199,
+                "product_id": 3,
+                "product_name": "Air mineral 600ml",
+                "probability": "0.85",
+                "estimated_qty": "12",
+                "estimated_revenue": "1050.00",
+                "product": {
+                  "id": 3,
+                  "name": "Air mineral 600ml",
+                  "price": "3500.00",
+                  "description": "Air mineral 600ml",
+                  "image_url": "https://images.unsplash.com/photo-1560343090-f0409e92791a?q=80&w=200&auto=format&fit=crop"
+                }
+              }
+            ]
+          },
+          {
+            "id": 209,
+            "daily_forecast_id": 15,
+            "hour": "19:00",
+            "predicted_transactions": "1.50",
+            "predicted_revenue": "15023.00",
+            "busy_level": "PEAK",
+            "emoji": "[!]",
+            "product_predictions": [
+              {
+                "id": 59,
+                "hourly_prediction_id": 209,
+                "product_id": 1,
+                "product_name": "Sabun cuci piring",
+                "probability": "0.92",
+                "estimated_qty": "8",
+                "estimated_revenue": "16500.00",
+                "product": {
+                  "id": 1,
+                  "name": "Sabun cuci piring",
+                  "price": "15000.00",
+                  "description": "Sabun cuci piring",
+                  "image_url": "https://images.unsplash.com/photo-1584622650111-993a426fbf0a?q=80&w=200&auto=format&fit=crop"
+                }
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": 16,
+        "ai_run_id": 13,
+        "forecast_date": "2026-05-04T00:00:00.000000Z",
+        "day_name": "Monday",
+        "day_of_week": 0,
+        "is_weekend": false,
+        "total_predicted_trx": "1.30",
+        "total_predicted_revenue": "15076.00",
+        "peak_hour": "18:00",
+        "peak_hour_trx": "1.02",
+        "busy_hours_count": 0,
+        "hourly_predictions": []
+      },
+      {
+        "id": 17,
+        "ai_run_id": 13,
+        "forecast_date": "2026-05-05T00:00:00.000000Z",
+        "day_name": "Tuesday",
+        "day_of_week": 1,
+        "is_weekend": false,
+        "total_predicted_trx": "1.10",
+        "total_predicted_revenue": "14000.00",
+        "peak_hour": "13:00",
+        "peak_hour_trx": "1.01",
+        "busy_hours_count": 0,
+        "hourly_predictions": []
+      }
+    ]
+  }
+}

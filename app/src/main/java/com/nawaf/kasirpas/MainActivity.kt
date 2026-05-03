@@ -75,11 +75,32 @@ class MainActivity : AppCompatActivity() {
 
         setupBottomNavigation()
         setupHeader()
-        checkActiveSubscription()
+        setupSwipeRefresh()
         
         if (savedInstanceState == null) {
-            // Initial fragment
             setSelectedTab(R.id.nav_kasir)
+        }
+    }
+
+    /**
+     * onResume akan terpanggil otomatis saat user kembali dari halaman pembayaran browser.
+     * Ini akan memastikan status di header (scaffold) langsung terupdate.
+     */
+    override fun onResume() {
+        super.onResume()
+        checkActiveSubscription()
+    }
+
+    private fun setupSwipeRefresh() {
+        binding.swipeRefresh.setColorSchemeResources(R.color.primary)
+        binding.swipeRefresh.setOnRefreshListener {
+            checkActiveSubscription()
+            
+            // Juga merefresh fragment yang sedang aktif jika diperlukan
+            val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
+            if (currentFragment is LaporanFragment) {
+                // Kamu bisa menambahkan fungsi refresh di LaporanFragment nanti
+            }
         }
     }
 
@@ -118,6 +139,8 @@ class MainActivity : AppCompatActivity() {
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
+            } finally {
+                binding.swipeRefresh.isRefreshing = false
             }
         }
     }
@@ -128,7 +151,7 @@ class MainActivity : AppCompatActivity() {
         particleJob = lifecycleScope.launch {
             while (isActive) {
                 createParticle()
-                delay(300) // Create new particle every 300ms
+                delay(300) 
             }
         }
     }
@@ -151,7 +174,6 @@ class MainActivity : AppCompatActivity() {
         val params = ViewGroup.LayoutParams(size, size)
         binding.particleContainer.addView(particle, params)
 
-        // Random starting position around the button
         val containerWidth = binding.containerUpgrade.width
         val containerHeight = binding.containerUpgrade.height
         
@@ -161,7 +183,6 @@ class MainActivity : AppCompatActivity() {
         particle.x = startX
         particle.y = startY
 
-        // Animation: Fly upwards and fade out
         val flyUp = ObjectAnimator.ofPropertyValuesHolder(
             particle,
             PropertyValuesHolder.ofFloat(View.TRANSLATION_Y, particle.translationY, particle.translationY - 100f - random.nextInt(100)),
@@ -207,7 +228,6 @@ class MainActivity : AppCompatActivity() {
         binding.bottomNavigation.setOnItemSelectedListener { item ->
             val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
             
-            // Optimization: Only replace if it's a different fragment
             when (item.itemId) {
                 R.id.nav_kasir -> {
                     if (currentFragment !is KasirFragment) replaceFragment(KasirFragment())
@@ -230,15 +250,10 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    /**
-     * Programmatically change the selected tab and update the fragment.
-     * This fixes Issue 1 (BottomNav state sync).
-     */
     fun setSelectedTab(itemId: Int) {
         if (binding.bottomNavigation.selectedItemId != itemId) {
             binding.bottomNavigation.selectedItemId = itemId
         } else {
-            // Force replace if it's the first load or same ID but fragment container is empty
             val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
             if (currentFragment == null) {
                 val fragment = when(itemId) {
@@ -256,7 +271,6 @@ class MainActivity : AppCompatActivity() {
     private fun replaceFragment(fragment: Fragment, animate: Boolean = true) {
         val transaction = supportFragmentManager.beginTransaction()
         if (animate) {
-            // Smooth fade transitions
             transaction.setCustomAnimations(
                 R.anim.fragment_fade_in, 
                 R.anim.fragment_fade_out
