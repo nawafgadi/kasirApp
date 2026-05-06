@@ -54,7 +54,7 @@ class PengaturanFragment : Fragment() {
         if (user != null) {
             binding.tvUserName.text = user.name
             binding.tvUserRole.text = "Store Manager • ${user.email}"
-            
+
             binding.ivProfilePicture.load("https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg") {
                 crossfade(true)
                 placeholder(R.drawable.ic_person)
