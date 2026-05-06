@@ -74,7 +74,7 @@ class KasirFragment : Fragment() {
         viewModel.products.observe(viewLifecycleOwner) { products ->
             productAdapter.updateData(products)
             // Update categories if they are empty or haven't been loaded properly
-            val categories = products.map { it.category }.distinctBy { it.id }
+            val categories = products.mapNotNull { it.category }.distinctBy { it.id }
             categoryAdapter.updateData(categories)
         }
 

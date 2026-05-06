@@ -1,17 +1,26 @@
 package com.nawaf.kasirpas.model
 
+import com.google.gson.annotations.SerializedName
+
 data class Product(
     val id: Int,
     val name: String,
     val price: String,
-    val description: String,
-    val created_at: String,
-    val updated_at: String,
-    val image_url: String,
-    val category_id: Int,
-    val deleted_at: String?,
-    val is_active: Boolean,
-    val user_id: Int,
-    val category: Category,
-    val stocks: List<Stock>
+    val description: String?,
+    @SerializedName("created_at")
+    val createdAt: String?,
+    @SerializedName("updated_at")
+    val updatedAt: String?,
+    @SerializedName("image_url")
+    val imageUrl: String?,
+    @SerializedName("category_id")
+    val categoryId: Int?,
+    @SerializedName("deleted_at")
+    val deletedAt: String?,
+    @SerializedName("is_active")
+    val isActive: Int?,
+    @SerializedName("user_id")
+    val userId: Int?,
+    val category: Category?,
+    val stocks: List<Stock>?
 )

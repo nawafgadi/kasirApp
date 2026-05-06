@@ -15,6 +15,8 @@ import coil.transform.CircleCropTransformation
 import com.nawaf.kasirpas.R
 import com.nawaf.kasirpas.activity.AiBussyHoursActivity
 import com.nawaf.kasirpas.activity.AiStocksActivity
+import com.nawaf.kasirpas.activity.KelolaKategoriActivity
+import com.nawaf.kasirpas.activity.KelolaProductActivity
 import com.nawaf.kasirpas.activity.LoginActivity
 import com.nawaf.kasirpas.api.RetrofitClient
 import com.nawaf.kasirpas.databinding.FragmentPengaturanBinding
@@ -123,6 +125,14 @@ class PengaturanFragment : Fragment() {
     }
 
     private fun setupListeners() {
+        binding.btnManageCategories.setOnClickListener {
+            startActivity(Intent(requireContext(), KelolaKategoriActivity::class.java))
+        }
+
+        binding.btnManageProducts.setOnClickListener {
+            startActivity(Intent(requireContext(), KelolaProductActivity::class.java))
+        }
+
         binding.btnAiStock.setOnClickListener {
             if (isProMax) {
                 startActivity(Intent(requireContext(), AiStocksActivity::class.java))

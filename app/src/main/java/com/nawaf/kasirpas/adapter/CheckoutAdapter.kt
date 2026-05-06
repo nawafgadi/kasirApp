@@ -48,9 +48,14 @@ class CheckoutAdapter(
             
             binding.tvQuantity.text = item.quantity.toString()
 
-            binding.ivProduct.load(item.product.image_url) {
-                crossfade(true)
-                placeholder(R.drawable.ic_inventory)
+            val url = item.product.imageUrl
+            if (!url.isNullOrEmpty()) {
+                binding.ivProduct.load(url) {
+                    crossfade(true)
+                    placeholder(R.drawable.ic_inventory)
+                }
+            } else {
+                binding.ivProduct.setImageResource(R.drawable.ic_inventory)
             }
 
             binding.btnPlus.setOnClickListener { onPlusClick(item) }

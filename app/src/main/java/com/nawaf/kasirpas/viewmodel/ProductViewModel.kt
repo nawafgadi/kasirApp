@@ -60,7 +60,7 @@ class ProductViewModel : ViewModel() {
         val currentCart = _cartItems.value?.toMutableList() ?: mutableListOf()
         val existingItem = currentCart.find { it.product.id == product.id }
         
-        val availableStock = product.stocks.sumOf { it.stock_on_hand }
+        val availableStock = product.stocks?.sumOf { it.stockOnHand ?: 0 } ?: 0
         val currentQuantity = existingItem?.quantity ?: 0
 
         if (currentQuantity < availableStock) {
@@ -110,7 +110,7 @@ class ProductViewModel : ViewModel() {
     fun getFilteredProducts(query: String, categoryId: Int?): List<Product> {
         var filtered = allProductsList
         if (categoryId != null) {
-            filtered = filtered.filter { it.category_id == categoryId }
+            filtered = filtered.filter { it.categoryId == categoryId }
         }
         if (query.isNotEmpty()) {
             filtered = filtered.filter { it.name.contains(query, ignoreCase = true) }
