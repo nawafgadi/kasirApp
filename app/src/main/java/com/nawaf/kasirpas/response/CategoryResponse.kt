@@ -24,7 +24,7 @@ data class CategoryWithProducts(
     @SerializedName("user_id")
     val userId: Int,
     val name: String,
-    @SerializedName("isActive")
+    @SerializedName("is_active")
     val isActive: Int,
     @SerializedName("created_at")
     val createdAt: String,

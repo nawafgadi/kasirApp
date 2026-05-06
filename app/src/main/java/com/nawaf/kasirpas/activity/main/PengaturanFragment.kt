@@ -10,6 +10,8 @@ import androidx.fragment.app.Fragment
 import coil.load
 import coil.transform.CircleCropTransformation
 import com.nawaf.kasirpas.R
+import com.nawaf.kasirpas.activity.KelolaKategoriActivity
+import com.nawaf.kasirpas.activity.KelolaProductActivity
 import com.nawaf.kasirpas.activity.LoginActivity
 import com.nawaf.kasirpas.databinding.FragmentPengaturanBinding
 import com.nawaf.kasirpas.utils.PreferenceManager
@@ -41,7 +43,7 @@ class PengaturanFragment : Fragment() {
         if (user != null) {
             binding.tvUserName.text = user.name
             binding.tvUserRole.text = "Store Manager • ${user.email}"
-            
+
             binding.ivProfilePicture.load("https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg") {
                 crossfade(true)
                 placeholder(R.drawable.ic_person)
@@ -51,12 +53,16 @@ class PengaturanFragment : Fragment() {
     }
 
     private fun setupListeners() {
+        // Klik Kelola Kategori sekarang beneran pindah halaman
         binding.btnManageCategories.setOnClickListener {
-            Toast.makeText(context, "Fitur Kelola Kategori", Toast.LENGTH_SHORT).show()
+            val intent = Intent(requireContext(), KelolaKategoriActivity::class.java)
+            startActivity(intent)
         }
 
+        // Klik Kelola Produk sekarang beneran pindah halaman
         binding.btnManageProducts.setOnClickListener {
-            Toast.makeText(context, "Fitur Kelola Produk", Toast.LENGTH_SHORT).show()
+            val intent = Intent(requireContext(), KelolaProductActivity::class.java)
+            startActivity(intent)
         }
 
         binding.btnLogout.setOnClickListener {
