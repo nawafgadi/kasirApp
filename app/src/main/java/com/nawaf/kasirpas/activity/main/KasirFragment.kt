@@ -9,6 +9,7 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import com.nawaf.kasirpas.MainActivity
 import com.nawaf.kasirpas.R
 import com.nawaf.kasirpas.adapter.CategoryAdapter
 import com.nawaf.kasirpas.adapter.ProductAdapter
@@ -54,11 +55,8 @@ class KasirFragment : Fragment() {
         
         // Handle Navigation to Checkout via Floating Bar
         binding.cardCheckoutBar.setOnClickListener {
-            parentFragmentManager.beginTransaction()
-                .setCustomAnimations(R.anim.fragment_fade_in, 0, 0, 0)
-                .replace(R.id.fragmentContainer, CheckoutFragment())
-                .addToBackStack(null)
-                .commit()
+            // Use MainActivity's method to sync bottom navigation state
+            (activity as? MainActivity)?.setSelectedTab(R.id.nav_checkout)
         }
     }
 

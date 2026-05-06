@@ -1,0 +1,14 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="24"
+    android:viewportHeight="24">
+    <!-- Trending Up Path -->
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M16,6l2.29,2.29l-4.88,4.88l-4,-4L2,16.59L3.41,18l6,-6l4,4l6.3,-6.29L22,12V6H16z" />
+    <!-- AI Sparkles -->
+    <path
+        android:fillColor="#FF000000"
+        android:pathData="M19,1l0.62,1.38L21,3l-1.38,0.62L19,5l-0.62-1.38L17,3l1.38-0.62L19,1z M16,3l0.31,0.69L17,4l-0.69,0.31L16,5l-0.31-0.69L15,4l0.69-0.31L16,3z" />
+</vector>
