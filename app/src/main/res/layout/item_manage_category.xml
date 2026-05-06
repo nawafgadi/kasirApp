@@ -7,8 +7,7 @@
     app:cardBackgroundColor="@android:color/white"
     app:cardCornerRadius="12dp"
     app:cardElevation="2dp"
-    app:strokeColor="#E5E7EB"
-    app:strokeWidth="1dp">
+    app:strokeWidth="0dp">
 
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
@@ -19,9 +18,10 @@
             android:id="@+id/iconBox"
             android:layout_width="48dp"
             android:layout_height="48dp"
-            app:cardBackgroundColor="#EBDCFF"
+            app:cardBackgroundColor="#F6ECFF"
             app:cardCornerRadius="24dp"
             app:cardElevation="0dp"
+            app:strokeWidth="0dp"
             app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent">

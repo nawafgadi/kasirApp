@@ -3,6 +3,8 @@ package com.nawaf.kasirpas.api
 import com.nawaf.kasirpas.request.ProductRequest
 import com.nawaf.kasirpas.response.ProductResponse
 import com.nawaf.kasirpas.response.SingleProductResponse
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
 import retrofit2.Response
 import retrofit2.http.*
 
@@ -12,17 +14,30 @@ interface ProductApi {
         @Header("Authorization") token: String
     ): Response<ProductResponse>
 
+    @Multipart
     @POST("products")
     suspend fun storeProduct(
         @Header("Authorization") token: String,
-        @Body request: ProductRequest
+        @Part("name") name: RequestBody,
+        @Part("price") price: RequestBody,
+        @Part("description") description: RequestBody?,
+        @Part("stock") stock: RequestBody,
+        @Part("category_id") categoryId: RequestBody?,
+        @Part image: MultipartBody.Part?
     ): Response<SingleProductResponse>
 
-    @PUT("products/{id}")
+    @Multipart
+    @POST("products/{id}")
     suspend fun updateProduct(
         @Header("Authorization") token: String,
         @Path("id") id: Int,
-        @Body request: ProductRequest
+        @Part("_method") method: RequestBody,
+        @Part("name") name: RequestBody,
+        @Part("price") price: RequestBody,
+        @Part("description") description: RequestBody?,
+        @Part("stock") stock: RequestBody,
+        @Part("category_id") categoryId: RequestBody?,
+        @Part image: MultipartBody.Part?
     ): Response<SingleProductResponse>
 
     @DELETE("products/{id}")

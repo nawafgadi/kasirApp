@@ -18,7 +18,7 @@ data class Product(
     @SerializedName("deleted_at")
     val deletedAt: String?,
     @SerializedName("is_active")
-    val isActive: Int?,
+    val isActive: Boolean?,
     @SerializedName("user_id")
     val userId: Int?,
     val category: Category?,

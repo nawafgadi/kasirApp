@@ -1,14 +1,19 @@
 package com.nawaf.kasirpas.activity.main
 
+import android.app.Dialog
+import android.graphics.Color
+import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.ImageView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.activityViewModels
+import coil.load
 import com.nawaf.kasirpas.MainActivity
 import com.nawaf.kasirpas.R
 import com.nawaf.kasirpas.adapter.CategoryAdapter
@@ -23,13 +28,13 @@ class KasirFragment : Fragment() {
 
     private var _binding: FragmentKasirBinding? = null
     private val binding get() = _binding!!
-    
+
     private val viewModel: ProductViewModel by activityViewModels()
-    
+
     private lateinit var productAdapter: ProductAdapter
     private lateinit var categoryAdapter: CategoryAdapter
     private lateinit var prefManager: PreferenceManager
-    
+
     private var currentQuery: String = ""
     private var currentCategoryId: Int? = null
 
@@ -43,7 +48,7 @@ class KasirFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        
+
         prefManager = PreferenceManager(requireContext())
         setupRecyclerViews()
         setupSearch()
@@ -52,7 +57,7 @@ class KasirFragment : Fragment() {
 
         val token = prefManager.getToken() ?: ""
         viewModel.loadProducts(token)
-        
+
         // Handle Navigation to Checkout via Floating Bar
         binding.cardCheckoutBar.setOnClickListener {
             // Use MainActivity's method to sync bottom navigation state
@@ -65,7 +70,7 @@ class KasirFragment : Fragment() {
             val token = prefManager.getToken() ?: ""
             viewModel.loadProducts(token, forceRefresh = true)
         }
-        
+
         // Customize SwipeRefreshLayout colors
         binding.swipeRefresh.setColorSchemeResources(R.color.primary)
     }
@@ -79,11 +84,8 @@ class KasirFragment : Fragment() {
         }
 
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            // Update both standard ProgressBar and SwipeRefresh indicator
-            _binding?.progressBar?.visibility = if (isLoading && !binding.swipeRefresh.isRefreshing) View.VISIBLE else View.GONE
-            if (!isLoading) {
-                binding.swipeRefresh.isRefreshing = false
-            }
+            // Use SwipeRefresh indicator for all loading states
+            binding.swipeRefresh.isRefreshing = isLoading
         }
 
         viewModel.error.observe(viewLifecycleOwner) { errorMsg ->
@@ -105,13 +107,13 @@ class KasirFragment : Fragment() {
         viewModel.cartItems.observe(viewLifecycleOwner) { cartItems ->
             if (cartItems.isNotEmpty()) {
                 binding.cardCheckoutBar.visibility = View.VISIBLE
-                
+
                 val totalCount = viewModel.getCartItemCount()
                 val totalPrice = viewModel.getCartTotal()
-                
+
                 binding.tvCheckoutItemCount.text = "$totalCount Items"
                 binding.tvCartBadge.text = totalCount.toString()
-                
+
                 val format = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
                 binding.tvCheckoutTotalPrice.text = format.format(totalPrice).replace("Rp", "Rp ")
             } else {
@@ -137,9 +139,15 @@ class KasirFragment : Fragment() {
     }
 
     private fun setupRecyclerViews() {
-        productAdapter = ProductAdapter(listOf()) { product ->
-            viewModel.addToCart(product)
-        }
+        productAdapter = ProductAdapter(
+            products = listOf(),
+            onImageClick = { imageUrl ->
+                showImageDialog(imageUrl)
+            },
+            onAddClick = { product ->
+                viewModel.addToCart(product)
+            }
+        )
         binding.rvProducts.adapter = productAdapter
 
         categoryAdapter = CategoryAdapter(listOf()) { category ->
@@ -147,6 +155,35 @@ class KasirFragment : Fragment() {
             applyFilters()
         }
         binding.rvCategories.adapter = categoryAdapter
+    }
+
+    private fun showImageDialog(imageUrl: String?) {
+        if (imageUrl.isNullOrEmpty()) return
+
+        val dialog = Dialog(requireContext())
+        dialog.setContentView(R.layout.dialog_image_preview)
+        dialog.window?.setBackgroundDrawable(ColorDrawable(Color.TRANSPARENT))
+        dialog.window?.setLayout(
+            ViewGroup.LayoutParams.MATCH_PARENT,
+            ViewGroup.LayoutParams.MATCH_PARENT
+        )
+
+        val imageView = dialog.findViewById<ImageView>(R.id.ivPreview)
+        val btnClose = dialog.findViewById<ImageView>(R.id.btnClosePreview)
+
+        imageView.load(imageUrl) {
+            crossfade(true)
+        }
+
+        btnClose.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        imageView.setOnClickListener {
+            dialog.dismiss()
+        }
+
+        dialog.show()
     }
 
     override fun onDestroyView() {

@@ -5,47 +5,62 @@
     android:id="@+id/main"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:background="@color/background"
+    android:background="#F9FAFB"
     tools:context=".activity.AiBussyHoursActivity">
 
     <com.google.android.material.appbar.AppBarLayout
         android:id="@+id/appBarLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:background="@color/white"
+        android:background="@android:color/transparent"
         app:elevation="0dp"
         app:liftOnScroll="false">
 
         <androidx.appcompat.widget.Toolbar
             android:id="@+id/toolbar"
             android:layout_width="match_parent"
-            android:layout_height="56dp"
-            android:background="@color/white"
-            app:contentInsetStartWithNavigation="0dp">
+            android:layout_height="64dp"
+            app:contentInsetStart="0dp">
 
-            <LinearLayout
+            <androidx.constraintlayout.widget.ConstraintLayout
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                android:gravity="center_vertical"
-                android:orientation="horizontal">
+                android:paddingHorizontal="16dp">
 
-                <ImageButton
-                    android:id="@+id/btnBack"
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/btnBackWrapper"
                     android:layout_width="48dp"
                     android:layout_height="48dp"
-                    android:background="?attr/selectableItemBackgroundBorderless"
-                    android:src="@drawable/ic_arrow_back"
-                    app:tint="@color/on_surface" />
+                    app:cardBackgroundColor="#FFFFFF"
+                    app:cardCornerRadius="24dp"
+                    app:cardElevation="2dp"
+                    app:strokeWidth="0dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageButton
+                        android:id="@+id/btnBack"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:src="@drawable/ic_arrow_back"
+                        app:tint="#1C1B1B" />
+                </com.google.android.material.card.MaterialCardView>
 
                 <TextView
-                    android:layout_width="0dp"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Traffic Forecast"
-                    android:textColor="@color/on_surface"
-                    android:textSize="18sp"
-                    android:textStyle="bold" />
-            </LinearLayout>
+                    android:layout_marginStart="16dp"
+                    android:fontFamily="sans-serif-black"
+                    android:text="AI Forecast"
+                    android:textColor="#1C1B1B"
+                    android:textSize="22sp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintStart_toEndOf="@id/btnBackWrapper"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+            </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.appcompat.widget.Toolbar>
 
         <!-- Day Selector (Selection Hari) -->
@@ -54,9 +69,10 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:clipToPadding="false"
-            android:paddingHorizontal="16dp"
-            android:paddingBottom="12dp"
             android:orientation="horizontal"
+            android:paddingHorizontal="16dp"
+            android:paddingTop="8dp"
+            android:paddingBottom="12dp"
             tools:listitem="@layout/item_day_selector" />
 
     </com.google.android.material.appbar.AppBarLayout>
@@ -71,232 +87,296 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:clipToPadding="false"
-            android:paddingBottom="24dp">
+            android:paddingBottom="40dp">
 
             <LinearLayout
                 android:id="@+id/layoutContent"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="vertical"
-                android:padding="20dp"
+                android:paddingHorizontal="24dp"
+                android:paddingTop="16dp"
                 android:visibility="gone"
                 tools:visibility="visible">
 
+                <!-- Header Title & Date -->
                 <LinearLayout
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:orientation="horizontal"
-                    android:gravity="center_vertical">
-                    
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
                     <LinearLayout
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_weight="1"
                         android:orientation="vertical">
-                        
+
                         <TextView
                             android:id="@+id/tvInsightsTitle"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:fontFamily="sans-serif-black"
                             android:text="Today's Insights"
-                            android:textColor="@color/on_surface"
-                            android:textSize="20sp"
-                            android:textStyle="bold" />
-                            
+                            android:textColor="#1C1B1B"
+                            android:textSize="28sp" />
+
                         <TextView
                             android:id="@+id/tvDate"
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
+                            android:layout_marginTop="4dp"
+                            android:fontFamily="sans-serif-medium"
                             android:text="Wait..."
-                            android:textColor="@color/on_surface_variant"
-                            android:textSize="14sp" />
+                            android:textColor="#6B7280"
+                            android:textSize="15sp" />
                     </LinearLayout>
 
-                    <TextView
+                    <com.google.android.material.card.MaterialCardView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="Live"
-                        android:background="@drawable/bg_status_active"
-                        android:backgroundTint="@color/primary_transparent"
-                        android:textColor="@color/primary"
-                        android:paddingHorizontal="12dp"
-                        android:paddingVertical="4dp"
-                        android:textSize="10sp"
-                        android:textStyle="bold"/>
+                        app:cardBackgroundColor="#ECFDF5"
+                        app:cardCornerRadius="100dp"
+                        app:strokeWidth="0dp">
+
+                        <TextView
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingHorizontal="12dp"
+                            android:paddingVertical="6dp"
+                            android:text="● LIVE"
+                            android:textColor="#059669"
+                            android:textSize="12sp"
+                            android:textStyle="bold" />
+                    </com.google.android.material.card.MaterialCardView>
                 </LinearLayout>
 
-                <GridLayout
-                    android:layout_width="match_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
-                    android:columnCount="2">
-
-                    <!-- Peak Hour Card -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        android:layout_marginEnd="8dp"
-                        app:cardBackgroundColor="@color/white"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="0dp"
-                        app:strokeColor="@color/outline_variant"
-                        app:strokeWidth="1dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:padding="16dp">
-
-                            <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:src="@drawable/history_icon"
-                                app:tint="@color/primary" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="12dp"
-                                android:text="PEAK HOUR"
-                                android:textColor="@color/outline"
-                                android:textSize="10sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:id="@+id/tvPeakHour"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="19:00"
-                                android:textColor="@color/on_surface"
-                                android:textSize="24sp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-
-                    <!-- Predicted Trans Card -->
-                    <com.google.android.material.card.MaterialCardView
-                        android:layout_width="0dp"
-                        android:layout_height="wrap_content"
-                        android:layout_columnWeight="1"
-                        app:cardBackgroundColor="@color/white"
-                        app:cardCornerRadius="16dp"
-                        app:cardElevation="0dp"
-                        app:strokeColor="@color/outline_variant"
-                        app:strokeWidth="1dp">
-
-                        <LinearLayout
-                            android:layout_width="match_parent"
-                            android:layout_height="wrap_content"
-                            android:orientation="vertical"
-                            android:padding="16dp">
-
-                            <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:src="@drawable/ic_trending_up"
-                                app:tint="@color/accent_green" />
-
-                            <TextView
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_marginTop="12dp"
-                                android:text="PREDICTED TRANS."
-                                android:textColor="@color/outline"
-                                android:textSize="10sp"
-                                android:textStyle="bold" />
-
-                            <TextView
-                                android:id="@+id/tvPredictedTrx"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:text="1.20"
-                                android:textColor="@color/on_surface"
-                                android:textSize="24sp"
-                                android:textStyle="bold" />
-                        </LinearLayout>
-                    </com.google.android.material.card.MaterialCardView>
-                </GridLayout>
-
-                <!-- Revenue Card -->
+                <!-- Premium Hero Card (Revenue) -->
                 <com.google.android.material.card.MaterialCardView
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="12dp"
-                    app:cardBackgroundColor="@color/primary"
-                    app:cardCornerRadius="16dp"
-                    app:cardElevation="4dp"
+                    android:layout_marginTop="24dp"
+                    app:cardBackgroundColor="#111827"
+                    app:cardCornerRadius="24dp"
+                    app:cardElevation="12dp"
                     app:strokeWidth="0dp">
 
-                    <RelativeLayout
+                    <androidx.constraintlayout.widget.ConstraintLayout
                         android:layout_width="match_parent"
                         android:layout_height="wrap_content"
-                        android:padding="20dp">
+                        android:padding="24dp">
 
                         <ImageView
-                            android:layout_width="100dp"
-                            android:layout_height="100dp"
-                            android:layout_alignParentEnd="true"
-                            android:layout_centerVertical="true"
+                            android:layout_width="140dp"
+                            android:layout_height="140dp"
                             android:layout_marginEnd="-20dp"
-                            android:alpha="0.1"
-                            android:src="@drawable/ic_wallet" />
+                            android:layout_marginBottom="-20dp"
+                            android:src="@drawable/ic_wallet"
+                            app:layout_constraintBottom_toBottomOf="parent"
+                            app:layout_constraintEnd_toEndOf="parent"
+                            app:tint="#1AFFFFFF" />
 
                         <LinearLayout
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:orientation="vertical">
+                            android:orientation="vertical"
+                            app:layout_constraintStart_toStartOf="parent"
+                            app:layout_constraintTop_toTopOf="parent">
 
-                            <ImageView
-                                android:layout_width="24dp"
-                                android:layout_height="24dp"
-                                android:src="@drawable/ic_wallet"
-                                app:tint="@color/white" />
-
-                            <TextView
+                            <LinearLayout
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:layout_marginTop="12dp"
-                                android:text="PREDICTED REVENUE"
-                                android:textColor="#B3FFFFFF"
-                                android:textSize="12sp"
-                                android:textStyle="bold" />
+                                android:gravity="center_vertical"
+                                android:orientation="horizontal">
+
+                                <com.google.android.material.card.MaterialCardView
+                                    android:layout_width="32dp"
+                                    android:layout_height="32dp"
+                                    app:cardBackgroundColor="#33FFFFFF"
+                                    app:cardCornerRadius="16dp"
+                                    app:strokeWidth="0dp">
+
+                                    <ImageView
+                                        android:layout_width="16dp"
+                                        android:layout_height="16dp"
+                                        android:layout_gravity="center"
+                                        android:src="@drawable/ic_wallet"
+                                        app:tint="#FFFFFF" />
+                                </com.google.android.material.card.MaterialCardView>
+
+                                <TextView
+                                    android:layout_width="wrap_content"
+                                    android:layout_height="wrap_content"
+                                    android:layout_marginStart="12dp"
+                                    android:fontFamily="sans-serif-medium"
+                                    android:letterSpacing="0.05"
+                                    android:text="PREDICTED REVENUE"
+                                    android:textColor="#9CA3AF"
+                                    android:textSize="12sp" />
+                            </LinearLayout>
 
                             <TextView
                                 android:id="@+id/tvPredictedRevenue"
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Rp 15.041k"
-                                android:textColor="@color/white"
-                                android:textSize="28sp"
-                                android:textStyle="bold" />
+                                android:layout_marginTop="16dp"
+                                android:fontFamily="sans-serif-black"
+                                android:text="Rp 0"
+                                android:textColor="#FFFFFF"
+                                android:textSize="36sp" />
 
                             <TextView
                                 android:layout_width="wrap_content"
                                 android:layout_height="wrap_content"
-                                android:text="Optimization active"
-                                android:textColor="#CCFFFFFF"
-                                android:textSize="12sp" />
+                                android:layout_marginTop="8dp"
+                                android:fontFamily="sans-serif-medium"
+                                android:text="✨ AI Confidence: High"
+                                android:textColor="#10B981"
+                                android:textSize="13sp" />
                         </LinearLayout>
-                    </RelativeLayout>
+                    </androidx.constraintlayout.widget.ConstraintLayout>
                 </com.google.android.material.card.MaterialCardView>
 
-                <!-- Hourly Forecast Section -->
-                <TextView
-                    android:layout_width="wrap_content"
+                <!-- Grid Cards (Peak Hour & Traffic) -->
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="16dp"
+                    android:orientation="horizontal"
+                    android:weightSum="2">
+
+                    <!-- Peak Hour -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginEnd="8dp"
+                        android:layout_weight="1"
+                        app:cardBackgroundColor="#FFFFFF"
+                        app:cardCornerRadius="20dp"
+                        app:cardElevation="2dp"
+                        app:strokeWidth="0dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="20dp">
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                app:cardBackgroundColor="#F3E8FF"
+                                app:cardCornerRadius="20dp"
+                                app:strokeWidth="0dp">
+
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/history_icon"
+                                    app:tint="#653DA7" />
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:fontFamily="sans-serif-medium"
+                                android:letterSpacing="0.05"
+                                android:text="PEAK HOUR"
+                                android:textColor="#6B7280"
+                                android:textSize="11sp" />
+
+                            <TextView
+                                android:id="@+id/tvPeakHour"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:fontFamily="sans-serif-black"
+                                android:text="--"
+                                android:textColor="#1C1B1B"
+                                android:textSize="24sp" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+
+                    <!-- Traffic Est -->
+                    <com.google.android.material.card.MaterialCardView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_marginStart="8dp"
+                        android:layout_weight="1"
+                        app:cardBackgroundColor="#FFFFFF"
+                        app:cardCornerRadius="20dp"
+                        app:cardElevation="2dp"
+                        app:strokeWidth="0dp">
+
+                        <LinearLayout
+                            android:layout_width="match_parent"
+                            android:layout_height="wrap_content"
+                            android:orientation="vertical"
+                            android:padding="20dp">
+
+                            <com.google.android.material.card.MaterialCardView
+                                android:layout_width="40dp"
+                                android:layout_height="40dp"
+                                app:cardBackgroundColor="#E0E7FF"
+                                app:cardCornerRadius="20dp"
+                                app:strokeWidth="0dp">
+
+                                <ImageView
+                                    android:layout_width="20dp"
+                                    android:layout_height="20dp"
+                                    android:layout_gravity="center"
+                                    android:src="@drawable/ic_trending_up"
+                                    app:tint="#4338CA" />
+                            </com.google.android.material.card.MaterialCardView>
+
+                            <TextView
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="16dp"
+                                android:fontFamily="sans-serif-medium"
+                                android:letterSpacing="0.05"
+                                android:text="TRAFFIC EST."
+                                android:textColor="#6B7280"
+                                android:textSize="11sp" />
+
+                            <TextView
+                                android:id="@+id/tvPredictedTrx"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_marginTop="4dp"
+                                android:fontFamily="sans-serif-black"
+                                android:text="--"
+                                android:textColor="#1C1B1B"
+                                android:textSize="24sp" />
+                        </LinearLayout>
+                    </com.google.android.material.card.MaterialCardView>
+                </LinearLayout>
+
+                <!-- Hourly Forecast Header -->
+                <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="32dp"
-                    android:text="Hourly Forecast"
-                    android:textColor="@color/on_surface"
-                    android:textSize="20sp"
-                    android:textStyle="bold" />
+                    android:layout_marginBottom="16dp"
+                    android:gravity="center_vertical"
+                    android:orientation="horizontal">
+
+                    <TextView
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="1"
+                        android:fontFamily="sans-serif-black"
+                        android:text="Hourly Breakdown"
+                        android:textColor="#1C1B1B"
+                        android:textSize="20sp" />
+                </LinearLayout>
 
                 <androidx.recyclerview.widget.RecyclerView
                     android:id="@+id/rvHourlyForecast"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="16dp"
                     android:nestedScrollingEnabled="false" />
 
             </LinearLayout>

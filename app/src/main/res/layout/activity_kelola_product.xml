@@ -11,7 +11,8 @@
   <com.google.android.material.appbar.AppBarLayout
       android:layout_width="match_parent"
       android:layout_height="wrap_content"
-      android:background="@android:color/white"
+      android:backgroundTint="@android:color/white"
+      app:liftOnScroll="false"
       app:elevation="0dp">
 
     <androidx.appcompat.widget.Toolbar
@@ -75,7 +76,7 @@
     <View
         android:layout_width="match_parent"
         android:layout_height="1dp"
-        android:background="#E5E7EB" />
+        android:background="#F3F4F6" />
   </com.google.android.material.appbar.AppBarLayout>
 
   <androidx.core.widget.NestedScrollView
@@ -96,18 +97,17 @@
           android:layout_height="wrap_content"
           android:baselineAligned="false"
           android:orientation="horizontal"
-          android:weightSum="3">
+          android:weightSum="2">
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginEnd="4dp"
+            android:layout_marginEnd="8dp"
             android:layout_weight="1"
             app:cardBackgroundColor="@android:color/white"
             app:cardCornerRadius="12dp"
             app:cardElevation="2dp"
-            app:strokeColor="#E5E7EB"
-            app:strokeWidth="1dp">
+            app:strokeWidth="0dp">
           <LinearLayout
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
@@ -119,7 +119,7 @@
                 android:layout_height="wrap_content"
                 android:text="Total Produk"
                 android:textColor="#4B5563"
-                android:textSize="11sp" />
+                android:textSize="12sp" />
             <TextView
                 android:id="@+id/tvTotalProduk"
                 android:layout_width="wrap_content"
@@ -128,54 +128,19 @@
                 android:fontFamily="sans-serif-black"
                 android:text="0"
                 android:textColor="#1C1B1B"
-                android:textSize="22sp" />
+                android:textSize="24sp" />
           </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
 
         <com.google.android.material.card.MaterialCardView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
-            android:layout_marginHorizontal="4dp"
+            android:layout_marginStart="8dp"
             android:layout_weight="1"
             app:cardBackgroundColor="@android:color/white"
             app:cardCornerRadius="12dp"
             app:cardElevation="2dp"
-            app:strokeColor="#E5E7EB"
-            app:strokeWidth="1dp">
-          <LinearLayout
-              android:layout_width="match_parent"
-              android:layout_height="wrap_content"
-              android:gravity="center"
-              android:orientation="vertical"
-              android:paddingVertical="16dp">
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Stok Menipis"
-                android:textColor="#4B5563"
-                android:textSize="11sp" />
-            <TextView
-                android:id="@+id/tvStokMenipis"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="4dp"
-                android:fontFamily="sans-serif-black"
-                android:text="0"
-                android:textColor="#BA1A1A"
-                android:textSize="22sp" />
-          </LinearLayout>
-        </com.google.android.material.card.MaterialCardView>
-
-        <com.google.android.material.card.MaterialCardView
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="4dp"
-            android:layout_weight="1"
-            app:cardBackgroundColor="@android:color/white"
-            app:cardCornerRadius="12dp"
-            app:cardElevation="2dp"
-            app:strokeColor="#E5E7EB"
-            app:strokeWidth="1dp">
+            app:strokeWidth="0dp">
           <LinearLayout
               android:layout_width="match_parent"
               android:layout_height="wrap_content"
@@ -187,7 +152,7 @@
                 android:layout_height="wrap_content"
                 android:text="Habis"
                 android:textColor="#4B5563"
-                android:textSize="11sp" />
+                android:textSize="12sp" />
             <TextView
                 android:id="@+id/tvStokHabis"
                 android:layout_width="wrap_content"
@@ -195,8 +160,8 @@
                 android:layout_marginTop="4dp"
                 android:fontFamily="sans-serif-black"
                 android:text="0"
-                android:textColor="#1C1B1B"
-                android:textSize="22sp" />
+                android:textColor="#BA1A1A"
+                android:textSize="24sp" />
           </LinearLayout>
         </com.google.android.material.card.MaterialCardView>
       </LinearLayout>

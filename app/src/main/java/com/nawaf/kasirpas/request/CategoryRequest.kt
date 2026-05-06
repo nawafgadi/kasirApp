@@ -8,6 +8,6 @@ data class CategoryRequest(
 )
 
 data class CategoryStatusRequest(
-    @SerializedName("isActive")
-    val isActive: Int
+    @SerializedName("is_active")
+    val isActive: Boolean
 )
