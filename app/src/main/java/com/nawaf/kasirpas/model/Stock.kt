@@ -1,10 +1,17 @@
 package com.nawaf.kasirpas.model
 
+import com.google.gson.annotations.SerializedName
+
 data class Stock(
-    val id: String,
-    val product_id: Int,
-    val stock_on_hand: Int,
-    val created_at: String,
-    val updated_at: String,
-    val deleted_at: String?
+    val id: String?,
+    @SerializedName("product_id")
+    val productId: Int?,
+    @SerializedName("stock_on_hand")
+    val stockOnHand: Int?,
+    @SerializedName("created_at")
+    val createdAt: String?,
+    @SerializedName("updated_at")
+    val updatedAt: String?,
+    @SerializedName("deleted_at")
+    val deletedAt: String?
 )

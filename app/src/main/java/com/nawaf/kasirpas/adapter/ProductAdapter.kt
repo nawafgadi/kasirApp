@@ -41,12 +41,17 @@ class ProductAdapter(
             val format = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
             binding.tvPrice.text = format.format(price).replace("Rp", "Rp ")
             
-            val totalStock = product.stocks.sumOf { it.stock_on_hand }
+            val totalStock = product.stocks?.sumOf { it.stockOnHand ?: 0 } ?: 0
             binding.tvStock.text = "Stok: $totalStock"
 
-            binding.ivProduct.load(product.image_url) {
-                crossfade(true)
-                placeholder(R.drawable.ic_inventory)
+            val url = product.imageUrl
+            if (!url.isNullOrEmpty()) {
+                binding.ivProduct.load(url) {
+                    crossfade(true)
+                    placeholder(R.drawable.ic_inventory)
+                }
+            } else {
+                binding.ivProduct.setImageResource(R.drawable.ic_inventory)
             }
 
             binding.btnAddToCart.setOnClickListener {
