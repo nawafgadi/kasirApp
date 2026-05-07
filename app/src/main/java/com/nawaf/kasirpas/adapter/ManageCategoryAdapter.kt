@@ -38,18 +38,18 @@ class ManageCategoryAdapter(
 
         fun bind(category: Category) {
             binding.tvCategoryName.text = category.name
-            
+
             val isActive = category.isActive == 1
-            
+
             // Clear listener to avoid triggering it when binding
             binding.switchStatus.setOnCheckedChangeListener(null)
             binding.switchStatus.isChecked = isActive
-            
+
             updateStatusUI(isActive)
 
             binding.btnEdit.setOnClickListener { onEditClick(category) }
             binding.btnHapus.setOnClickListener { onDeleteClick(category) }
-            
+
             binding.switchStatus.setOnCheckedChangeListener { _, isChecked ->
                 onStatusChange(category, isChecked)
                 updateStatusUI(isChecked)
@@ -60,9 +60,11 @@ class ManageCategoryAdapter(
             if (isActive) {
                 binding.tvStatus.text = "Terlihat"
                 binding.tvStatus.setTextColor(0xFF10B981.toInt())
+                binding.switchStatus.trackTintList = android.content.res.ColorStateList.valueOf(0xFF10B981.toInt())
             } else {
                 binding.tvStatus.text = "Tersembunyi"
                 binding.tvStatus.setTextColor(0xFF6B7280.toInt())
+                binding.switchStatus.trackTintList = android.content.res.ColorStateList.valueOf(0xFFD1D5DB.toInt())
             }
         }
     }

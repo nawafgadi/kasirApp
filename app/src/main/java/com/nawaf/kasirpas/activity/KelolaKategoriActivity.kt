@@ -29,7 +29,7 @@ class KelolaKategoriActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         preferenceManager = PreferenceManager(this)
-        
+
         setupNavigation()
         setupRecyclerView()
         fetchKategori()
@@ -39,7 +39,7 @@ class KelolaKategoriActivity : AppCompatActivity() {
         binding.btnBack.setOnClickListener {
             onBackPressedDispatcher.onBackPressed()
         }
-        
+
         binding.btnTambahKategori.setOnClickListener {
             showCategoryForm()
         }
@@ -58,7 +58,7 @@ class KelolaKategoriActivity : AppCompatActivity() {
                 updateKategoriStatus(category, isChecked)
             }
         )
-        
+
         binding.rvKategori.layoutManager = LinearLayoutManager(this)
         binding.rvKategori.adapter = adapter
     }
@@ -80,7 +80,7 @@ class KelolaKategoriActivity : AppCompatActivity() {
                 dialogBinding.tilCategoryName.error = "Nama kategori tidak boleh kosong"
                 return@setOnClickListener
             }
-            
+
             saveCategory(name, category?.id)
             dialog.dismiss()
         }
@@ -138,8 +138,7 @@ class KelolaKategoriActivity : AppCompatActivity() {
 
     private fun updateKategoriStatus(category: Category, isChecked: Boolean) {
         val token = preferenceManager.getToken() ?: return
-        val status = if (isChecked) 1 else 0
-        val request = CategoryStatusRequest(isActive = status)
+        val request = CategoryStatusRequest(isActive = isChecked)
 
         lifecycleScope.launch {
             try {

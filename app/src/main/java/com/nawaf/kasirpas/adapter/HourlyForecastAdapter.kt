@@ -11,14 +11,12 @@ import androidx.recyclerview.widget.RecyclerView
 import coil.load
 import coil.transform.RoundedCornersTransformation
 import com.nawaf.kasirpas.R
+import com.nawaf.kasirpas.api.RetrofitClient
 import com.nawaf.kasirpas.model.HourlyPrediction
 import java.util.Locale
 
 class HourlyForecastAdapter(private val items: List<HourlyPrediction>) :
     RecyclerView.Adapter<HourlyForecastAdapter.ViewHolder>() {
-
-    // IP Server Laravel (Tanpa /api/)
-    private val BASE_URL = "http://192.168.0.2:8000/"
 
     class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val tvHour: TextView = view.findViewById(R.id.tvHour)
@@ -48,34 +46,25 @@ class HourlyForecastAdapter(private val items: List<HourlyPrediction>) :
         if (item.productPredictions.isNotEmpty()) {
             holder.layoutProductPredictions.visibility = View.VISIBLE
             holder.containerProducts.removeAllViews()
-            
+
             item.productPredictions.take(3).forEach { prediction ->
                 val productView = LayoutInflater.from(holder.itemView.context)
                     .inflate(R.layout.item_ai_product_prediction, holder.containerProducts, false)
-                
+
                 productView.findViewById<TextView>(R.id.tvProductName).text = prediction.productName
                 productView.findViewById<TextView>(R.id.tvProductDemand).text = "Demand: ${if (prediction.probability.toDouble() > 0.8) "High" else "Stable"}"
                 productView.findViewById<TextView>(R.id.tvEstimatedQty).text = "~${prediction.estimatedQty}"
-                
-                val ivProduct = productView.findViewById<ImageView>(R.id.ivProduct)
-                
-                // PENTING: Ambil image_url dari objek product yang ada di response API
-                val rawImageUrl = prediction.product?.imageUrl
-                val finalImageUrl = when {
-                    rawImageUrl.isNullOrEmpty() -> null
-                    rawImageUrl.startsWith("http") -> rawImageUrl // Jika URL lengkap (kayak Unsplash)
-                    rawImageUrl.startsWith("storage/") -> BASE_URL + rawImageUrl // Jika sudah ada prefix storage
-                    else -> BASE_URL + "storage/" + rawImageUrl.removePrefix("/") // Jika path relatif Laravel
-                }
 
-                // LOAD GAMBAR ASLI DARI RESPONSE
-                ivProduct.load(finalImageUrl) {
+                val ivProduct = productView.findViewById<ImageView>(R.id.ivProduct)
+
+                val imageUrl = prediction.product?.imageUrl
+
+                ivProduct.load(imageUrl) {
                     crossfade(true)
                     crossfade(500)
-                    // Hapus placeholder ikon box agar bener-bener kelihatan gamar produknya
                     transformations(RoundedCornersTransformation(12f))
                 }
-                
+
                 holder.containerProducts.addView(productView)
             }
         } else {

@@ -1,11 +1,14 @@
 package com.nawaf.kasirpas.activity
 
+import android.net.Uri
 import android.os.Bundle
 import android.widget.ArrayAdapter
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.lifecycleScope
 import androidx.recyclerview.widget.LinearLayoutManager
+import coil.load
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import com.nawaf.kasirpas.adapter.ManageProductAdapter
 import com.nawaf.kasirpas.api.RetrofitClient
@@ -13,9 +16,15 @@ import com.nawaf.kasirpas.databinding.ActivityKelolaProductBinding
 import com.nawaf.kasirpas.databinding.BottomSheetProductBinding
 import com.nawaf.kasirpas.model.Category
 import com.nawaf.kasirpas.model.Product
-import com.nawaf.kasirpas.request.ProductRequest
 import com.nawaf.kasirpas.utils.PreferenceManager
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.File
+import java.io.FileOutputStream
 
 class KelolaProductActivity : AppCompatActivity() {
 
@@ -23,6 +32,16 @@ class KelolaProductActivity : AppCompatActivity() {
     private lateinit var adapter: ManageProductAdapter
     private lateinit var preferenceManager: PreferenceManager
     private var categories: List<Category> = emptyList()
+
+    private var selectedImageUri: Uri? = null
+    private var currentDialogBinding: BottomSheetProductBinding? = null
+
+    private val imagePickerLauncher = registerForActivityResult(ActivityResultContracts.GetContent()) { uri: Uri? ->
+        uri?.let {
+            selectedImageUri = it
+            currentDialogBinding?.ivProductImage?.load(it)
+        }
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -97,7 +116,9 @@ class KelolaProductActivity : AppCompatActivity() {
         val dialogBinding = BottomSheetProductBinding.inflate(layoutInflater)
         dialog.setContentView(dialogBinding.root)
 
-        // Setup Category Dropdown
+        currentDialogBinding = dialogBinding
+        selectedImageUri = null
+
         val categoryNames = categories.map { it.name }
         val categoryAdapter = ArrayAdapter(this, android.R.layout.simple_dropdown_item_1line, categoryNames)
         dialogBinding.acCategory.setAdapter(categoryAdapter)
@@ -108,22 +129,27 @@ class KelolaProductActivity : AppCompatActivity() {
             selectedCategoryId = categories[position].id
         }
 
+        dialogBinding.cvImagePicker.setOnClickListener {
+            imagePickerLauncher.launch("image/*")
+        }
+
         if (product != null) {
             dialogBinding.tvTitle.text = "Edit Produk"
             dialogBinding.etProductName.setText(product.name)
             dialogBinding.etProductPrice.setText(product.price)
             val currentStock = product.stocks?.sumOf { it.stockOnHand ?: 0 } ?: 0
             dialogBinding.etProductStock.setText(currentStock.toString())
-            dialogBinding.etDescription.setText(product.description)
             dialogBinding.acCategory.setText(product.category?.name ?: "", false)
             dialogBinding.btnSave.text = "Update Produk"
+            product.imageUrl?.let {
+                dialogBinding.ivProductImage.load(it)
+            }
         }
 
         dialogBinding.btnSave.setOnClickListener {
             val name = dialogBinding.etProductName.text.toString().trim()
             val priceStr = dialogBinding.etProductPrice.text.toString().trim()
             val stockStr = dialogBinding.etProductStock.text.toString().trim()
-            val description = dialogBinding.etDescription.text.toString().trim()
 
             if (name.isEmpty()) {
                 dialogBinding.tilProductName.error = "Nama tidak boleh kosong"
@@ -138,35 +164,115 @@ class KelolaProductActivity : AppCompatActivity() {
                 return@setOnClickListener
             }
 
-            val request = ProductRequest(
+            saveProduct(
                 name = name,
-                price = priceStr.toDoubleOrNull() ?: 0.0,
-                description = if (description.isEmpty()) null else description,
-                stock = stockStr.toIntOrNull() ?: 0,
-                categoryId = selectedCategoryId
+                price = priceStr,
+                stock = stockStr,
+                description = "",
+                categoryId = selectedCategoryId,
+                productId = product?.id,
+                dialog = dialog
             )
+        }
 
-            saveProduct(request, product?.id)
-            dialog.dismiss()
+        dialog.setOnDismissListener {
+            currentDialogBinding = null
         }
 
         dialog.show()
     }
 
-    private fun saveProduct(request: ProductRequest, productId: Int? = null) {
+    private fun getFileFromUri(uri: Uri): File? {
+        val fileName = getFileName(uri) ?: "temp_image.jpg"
+        val tempFile = File(cacheDir, fileName)
+        return try {
+            val inputStream = contentResolver.openInputStream(uri)
+            val outputStream = FileOutputStream(tempFile)
+            inputStream?.copyTo(outputStream)
+            inputStream?.close()
+            outputStream.close()
+            tempFile
+        } catch (e: Exception) {
+            e.printStackTrace()
+            null
+        }
+    }
+
+    private fun getFileName(uri: Uri): String? {
+        var name: String? = null
+        val cursor = contentResolver.query(uri, null, null, null, null)
+        cursor?.use {
+            if (it.moveToFirst()) {
+                val nameIndex = it.getColumnIndex(android.provider.OpenableColumns.DISPLAY_NAME)
+                if (nameIndex != -1) {
+                    name = it.getString(nameIndex)
+                }
+            }
+        }
+        return name
+    }
+
+    private fun createPartFromString(string: String): RequestBody {
+        return string.toRequestBody(MultipartBody.FORM)
+    }
+
+    private fun saveProduct(
+        name: String,
+        price: String,
+        stock: String,
+        description: String,
+        categoryId: Int?,
+        productId: Int?,
+        dialog: BottomSheetDialog
+    ) {
         val token = preferenceManager.getToken() ?: return
+
+        val namePart = createPartFromString(name)
+        val pricePart = createPartFromString(price)
+        val stockPart = createPartFromString(stock)
+        val descPart = if (description.isNotEmpty()) createPartFromString(description) else null
+        val catPart = categoryId?.toString()?.let { createPartFromString(it) }
+
+        val imagePart = selectedImageUri?.let { uri ->
+            val file = getFileFromUri(uri)
+            if (file != null) {
+                val reqFile = file.asRequestBody("image/*".toMediaTypeOrNull())
+                MultipartBody.Part.createFormData("image", file.name, reqFile)
+            } else null
+        }
+
         lifecycleScope.launch {
             try {
                 val response = if (productId == null) {
-                    RetrofitClient.productApi.storeProduct("Bearer $token", request)
+                    RetrofitClient.productApi.storeProduct(
+                        token = "Bearer $token",
+                        name = namePart,
+                        price = pricePart,
+                        description = descPart,
+                        stock = stockPart,
+                        categoryId = catPart,
+                        image = imagePart
+                    )
                 } else {
-                    RetrofitClient.productApi.updateProduct("Bearer $token", productId, request)
+                    val methodPart = createPartFromString("PUT")
+                    RetrofitClient.productApi.updateProduct(
+                        token = "Bearer $token",
+                        id = productId,
+                        method = methodPart,
+                        name = namePart,
+                        price = pricePart,
+                        description = descPart,
+                        stock = stockPart,
+                        categoryId = catPart,
+                        image = imagePart
+                    )
                 }
 
                 if (response.isSuccessful) {
                     val msg = if (productId == null) "Produk berhasil ditambah" else "Produk berhasil diupdate"
                     showToast(msg)
                     fetchProducts()
+                    dialog.dismiss()
                 } else {
                     showToast("Gagal menyimpan produk: ${response.message()}")
                 }
@@ -202,11 +308,9 @@ class KelolaProductActivity : AppCompatActivity() {
 
     private fun updateStats(products: List<Product>) {
         val total = products.size
-        val stokMenipis = products.count { (it.stocks?.sumOf { s -> s.stockOnHand ?: 0 } ?: 0) in 1..5 }
         val habis = products.count { (it.stocks?.sumOf { s -> s.stockOnHand ?: 0 } ?: 0) <= 0 }
 
         binding.tvTotalProduk.text = total.toString()
-        binding.tvStokMenipis.text = stokMenipis.toString()
         binding.tvStokHabis.text = habis.toString()
     }
 

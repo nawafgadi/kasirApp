@@ -12,6 +12,7 @@ import java.util.Locale
 
 class ProductAdapter(
     private var products: List<Product>,
+    private val onImageClick: (String?) -> Unit,
     private val onAddClick: (Product) -> Unit
 ) : RecyclerView.Adapter<ProductAdapter.ProductViewHolder>() {
 
@@ -36,11 +37,11 @@ class ProductAdapter(
 
         fun bind(product: Product) {
             binding.tvProductName.text = product.name
-            
+
             val price = product.price.toDoubleOrNull() ?: 0.0
             val format = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
             binding.tvPrice.text = format.format(price).replace("Rp", "Rp ")
-            
+
             val totalStock = product.stocks?.sumOf { it.stockOnHand ?: 0 } ?: 0
             binding.tvStock.text = "Stok: $totalStock"
 
@@ -52,6 +53,12 @@ class ProductAdapter(
                 }
             } else {
                 binding.ivProduct.setImageResource(R.drawable.ic_inventory)
+            }
+
+            binding.ivProduct.setOnClickListener {
+                if (!url.isNullOrEmpty()) {
+                    onImageClick(url)
+                }
             }
 
             binding.btnAddToCart.setOnClickListener {
