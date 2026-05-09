@@ -88,14 +88,14 @@
     <string name="next">Lanjut</string>
     <string name="start_now">Mulai Sekarang</string>
 
-    <string name="onboarding_title_1">Transaksi Lebih Cepat</string>
-    <string name="onboarding_desc_1">Proses pembayaran pelanggan Anda hanya dalam hitungan detik dengan interface yang intuitif.</string>
+    <string name="onboarding_title_1">Kasir Cepat &amp; Pintar</string>
+    <string name="onboarding_desc_1">Ucapkan selamat tinggal pada antrean panjang! Kelola setiap transaksi dengan mulus dalam satu sentuhan.</string>
 
-    <string name="onboarding_title_2">Kelola Stok Mudah</string>
-    <string name="onboarding_desc_2">Pantau ketersediaan barang secara real-time dan dapatkan notifikasi saat stok menipis.</string>
+    <string name="onboarding_title_2">Kendali Stok Penuh</string>
+    <string name="onboarding_desc_2">Tak ada lagi stok yang terlewat. Pantau inventaris secara real-time dan selalu siap penuhi kebutuhan pelanggan.</string>
 
-    <string name="onboarding_title_3">Laporan Real-time</string>
-    <string name="onboarding_desc_3">Analisis performa bisnis Anda kapan saja dan di mana saja langsung dari genggaman.</string>
+    <string name="onboarding_title_3">Tumbuh Bersama Data</string>
+    <string name="onboarding_desc_3">Pantau perkembangan bisnis dengan analitik cerdas. Ambil keputusan terbaik untuk melesatkan omset harianmu!</string>
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

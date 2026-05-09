@@ -30,8 +30,9 @@
             android:layout_width="match_parent"
             android:layout_height="match_parent"
             android:scaleType="fitCenter"
-            android:padding="32dp" />
-            
+            android:padding="48dp"
+            app:tint="@color/primary" />
+
     </FrameLayout>
 
     <TextView
@@ -40,8 +41,8 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="32dp"
         android:gravity="center"
-        android:textColor="@color/on_surface"
-        android:textSize="24sp"
+        android:textColor="@color/primary"
+        android:textSize="26sp"
         android:textStyle="bold"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
