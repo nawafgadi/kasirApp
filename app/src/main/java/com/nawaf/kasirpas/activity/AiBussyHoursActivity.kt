@@ -18,6 +18,8 @@ import com.nawaf.kasirpas.databinding.ActivityAiBussyHoursBinding
 import com.nawaf.kasirpas.model.DailyForecast
 import com.nawaf.kasirpas.utils.PreferenceManager
 import kotlinx.coroutines.launch
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.RequestBody.Companion.toRequestBody
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -48,7 +50,11 @@ class AiBussyHoursActivity : AppCompatActivity() {
 
     private fun setupUI() {
         binding.btnBack.setOnClickListener { finish() }
-        
+
+        binding.btnAnalyze.setOnClickListener {
+            triggerAnalyze()
+        }
+
         binding.swipeRefresh.setOnRefreshListener {
             fetchData()
         }
@@ -57,39 +63,71 @@ class AiBussyHoursActivity : AppCompatActivity() {
         binding.rvDays.layoutManager = LinearLayoutManager(this, LinearLayoutManager.HORIZONTAL, false)
     }
 
+    private fun triggerAnalyze() {
+        val token = prefManager.getToken() ?: return
+
+        binding.progressBar.visibility = View.VISIBLE
+        binding.btnAnalyze.isEnabled = false
+
+        lifecycleScope.launch {
+            try {
+                // Sesuai route: Route::post('/runs/analyze-busy-hours')
+                // Body kosong atau {} jika server tidak memerlukan parameter tambahan.
+                val emptyBody = "{}".toRequestBody("application/json".toMediaTypeOrNull())
+                val response = RetrofitClient.aiApi.analyzeBusyHours("Bearer $token", emptyBody)
+
+                if (response.isSuccessful && response.body()?.success == true) {
+                    Toast.makeText(this@AiBussyHoursActivity, "Analisis AI berhasil dijalankan!", Toast.LENGTH_SHORT).show()
+                    // Fetch ulang data terbaru setelah di-analyze
+                    fetchData()
+                } else {
+                    binding.progressBar.visibility = View.GONE
+                    binding.btnAnalyze.isEnabled = true
+                    Toast.makeText(this@AiBussyHoursActivity, "Gagal menjalankan AI Analysis", Toast.LENGTH_SHORT).show()
+                }
+            } catch (e: Exception) {
+                binding.progressBar.visibility = View.GONE
+                binding.btnAnalyze.isEnabled = true
+                e.printStackTrace()
+                Toast.makeText(this@AiBussyHoursActivity, "Terjadi kesalahan saat analyze", Toast.LENGTH_SHORT).show()
+            }
+        }
+    }
+
     private fun fetchData() {
         val token = prefManager.getToken() ?: return
-        
+
         binding.progressBar.visibility = View.VISIBLE
-        
+        binding.btnAnalyze.isEnabled = true
+
         lifecycleScope.launch {
             try {
                 val response = RetrofitClient.aiApi.getLatestBusyHours("Bearer $token")
                 binding.swipeRefresh.isRefreshing = false
                 binding.progressBar.visibility = View.GONE
-                
+
                 if (response.isSuccessful && response.body()?.success == true) {
                     val aiRun = response.body()?.data
                     if (aiRun != null && aiRun.dailyForecasts.isNotEmpty()) {
                         val allDays = aiRun.dailyForecasts
-                        
+
                         // Menentukan hari "Sekarang" untuk dijadikan default.
                         // Jika dalam mode testing/mock data 2026, kita cari tanggal yang paling mendekati 'hari ini'
                         // atau langsung ambil index 0 jika data pertama adalah target hari ini.
-                        
+
                         val sdf = SimpleDateFormat("yyyy-MM-dd", Locale.US)
                         val todayStr = sdf.format(Date())
-                        
+
                         // Logika pencarian index hari ini
                         var startIndex = allDays.indexOfFirst { it.forecastDate.startsWith(todayStr) }
-                        
-                        // Jika hari ini tidak ada di data (mungkin karena timezone atau data mock), 
+
+                        // Jika hari ini tidak ada di data (mungkin karena timezone atau data mock),
                         // kita default ke index 0 (karena biasanya data pertama adalah yang terbaru/hari ini)
                         if (startIndex == -1) startIndex = 0
-                        
+
                         // Ambil 3 hari kedepan saja sesuai request
                         val limitedDays = allDays.drop(startIndex).take(3)
-                        
+
                         if (limitedDays.isNotEmpty()) {
                             setupDaySelector(limitedDays)
                             displayData(limitedDays[0])
@@ -118,7 +156,7 @@ class AiBussyHoursActivity : AppCompatActivity() {
 
     private fun displayData(forecast: DailyForecast) {
         binding.layoutContent.visibility = View.VISIBLE
-        
+
         val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
         val outputFormat = SimpleDateFormat("dd MMM yyyy", Locale("id", "ID"))
         val dateStr = try {
@@ -127,11 +165,11 @@ class AiBussyHoursActivity : AppCompatActivity() {
         } catch (e: Exception) {
             forecast.forecastDate
         }
-        
+
         binding.tvDate.text = dateStr
         binding.tvPeakHour.text = forecast.peakHour
         binding.tvPredictedTrx.text = forecast.totalPredictedTrx
-        
+
         val revenue = forecast.totalPredictedRevenue.toDoubleOrNull() ?: 0.0
         val formattedRevenue = if (revenue >= 1000) {
             String.format(Locale.US, "Rp %.2fk", revenue / 1000)

@@ -69,7 +69,7 @@ class OnboardingActivity : AppCompatActivity() {
                 OnboardingItem(
                     R.string.onboarding_title_1,
                     R.string.onboarding_desc_1,
-                    R.drawable.ic_bolt
+                    R.drawable.ic_scan
                 ),
                 OnboardingItem(
                     R.string.onboarding_title_2,
@@ -79,7 +79,7 @@ class OnboardingActivity : AppCompatActivity() {
                 OnboardingItem(
                     R.string.onboarding_title_3,
                     R.string.onboarding_desc_3,
-                    R.drawable.ic_store
+                    R.drawable.ic_trending_up
                 )
             )
         )

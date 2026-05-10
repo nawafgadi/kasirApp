@@ -49,7 +49,7 @@
                 </com.google.android.material.card.MaterialCardView>
 
                 <TextView
-                    android:layout_width="wrap_content"
+                    android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginStart="16dp"
                     android:fontFamily="sans-serif-black"
@@ -58,7 +58,32 @@
                     android:textSize="22sp"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toEndOf="@id/btnBackWrapper"
+                    app:layout_constraintEnd_toStartOf="@id/btnAnalyzeWrapper"
                     app:layout_constraintTop_toTopOf="parent" />
+
+                <!-- Tombol Analyze Baru -->
+                <com.google.android.material.card.MaterialCardView
+                    android:id="@+id/btnAnalyzeWrapper"
+                    android:layout_width="48dp"
+                    android:layout_height="48dp"
+                    app:cardBackgroundColor="#2196F3"
+                    app:cardCornerRadius="24dp"
+                    app:cardElevation="2dp"
+                    app:strokeWidth="0dp"
+                    app:layout_constraintBottom_toBottomOf="parent"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintTop_toTopOf="parent">
+
+                    <ImageButton
+                        android:id="@+id/btnAnalyze"
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:background="?attr/selectableItemBackgroundBorderless"
+                        android:padding="10dp"
+                        android:scaleType="fitCenter"
+                        android:src="@drawable/ic_sparkle"
+                        app:tint="#FFFFFF" />
+                </com.google.android.material.card.MaterialCardView>
 
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.appcompat.widget.Toolbar>
