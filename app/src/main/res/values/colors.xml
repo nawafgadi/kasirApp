@@ -37,6 +37,7 @@
     <color name="on_secondary_container">#6b616e</color>
     <color name="surface_container">#f0eded</color>
     <color name="surface_container_low">#f6f3f2</color>
+    <color name="surface_container_high">#eae7e7</color>
     <color name="secondary_fixed">#ecdeee</color>
     
     <!-- SANGAT TRANSPARANT (10% Opacity = 1A) -->
