@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "764469756275",
+    "project_id": "warungku-763dc",
+    "storage_bucket": "warungku-763dc.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:764469756275:android:0c134f5ee8a5059843c506",
+        "android_client_info": {
+          "package_name": "com.smk.warungku_xipplg4_27"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBuf2HYfau7fZnsYRX5WvB_9-2VIICCNgk"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

@@ -1,181 +1,485 @@
 package com.nawaf.kasirpas.activity
 
-import android.content.res.ColorStateList
 import android.os.Bundle
-import android.text.Editable
-import android.text.TextWatcher
-import android.view.View
-import android.widget.Toast
-import androidx.appcompat.app.AppCompatActivity
-import androidx.core.content.ContextCompat
-import androidx.lifecycle.lifecycleScope
-import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.nawaf.kasirpas.R
-import com.nawaf.kasirpas.adapter.HistoryAdapter
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.animateColorAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.List
+import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.KeyboardArrowDown
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Search
+import androidx.compose.material.icons.filled.Info
+import androidx.compose.material.icons.filled.History
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.nawaf.kasirpas.api.RetrofitClient
-import com.nawaf.kasirpas.databinding.ActivityHistoryBinding
+import com.nawaf.kasirpas.response.TransactionHistory
 import com.nawaf.kasirpas.utils.PreferenceManager
-import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
+import java.text.NumberFormat
+import java.util.Locale
 
-class HistoryActivity : AppCompatActivity() {
+// Premium Color Palette
+val SurfaceColor = Color(0xFFFBFBFB) // Cleaner white-ish
+val OnSurfaceColor = Color(0xFF1D1B20)
+val PrimaryColor = Color(0xFF6750A4)
+val PrimaryContainerColor = Color(0xFFEADDFF)
+val OnPrimaryContainerColor = Color(0xFF21005D)
+val SurfaceContainerLow = Color(0xFFF3F3F7) // More "sunken" feel
+val SurfaceContainerHigh = Color(0xFFECE6F0)
+val OutlineVariantColor = Color(0xFFE0E0E0) // Softer divider
+val TertiaryColor = Color(0xFF006874)
+val TertiaryFixedColor = Color(0xFF97F0FF)
+val OutlineColor = Color(0xFF79747E)
+val GreyTextColor = Color(0xFF939094)
 
-    private lateinit var binding: ActivityHistoryBinding
-    private lateinit var adapter: HistoryAdapter
+class HistoryActivity : ComponentActivity() {
+
     private lateinit var prefManager: PreferenceManager
-    
-    private var currentPage = 1
-    private var lastPage = 1
-    private var isLoading = false
-    private var searchJob: Job? = null
-    private var currentFilter = "ALL" // ALL, TODAY
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        binding = ActivityHistoryBinding.inflate(layoutInflater)
-        setContentView(binding.root)
-
+        enableEdgeToEdge()
         prefManager = PreferenceManager(this)
-        setupRecyclerView()
-        setupBottomNav()
-        setupListeners()
-        setupSearch()
-        
-        fetchHistory(1, true)
-    }
 
-    private fun setupRecyclerView() {
-        adapter = HistoryAdapter()
-        binding.rvHistory.layoutManager = LinearLayoutManager(this)
-        binding.rvHistory.adapter = adapter
-
-        binding.rvHistory.addOnScrollListener(object : RecyclerView.OnScrollListener() {
-            override fun onScrolled(recyclerView: RecyclerView, dx: Int, dy: Int) {
-                super.onScrolled(recyclerView, dx, dy)
-                
-                val layoutManager = recyclerView.layoutManager as LinearLayoutManager
-                val visibleItemCount = layoutManager.childCount
-                val totalItemCount = layoutManager.itemCount
-                val firstVisibleItemPosition = layoutManager.findFirstVisibleItemPosition()
-
-                if (!isLoading && currentPage < lastPage) {
-                    if ((visibleItemCount + firstVisibleItemPosition) >= totalItemCount
-                        && firstVisibleItemPosition >= 0
-                    ) {
-                        fetchHistory(currentPage + 1)
-                    }
-                }
-            }
-        })
-    }
-
-    private fun setupSearch() {
-        binding.etSearch.addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {}
-            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                searchJob?.cancel()
-                searchJob = lifecycleScope.launch {
-                    delay(500)
-                    fetchHistory(1, true)
-                }
-            }
-            override fun afterTextChanged(s: Editable?) {}
-        })
-    }
-
-    private fun setupBottomNav() {
-        binding.bottomNav.selectedItemId = R.id.nav_laporan
-        binding.bottomNav.setOnItemSelectedListener { item ->
-            when (item.itemId) {
-                R.id.nav_kasir -> { finish(); true }
-                R.id.nav_checkout -> true
-                R.id.nav_laporan -> true
-                R.id.nav_pengaturan -> true
-                else -> false
-            }
+        setContent {
+            HistoryScreen(
+                onBack = { finish() },
+                prefManager = prefManager
+            )
         }
     }
+}
 
-    private fun setupListeners() {
-        binding.btnBack.setOnClickListener { finish() }
-        
-        binding.chipAll.setOnClickListener {
-            if (currentFilter != "ALL") {
-                currentFilter = "ALL"
-                updateFilterUI()
-                fetchHistory(1, true)
-            }
-        }
+@Composable
+fun HistoryScreen(onBack: () -> Unit, prefManager: PreferenceManager) {
+    var searchQuery by remember { mutableStateOf("") }
+    var currentPeriod by remember { mutableStateOf("semua") }
+    var transactions by remember { mutableStateOf(listOf<TransactionHistory>()) }
+    var currentPage by remember { mutableStateOf(1) }
+    var lastPage by remember { mutableStateOf(1) }
+    var nextPageUrl by remember { mutableStateOf<String?>(null) }
+    var isLoading by remember { mutableStateOf(false) }
 
-        binding.chipToday.setOnClickListener {
-            if (currentFilter != "TODAY") {
-                currentFilter = "TODAY"
-                updateFilterUI()
-                fetchHistory(1, true)
-            }
-        }
-    }
+    val listState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
 
-    private fun updateFilterUI() {
-        if (currentFilter == "ALL") {
-            binding.chipAll.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.primary_container))
-            binding.tvChipAll.setTextColor(ContextCompat.getColor(this, R.color.on_primary_container))
-            
-            binding.chipToday.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.surface_container_high))
-            binding.tvChipToday.setTextColor(ContextCompat.getColor(this, R.color.on_surface_variant))
-        } else {
-            binding.chipToday.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.primary_container))
-            binding.tvChipToday.setTextColor(ContextCompat.getColor(this, R.color.on_primary_container))
-            
-            binding.chipAll.backgroundTintList = ColorStateList.valueOf(ContextCompat.getColor(this, R.color.surface_container_high))
-            binding.tvChipAll.setTextColor(ContextCompat.getColor(this, R.color.on_surface_variant))
-        }
-    }
-
-    private fun fetchHistory(page: Int = 1, isRefresh: Boolean = false) {
+    fun fetchHistory(url: String? = null, isRefresh: Boolean = false) {
         val token = prefManager.getToken() ?: return
-        val searchQuery = binding.etSearch.text.toString()
+        if (isLoading) return
         
         isLoading = true
-        if (isRefresh) {
-            currentPage = 1
-            binding.progressBar.visibility = View.VISIBLE
-        } else {
-            binding.progressBar.visibility = View.VISIBLE
-        }
-
-        lifecycleScope.launch {
+        scope.launch {
             try {
-                val response = RetrofitClient.reportApi.getSalesHistory(
-                    token = "Bearer $token",
-                    page = page,
-                    search = if (searchQuery.isNotEmpty()) searchQuery else null,
-                    filter = if (currentFilter != "ALL") currentFilter.lowercase() else null
-                )
-                
+                val response = if (url != null) {
+                    RetrofitClient.reportApiService.getSalesHistoryNextPage("Bearer $token", url)
+                } else {
+                    RetrofitClient.reportApiService.getSalesHistory(
+                        token = "Bearer $token",
+                        period = currentPeriod,
+                        search = searchQuery.ifEmpty { null },
+                        page = 1
+                    )
+                }
                 if (response.isSuccessful) {
                     val data = response.body()?.data
                     data?.let {
                         if (isRefresh) {
-                            adapter.setItems(it.transactions)
+                            transactions = it.transactions
                         } else {
-                            adapter.addItems(it.transactions)
+                            val newTrx = it.transactions.filter { nt -> transactions.none { t -> t.id == nt.id } }
+                            transactions = transactions + newTrx
                         }
-                        
                         currentPage = it.currentPage
                         lastPage = it.lastPage
-                        binding.tvPaginationInfo.text = "Halaman $currentPage dari $lastPage"
+                        nextPageUrl = it.nextPageUrl
                     }
-                } else {
-                    Toast.makeText(this@HistoryActivity, "Gagal: ${response.message()}", Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
             } finally {
                 isLoading = false
-                binding.progressBar.visibility = View.GONE
+            }
+        }
+    }
+
+    LaunchedEffect(currentPeriod) {
+        fetchHistory(null, true)
+    }
+
+    LaunchedEffect(searchQuery) {
+        if (searchQuery.isNotEmpty()) {
+            delay(600) // Slightly longer debounce for "premium" feel
+            fetchHistory(null, true)
+        } else if (transactions.isNotEmpty() || currentPage > 1) {
+            fetchHistory(null, true)
+        }
+    }
+
+    val shouldLoadMore = remember {
+        derivedStateOf {
+            val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull() ?: return@derivedStateOf false
+            lastVisibleItem.index >= listState.layoutInfo.totalItemsCount - 2 && nextPageUrl != null && !isLoading
+        }
+    }
+
+    LaunchedEffect(shouldLoadMore.value) {
+        if (shouldLoadMore.value) {
+            fetchHistory(nextPageUrl)
+        }
+    }
+
+    Scaffold(
+        topBar = {
+            Surface(
+                color = Color.White,
+                tonalElevation = 2.dp,
+                shadowElevation = 0.dp // We use a custom soft border instead
+            ) {
+                Column {
+                    Spacer(modifier = Modifier.statusBarsPadding())
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 20.dp, vertical = 14.dp),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            IconButton(
+                                onClick = onBack,
+                                modifier = Modifier
+                                    .size(40.dp)
+                                    .background(SurfaceContainerLow, CircleShape)
+                            ) {
+                                Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = OnSurfaceColor, modifier = Modifier.size(20.dp))
+                            }
+                            Spacer(modifier = Modifier.width(16.dp))
+                            Text(
+                                text = "Riwayat Penjualan",
+                                fontSize = 20.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = OnSurfaceColor,
+                                letterSpacing = (-0.5).sp
+                            )
+                        }
+                        IconButton(onClick = { /* Filter */ }) {
+                            Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Filter", tint = OnSurfaceColor)
+                        }
+                    }
+                    HorizontalDivider(color = OutlineVariantColor.copy(alpha = 0.5f), thickness = 1.dp)
+                }
+            }
+        },
+        containerColor = SurfaceColor
+    ) { innerPadding ->
+        Column(
+            modifier = Modifier
+                .padding(innerPadding)
+                .fillMaxSize()
+        ) {
+            LazyColumn(
+                state = listState,
+                contentPadding = PaddingValues(top = 20.dp, start = 20.dp, end = 20.dp, bottom = 40.dp),
+                verticalArrangement = Arrangement.spacedBy(20.dp),
+                modifier = Modifier.fillMaxSize()
+            ) {
+                // Minimalist Search Bar Item
+                item {
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(52.dp)
+                            .clip(RoundedCornerShape(16.dp))
+                            .background(SurfaceContainerLow)
+                            .padding(horizontal = 16.dp),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            Icon(Icons.Default.Search, contentDescription = null, tint = OutlineColor, modifier = Modifier.size(20.dp))
+                            Spacer(modifier = Modifier.width(12.dp))
+                            BasicTextField(
+                                value = searchQuery,
+                                onValueChange = { searchQuery = it },
+                                modifier = Modifier.fillMaxWidth(),
+                                textStyle = TextStyle(fontSize = 15.sp, color = OnSurfaceColor),
+                                decorationBox = { innerTextField ->
+                                    if (searchQuery.isEmpty()) {
+                                        Text(text = "Cari transaksi atau tanggal...", fontSize = 15.sp, color = OutlineColor.copy(alpha = 0.7f))
+                                    }
+                                    innerTextField()
+                                }
+                            )
+                        }
+                    }
+                }
+
+                // Smooth Filter Chips
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        PremiumFilterChip(
+                            text = "Semua",
+                            isSelected = currentPeriod == "semua",
+                            onClick = { currentPeriod = "semua" }
+                        )
+                        PremiumFilterChip(
+                            text = "Hari Ini",
+                            isSelected = currentPeriod == "hari_ini",
+                            onClick = { currentPeriod = "hari_ini" }
+                        )
+                    }
+                }
+
+                // Empty State
+                if (!isLoading && transactions.isEmpty()) {
+                    item {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 80.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally
+                        ) {
+                            Icon(
+                                Icons.Default.History,
+                                contentDescription = null,
+                                modifier = Modifier.size(64.dp),
+                                tint = OutlineColor.copy(alpha = 0.3f)
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Text(
+                                "Belum ada transaksi ditemukan",
+                                color = OutlineColor,
+                                fontSize = 16.sp,
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
+                }
+
+                // Transactions List
+                items(transactions, key = { it.id }) { transaction ->
+                    PremiumTransactionCard(transaction)
+                }
+                
+                // Loading indicator
+                if (isLoading) {
+                    item {
+                        Box(modifier = Modifier.fillMaxWidth().padding(vertical = 20.dp), contentAlignment = Alignment.Center) {
+                            CircularProgressIndicator(modifier = Modifier.size(28.dp), color = PrimaryColor, strokeWidth = 3.dp)
+                        }
+                    }
+                }
+
+                // Pagination
+                item {
+                    PaginationSection(
+                        currentPage = currentPage,
+                        lastPage = lastPage,
+                        canLoadMore = nextPageUrl != null,
+                        onLoadMore = { fetchHistory(nextPageUrl) }
+                    )
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun PremiumFilterChip(
+    text: String,
+    isSelected: Boolean,
+    onClick: () -> Unit
+) {
+    val bgColor by animateColorAsState(
+        targetValue = if (isSelected) PrimaryColor else SurfaceContainerLow,
+        animationSpec = tween(durationMillis = 300)
+    )
+    val textColor by animateColorAsState(
+        targetValue = if (isSelected) Color.White else OnSurfaceColor.copy(alpha = 0.7f),
+        animationSpec = tween(durationMillis = 300)
+    )
+
+    Surface(
+        modifier = Modifier
+            .clip(RoundedCornerShape(14.dp))
+            .clickable(onClick = onClick),
+        color = bgColor
+    ) {
+        Box(
+            modifier = Modifier.padding(horizontal = 20.dp, vertical = 10.dp),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = text,
+                fontSize = 13.sp,
+                fontWeight = if (isSelected) FontWeight.SemiBold else FontWeight.Medium,
+                color = textColor
+            )
+        }
+    }
+}
+
+@Composable
+fun PremiumTransactionCard(transaction: TransactionHistory) {
+    val formatter = NumberFormat.getCurrencyInstance(Locale("in", "ID"))
+    
+    Surface(
+        modifier = Modifier
+            .fillMaxWidth()
+            .shadow(elevation = 8.dp, shape = RoundedCornerShape(20.dp), spotColor = Color.Black.copy(alpha = 0.1f)),
+        color = Color.White,
+        shape = RoundedCornerShape(20.dp)
+    ) {
+        Row(modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
+            // Vertical accent line
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .width(6.dp)
+                    .background(TertiaryColor)
+            )
+            
+            Column(modifier = Modifier.padding(18.dp).weight(1f)) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column {
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(TertiaryFixedColor.copy(alpha = 0.5f))
+                                .padding(horizontal = 8.dp, vertical = 4.dp)
+                        ) {
+                            Text(
+                                text = "SALE",
+                                fontSize = 10.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = TertiaryColor,
+                                letterSpacing = 0.5.sp
+                            )
+                        }
+                    }
+                    Text(
+                        text = formatter.format(transaction.totalAmount).replace("Rp", "Rp ").replace(",00", ""),
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = PrimaryColor
+                    )
+                }
+                
+                Spacer(modifier = Modifier.height(14.dp))
+                
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.Info, contentDescription = null, modifier = Modifier.size(14.dp), tint = GreyTextColor)
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(text = transaction.trxDate, fontSize = 12.sp, color = GreyTextColor, fontWeight = FontWeight.Light)
+                }
+                
+                Spacer(modifier = Modifier.height(4.dp))
+                
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(Icons.Default.Person, contentDescription = null, modifier = Modifier.size(14.dp), tint = GreyTextColor)
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(text = transaction.user.name, fontSize = 12.sp, color = GreyTextColor)
+                }
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                // Product list in a light gray container
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clip(RoundedCornerShape(12.dp))
+                        .background(SurfaceContainerLow.copy(alpha = 0.6f))
+                        .padding(12.dp)
+                ) {
+                    transaction.items.forEachIndexed { index, item ->
+                        Row(
+                            modifier = Modifier.fillMaxWidth(),
+                            horizontalArrangement = Arrangement.SpaceBetween
+                        ) {
+                            Text(
+                                text = "${item.quantity}x ${item.product.name}",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Medium,
+                                color = OnSurfaceColor.copy(alpha = 0.8f)
+                            )
+                            Text(
+                                text = formatter.format(item.product.price).replace("Rp", "Rp ").replace(",00", ""),
+                                fontSize = 12.sp,
+                                color = OnSurfaceColor.copy(alpha = 0.6f)
+                            )
+                        }
+                        if (index < transaction.items.size - 1) {
+                            Spacer(modifier = Modifier.height(6.dp))
+                        }
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun PaginationSection(currentPage: Int, lastPage: Int, canLoadMore: Boolean, onLoadMore: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 16.dp),
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = "HALAMAN $currentPage DARI $lastPage",
+            fontSize = 11.sp,
+            fontWeight = FontWeight.Bold,
+            color = OutlineColor.copy(alpha = 0.6f),
+            letterSpacing = 1.5.sp
+        )
+        if (canLoadMore) {
+            Spacer(modifier = Modifier.height(16.dp))
+            Button(
+                onClick = onLoadMore,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(52.dp),
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = Color.White),
+                border = androidx.compose.foundation.BorderStroke(1.dp, OutlineVariantColor),
+                elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
+            ) {
+                Text(text = "Muat Lebih Banyak", color = PrimaryColor, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                Spacer(modifier = Modifier.width(8.dp))
+                Icon(Icons.Default.KeyboardArrowDown, contentDescription = null, tint = PrimaryColor, modifier = Modifier.size(20.dp))
             }
         }
     }
