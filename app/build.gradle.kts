@@ -1,6 +1,7 @@
 plugins {
     id("com.android.application")
     id("org.jetbrains.kotlin.android")
+    alias(libs.plugins.kotlin.compose)
 }
 
 android {
@@ -69,6 +70,7 @@ dependencies {
     implementation("androidx.fragment:fragment-ktx:1.6.2")
 
     implementation("io.coil-kt:coil:2.6.0")
+    implementation("io.coil-kt:coil-compose:2.6.0")
 
     implementation("androidx.swiperefreshlayout:swiperefreshlayout:1.1.0")
 
@@ -84,8 +86,16 @@ dependencies {
     implementation("androidx.compose.ui:ui")
 
     implementation("androidx.compose.material3:material3")
+    implementation("androidx.compose.material:material-icons-extended")
 
     implementation("androidx.compose.ui:ui-tooling-preview")
+    implementation(libs.androidx.activity.ktx)
+    implementation(libs.androidx.compose.ui.graphics)
+    implementation(libs.androidx.navigation.fragment.ktx)
+    implementation(libs.androidx.navigation.ui.ktx)
+    androidTestImplementation(platform(libs.androidx.compose.bom))
+    androidTestImplementation(libs.androidx.compose.ui.test.junit4)
 
     debugImplementation("androidx.compose.ui:ui-tooling")
+    debugImplementation(libs.androidx.compose.ui.test.manifest)
 }

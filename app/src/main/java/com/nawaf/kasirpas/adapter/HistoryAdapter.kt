@@ -53,7 +53,7 @@ class HistoryAdapter : RecyclerView.Adapter<HistoryAdapter.ViewHolder>() {
                 .replace(",00", "")
 
             val itemsSummary = transaction.items.joinToString("\n") { item ->
-                "${item.quantity}x ${item.product.name} @ ${formatter.format(item.price).replace("Rp", "Rp ").replace(",00", "")}"
+                "${item.quantity}x ${item.product.name} @ ${formatter.format(item.product.price).replace("Rp", "Rp ").replace(",00", "")}"
             }
             binding.tvItemsSummary.text = itemsSummary
         }
