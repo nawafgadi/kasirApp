@@ -274,6 +274,9 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun replaceFragment(fragment: Fragment, animate: Boolean = true) {
+        // Disable swipe refresh when in Settings or other specific fragments if needed
+        binding.swipeRefresh.isEnabled = fragment !is PengaturanFragment
+
         val transaction = supportFragmentManager.beginTransaction()
         if (animate) {
             transaction.setCustomAnimations(
