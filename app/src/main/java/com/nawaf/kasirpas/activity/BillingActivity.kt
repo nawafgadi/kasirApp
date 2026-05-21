@@ -9,7 +9,6 @@ import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
@@ -42,6 +41,7 @@ import androidx.lifecycle.lifecycleScope
 import coil.compose.AsyncImage
 import com.nawaf.kasirpas.activity.ui.theme.KasirAppTheme
 import com.nawaf.kasirpas.api.RetrofitClient
+import com.nawaf.kasirpas.model.Subscription
 import com.nawaf.kasirpas.request.BillingRequest
 import com.nawaf.kasirpas.utils.PreferenceManager
 import kotlinx.coroutines.launch
@@ -56,10 +56,12 @@ val BillingOnSurface = Color(0xFF1C1B1B)
 val BillingOnSurfaceVariant = Color(0xFF4A4452)
 val BillingSecondaryContainer = Color(0xFFECDEEE)
 val BillingOnSecondaryContainer = Color(0xFF6B616E)
+val BillingOutlineVariant = Color(0xFFCCC3D3)
 
 class BillingActivity : ComponentActivity() {
 
     private lateinit var preferenceManager: PreferenceManager
+    private var refreshTrigger by mutableIntStateOf(0)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -70,10 +72,16 @@ class BillingActivity : ComponentActivity() {
             KasirAppTheme {
                 BillingScreen(
                     onBack = { finish() },
-                    preferenceManager = preferenceManager
+                    preferenceManager = preferenceManager,
+                    refreshTrigger = refreshTrigger
                 ) { planName -> subscribe(planName) }
             }
         }
+    }
+
+    override fun onResume() {
+        super.onResume()
+        refreshTrigger++
     }
 
     private fun subscribe(planName: String) {
@@ -93,7 +101,8 @@ class BillingActivity : ComponentActivity() {
                     val intent = Intent(Intent.ACTION_VIEW, Uri.parse(paymentUrl))
                     startActivity(intent)
                 } else {
-                    Toast.makeText(this@BillingActivity, "Gagal membuat pesanan", Toast.LENGTH_SHORT).show()
+                    val errorMsg = response.errorBody()?.string() ?: "Gagal membuat pesanan"
+                    Toast.makeText(this@BillingActivity, errorMsg, Toast.LENGTH_SHORT).show()
                 }
             } catch (e: Exception) {
                 Toast.makeText(this@BillingActivity, "Terjadi kesalahan: ${e.message}", Toast.LENGTH_SHORT).show()
@@ -107,8 +116,10 @@ class BillingActivity : ComponentActivity() {
 fun BillingScreen(
     onBack: () -> Unit,
     preferenceManager: PreferenceManager,
+    refreshTrigger: Int,
     onSubscribe: (String) -> Unit
 ) {
+    var activeSub by remember { mutableStateOf<Subscription?>(null) }
     var isLoading by remember { mutableStateOf(true) }
     val scope = rememberCoroutineScope()
 
@@ -117,8 +128,10 @@ fun BillingScreen(
         isLoading = true
         scope.launch {
             try {
-                RetrofitClient.billingApi.getActiveSubscription("Bearer $token")
-                // We just trigger the call, but don't display the card as requested
+                val response = RetrofitClient.billingApi.getActiveSubscription("Bearer $token")
+                if (response.isSuccessful) {
+                    activeSub = response.body()?.data
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
             } finally {
@@ -127,7 +140,7 @@ fun BillingScreen(
         }
     }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(refreshTrigger) {
         fetchActiveSubscription()
     }
 
@@ -163,9 +176,6 @@ fun BillingScreen(
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
             )
-        },
-        bottomBar = {
-            LuxuryBottomNav()
         }
     ) { innerPadding ->
         Box(
@@ -188,12 +198,109 @@ fun BillingScreen(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(24.dp)
                 ) {
-                    HeroSection()
-                    PricingCardPro(onSubscribe)
+                    if (activeSub != null && activeSub?.status == "ACTIVE") {
+                        ActiveSubscriptionSection(activeSub!!)
+                    } else {
+                        HeroSection()
+                        PricingCardPro(onSubscribe)
+                    }
+                    
                     BentoFeaturedSection()
                     
                     Spacer(modifier = Modifier.height(32.dp))
                 }
+            }
+        }
+    }
+}
+
+@Composable
+fun ActiveSubscriptionSection(subscription: Subscription) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(28.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        border = androidx.compose.foundation.BorderStroke(1.dp, BillingPrimary.copy(alpha = 0.1f))
+    ) {
+        Column(
+            modifier = Modifier.padding(28.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Box(
+                modifier = Modifier
+                    .size(80.dp)
+                    .clip(CircleShape)
+                    .background(BillingPrimary.copy(alpha = 0.1f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    Icons.Default.VerifiedUser,
+                    contentDescription = null,
+                    tint = BillingPrimary,
+                    modifier = Modifier.size(40.dp)
+                )
+            }
+            
+            Spacer(modifier = Modifier.height(20.dp))
+            
+            Text(
+                text = "Langganan Aktif",
+                fontSize = 22.sp,
+                fontWeight = FontWeight.Bold,
+                color = BillingOnSurface
+            )
+            
+            Text(
+                text = "Anda menggunakan paket ${subscription.planName}",
+                fontSize = 14.sp,
+                color = BillingOnSurfaceVariant
+            )
+            
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            HorizontalDivider(color = BillingOutlineVariant.copy(alpha = 0.5f))
+            
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column {
+                    Text("METODE", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = BillingOnSurfaceVariant, letterSpacing = 1.sp)
+                    Text(
+                        subscription.payments?.firstOrNull()?.paymentType?.uppercase() ?: "QRIS",
+                        fontWeight = FontWeight.ExtraBold,
+                        color = BillingOnSurface,
+                        fontSize = 16.sp
+                    )
+                }
+                Column(horizontalAlignment = Alignment.End) {
+                    Text("BERAKHIR", fontSize = 10.sp, fontWeight = FontWeight.Bold, color = BillingOnSurfaceVariant, letterSpacing = 1.sp)
+                    Text(
+                        formatExpiryDate(subscription.endDate),
+                        fontWeight = FontWeight.ExtraBold,
+                        color = BillingOnSurface,
+                        fontSize = 16.sp
+                    )
+                }
+            }
+            
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            Surface(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(16.dp),
+                color = Color(0xFFF0FDF4) // Light Success Green
+            ) {
+                Text(
+                    text = "Terima kasih telah mempercayai LuxePOS untuk mendukung pertumbuhan bisnis Anda! ✨",
+                    modifier = Modifier.padding(16.dp),
+                    fontSize = 12.sp,
+                    color = Color(0xFF166534),
+                    textAlign = TextAlign.Center,
+                    lineHeight = 18.sp)
             }
         }
     }
@@ -435,5 +542,17 @@ fun LuxuryBottomNav() {
                 )
             )
         }
+    }
+}
+
+fun formatExpiryDate(dateStr: String): String {
+    return try {
+        val inputFormat = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+        val outputFormat = SimpleDateFormat("dd MMM yyyy", Locale("id", "ID"))
+        val date = inputFormat.parse(dateStr)
+        outputFormat.format(date!!)
+    } catch (e: Exception) {
+        e.printStackTrace()
+        dateStr
     }
 }
