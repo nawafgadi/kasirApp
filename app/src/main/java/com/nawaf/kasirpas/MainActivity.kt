@@ -100,7 +100,7 @@ class MainActivity : AppCompatActivity() {
             // Juga merefresh fragment yang sedang aktif jika diperlukan
             val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
             if (currentFragment is LaporanFragment) {
-                // Kamu bisa menambahkan fungsi refresh di LaporanFragment nanti
+                currentFragment.refreshData()
             }
         }
     }
