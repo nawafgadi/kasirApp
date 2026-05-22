@@ -10,6 +10,7 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -24,6 +25,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
@@ -33,11 +35,14 @@ import androidx.compose.ui.platform.ComposeView
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
+import com.nawaf.kasirpas.MainActivity
+import com.nawaf.kasirpas.R
 import com.nawaf.kasirpas.activity.ui.theme.KasirAppTheme
 import com.nawaf.kasirpas.response.*
 import com.nawaf.kasirpas.utils.PreferenceManager
@@ -96,6 +101,7 @@ fun <T> LiveData<T>.observeAsStateHelper(initial: T): State<T> {
     return state
 }
 
+
 @Composable
 fun LaporanScreen(viewModel: ReportViewModel, prefManager: PreferenceManager) {
     val reportDataState = viewModel.reportData.observeAsStateHelper(null)
@@ -106,12 +112,43 @@ fun LaporanScreen(viewModel: ReportViewModel, prefManager: PreferenceManager) {
     val isLoading = isLoadingState.value
     val isUsingMock = isUsingMockState.value
 
-    var selectedTab by remember { mutableStateOf(1) } // Default: Minggu Ini
-
     // Load initial data
     LaunchedEffect(Unit) {
         val token = prefManager.getToken() ?: ""
         viewModel.loadDashboardReports(token)
+    }
+
+    LaporanContent(
+        reportData = reportData,
+        isLoading = isLoading,
+        isUsingMock = isUsingMock,
+        onRefresh = {
+            val token = prefManager.getToken() ?: ""
+            viewModel.loadDashboardReports(token, forceRefresh = true)
+        }
+    )
+}
+
+@Composable
+fun LaporanContent(
+    reportData: DashboardReportData?,
+    isLoading: Boolean,
+    isUsingMock: Boolean,
+    onRefresh: () -> Unit
+) {
+    var selectedTab by remember { mutableStateOf(1) } // Default: Minggu Ini
+
+    val scrollState = rememberLazyListState()
+
+    // Sync SwipeRefreshLayout state from MainActivity to only be enabled when at top
+    val context = LocalContext.current
+    LaunchedEffect(scrollState.firstVisibleItemIndex, scrollState.firstVisibleItemScrollOffset) {
+        val isAtTop = scrollState.firstVisibleItemIndex == 0 && scrollState.firstVisibleItemScrollOffset == 0
+        try {
+            (context as? MainActivity)?.findViewById<androidx.swiperefreshlayout.widget.SwipeRefreshLayout>(R.id.swipeRefresh)?.isEnabled = isAtTop
+        } catch (e: Exception) {
+            // Silently fail if not in MainActivity context (e.g. Preview)
+        }
     }
 
     Box(
@@ -134,6 +171,7 @@ fun LaporanScreen(viewModel: ReportViewModel, prefManager: PreferenceManager) {
             }
 
             LazyColumn(
+                state = scrollState,
                 modifier = Modifier.fillMaxSize(),
                 contentPadding = PaddingValues(bottom = 24.dp)
             ) {
@@ -198,16 +236,55 @@ fun LaporanScreen(viewModel: ReportViewModel, prefManager: PreferenceManager) {
                 )
                 Spacer(modifier = Modifier.height(8.dp))
                 Button(
-                    onClick = {
-                        val token = prefManager.getToken() ?: ""
-                        viewModel.loadDashboardReports(token, forceRefresh = true)
-                    },
+                    onClick = onRefresh,
                     colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF653DA7))
                 ) {
                     Text("Coba Lagi")
                 }
             }
         }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun LaporanScreenPreview() {
+    KasirAppTheme {
+        // Mock data for preview
+        val mockSummary = ReportSummary(
+            totalPendapatan = 1500000.0,
+            pendapatanVsSebelumnya = PendapatanVsSebelumnya(1200000.0, 25.0),
+            totalTransaksi = 42,
+            rataRataKeranjang = 35714.0,
+            trenPenjualan = emptyList(),
+            produkTerlaris = listOf(
+                ProdukTerlaris("Kopi Kenangan", 20),
+                ProdukTerlaris("Roti Bakar", 15)
+            ),
+            transaksiTerakhir = listOf(
+                TransaksiTerakhir(1, "SALE", 50000.0, "2023-10-01 10:00:00")
+            )
+        )
+        
+        val mockData = DashboardReportData(
+            hariIni = mockSummary,
+            mingguIni = mockSummary,
+            bulanIni = mockSummary,
+            tahunIni = mockSummary,
+            sepanjangMasa = mockSummary,
+            grafikData = GrafikData(
+                mingguIni = GrafikPeriod(listOf("Sen", "Sel"), listOf(100.0, 200.0)),
+                bulanIni = GrafikPeriod(listOf("M1", "M2"), listOf(1000.0, 2000.0)),
+                tahunIni = GrafikPeriod(listOf("Jan", "Feb"), listOf(10000.0, 20000.0))
+            )
+        )
+
+        LaporanContent(
+            reportData = mockData,
+            isLoading = false,
+            isUsingMock = true,
+            onRefresh = {}
+        )
     }
 }
 
@@ -248,21 +325,21 @@ fun DashboardHeader(isUsingMock: Boolean) {
                 }
                 
                 // Badge Status
-                Box(
-                    modifier = Modifier
-                        .background(
-                            if (isUsingMock) Color(0xFFFF9800) else Color(0xFF10B981),
-                            shape = RoundedCornerShape(50)
-                        )
-                        .padding(horizontal = 12.dp, vertical = 6.dp)
-                ) {
-                    Text(
-                        text = if (isUsingMock) "Mode Demo" else "Sinkron",
-                        color = Color.White,
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Bold
-                    )
-                }
+//                Box(
+//                    modifier = Modifier
+//                        .background(
+//                            if (isUsingMock) Color(0xFFFF9800) else Color(0xFF10B981),
+//                            shape = RoundedCornerShape(50)
+//                        )
+//                        .padding(horizontal = 12.dp, vertical = 6.dp)
+//                ) {
+//                    Text(
+//                        text = if (isUsingMock) "Mode Demo" else "Sinkron",
+//                        color = Color.White,
+//                        fontSize = 10.sp,
+//                        fontWeight = FontWeight.Bold
+//                    )
+//                }
             }
         }
     }
