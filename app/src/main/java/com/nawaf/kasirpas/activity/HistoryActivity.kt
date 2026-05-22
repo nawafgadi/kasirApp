@@ -85,34 +85,44 @@ fun HistoryScreen(onBack: () -> Unit, prefManager: PreferenceManager) {
     var lastPage by remember { mutableStateOf(1) }
     var nextPageUrl by remember { mutableStateOf<String?>(null) }
     var isLoading by remember { mutableStateOf(false) }
+    var lastLoadedPage by remember { mutableStateOf(0) }
 
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
 
-    fun fetchHistory(url: String? = null, isRefresh: Boolean = false) {
+    fun fetchHistory(pageToLoad: Int = 1, isRefresh: Boolean = false) {
         val token = prefManager.getToken() ?: return
         if (isLoading) return
-        
+
+        // Prevent loading the same page multiple times unless refreshing
+        if (!isRefresh && pageToLoad <= lastLoadedPage) return
+
         isLoading = true
+        if (isRefresh) {
+            lastLoadedPage = 1
+        } else {
+            lastLoadedPage = pageToLoad
+        }
+
         scope.launch {
             try {
-                val response = if (url != null) {
-                    RetrofitClient.reportApiService.getSalesHistoryNextPage("Bearer $token", url)
-                } else {
-                    RetrofitClient.reportApiService.getSalesHistory(
-                        token = "Bearer $token",
-                        period = currentPeriod,
-                        search = searchQuery.ifEmpty { null },
-                        page = 1
-                    )
-                }
+                val response = RetrofitClient.reportApiService.getSalesHistory(
+                    token = "Bearer $token",
+                    period = currentPeriod,
+                    search = searchQuery.ifEmpty { null },
+                    perPage = 10,
+                    page = pageToLoad
+                )
                 if (response.isSuccessful) {
                     val data = response.body()?.data
                     data?.let {
                         if (isRefresh) {
                             transactions = it.transactions
                         } else {
-                            val newTrx = it.transactions.filter { nt -> transactions.none { t -> t.id == nt.id } }
+                            // Filter duplicates just in case
+                            val existingIds = transactions.map { t -> t.id }.toSet()
+                            val newTrx =
+                                it.transactions.filter { nt -> !existingIds.contains(nt.id) }
                             transactions = transactions + newTrx
                         }
                         currentPage = it.currentPage
@@ -129,28 +139,28 @@ fun HistoryScreen(onBack: () -> Unit, prefManager: PreferenceManager) {
     }
 
     LaunchedEffect(currentPeriod) {
-        fetchHistory(null, true)
+        fetchHistory(1, true)
     }
 
     LaunchedEffect(searchQuery) {
         if (searchQuery.isNotEmpty()) {
-            delay(600) // Slightly longer debounce for "premium" feel
-            fetchHistory(null, true)
+            delay(600)
+            fetchHistory(1, true)
         } else if (transactions.isNotEmpty() || currentPage > 1) {
-            fetchHistory(null, true)
+            fetchHistory(1, true)
         }
     }
 
-    val shouldLoadMore = remember {
-        derivedStateOf {
-            val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull() ?: return@derivedStateOf false
-            lastVisibleItem.index >= listState.layoutInfo.totalItemsCount - 2 && nextPageUrl != null && !isLoading
-        }
-    }
-
-    LaunchedEffect(shouldLoadMore.value) {
-        if (shouldLoadMore.value) {
-            fetchHistory(nextPageUrl)
+    // Infinite Scroll Logic: Trigger when reaching near the end
+    LaunchedEffect(listState) {
+        snapshotFlow {
+            val lastVisibleItem = listState.layoutInfo.visibleItemsInfo.lastOrNull()
+            lastVisibleItem?.index
+        }.collect { lastIndex ->
+            val totalItems = listState.layoutInfo.totalItemsCount
+            if (lastIndex != null && lastIndex >= totalItems - 5 && !isLoading && currentPage < lastPage) {
+                fetchHistory(currentPage + 1, false)
+            }
         }
     }
 
@@ -177,7 +187,12 @@ fun HistoryScreen(onBack: () -> Unit, prefManager: PreferenceManager) {
                                     .size(40.dp)
                                     .background(SurfaceContainerLow, CircleShape)
                             ) {
-                                Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = OnSurfaceColor, modifier = Modifier.size(20.dp))
+                                Icon(
+                                    Icons.Default.ArrowBack,
+                                    contentDescription = "Back",
+                                    tint = OnSurfaceColor,
+                                    modifier = Modifier.size(20.dp)
+                                )
                             }
                             Spacer(modifier = Modifier.width(16.dp))
                             Text(
@@ -189,10 +204,17 @@ fun HistoryScreen(onBack: () -> Unit, prefManager: PreferenceManager) {
                             )
                         }
                         IconButton(onClick = { /* Filter */ }) {
-                            Icon(Icons.AutoMirrored.Filled.List, contentDescription = "Filter", tint = OnSurfaceColor)
+                            Icon(
+                                Icons.AutoMirrored.Filled.List,
+                                contentDescription = "Filter",
+                                tint = OnSurfaceColor
+                            )
                         }
                     }
-                    HorizontalDivider(color = OutlineVariantColor.copy(alpha = 0.5f), thickness = 1.dp)
+                    HorizontalDivider(
+                        color = OutlineVariantColor.copy(alpha = 0.5f),
+                        thickness = 1.dp
+                    )
                 }
             }
         },
@@ -205,7 +227,12 @@ fun HistoryScreen(onBack: () -> Unit, prefManager: PreferenceManager) {
         ) {
             LazyColumn(
                 state = listState,
-                contentPadding = PaddingValues(top = 20.dp, start = 20.dp, end = 20.dp, bottom = 40.dp),
+                contentPadding = PaddingValues(
+                    top = 20.dp,
+                    start = 20.dp,
+                    end = 20.dp,
+                    bottom = 40.dp
+                ),
                 verticalArrangement = Arrangement.spacedBy(20.dp),
                 modifier = Modifier.fillMaxSize()
             ) {
@@ -221,7 +248,12 @@ fun HistoryScreen(onBack: () -> Unit, prefManager: PreferenceManager) {
                         contentAlignment = Alignment.CenterStart
                     ) {
                         Row(verticalAlignment = Alignment.CenterVertically) {
-                            Icon(Icons.Default.Search, contentDescription = null, tint = OutlineColor, modifier = Modifier.size(20.dp))
+                            Icon(
+                                Icons.Default.Search,
+                                contentDescription = null,
+                                tint = OutlineColor,
+                                modifier = Modifier.size(20.dp)
+                            )
                             Spacer(modifier = Modifier.width(12.dp))
                             BasicTextField(
                                 value = searchQuery,
@@ -230,7 +262,11 @@ fun HistoryScreen(onBack: () -> Unit, prefManager: PreferenceManager) {
                                 textStyle = TextStyle(fontSize = 15.sp, color = OnSurfaceColor),
                                 decorationBox = { innerTextField ->
                                     if (searchQuery.isEmpty()) {
-                                        Text(text = "Cari transaksi atau tanggal...", fontSize = 15.sp, color = OutlineColor.copy(alpha = 0.7f))
+                                        Text(
+                                            text = "Cari transaksi atau tanggal...",
+                                            fontSize = 15.sp,
+                                            color = OutlineColor.copy(alpha = 0.7f)
+                                        )
                                     }
                                     innerTextField()
                                 }
@@ -288,12 +324,21 @@ fun HistoryScreen(onBack: () -> Unit, prefManager: PreferenceManager) {
                 items(transactions, key = { it.id }) { transaction ->
                     PremiumTransactionCard(transaction)
                 }
-                
+
                 // Loading indicator
                 if (isLoading) {
                     item {
-                        Box(modifier = Modifier.fillMaxWidth().padding(vertical = 20.dp), contentAlignment = Alignment.Center) {
-                            CircularProgressIndicator(modifier = Modifier.size(28.dp), color = PrimaryColor, strokeWidth = 3.dp)
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(vertical = 20.dp),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(
+                                modifier = Modifier.size(28.dp),
+                                color = PrimaryColor,
+                                strokeWidth = 3.dp
+                            )
                         }
                     }
                 }
@@ -303,8 +348,8 @@ fun HistoryScreen(onBack: () -> Unit, prefManager: PreferenceManager) {
                     PaginationSection(
                         currentPage = currentPage,
                         lastPage = lastPage,
-                        canLoadMore = nextPageUrl != null,
-                        onLoadMore = { fetchHistory(nextPageUrl) }
+                        canLoadMore = currentPage < lastPage,
+                        onLoadMore = { fetchHistory(currentPage + 1, false) }
                     )
                 }
             }
@@ -350,71 +395,100 @@ fun PremiumFilterChip(
 @Composable
 fun PremiumTransactionCard(transaction: TransactionHistory) {
     val formatter = NumberFormat.getCurrencyInstance(Locale("in", "ID"))
-    
+
+    // Logika penentuan warna berdasarkan tipe transaksi
+    val isSale = transaction.trxType.equals("SALE", ignoreCase = true)
+    val accentColor = if (isSale) TertiaryColor else Color(0xFFF59E0B) // Cyan vs Amber
+    val badgeBgColor = if (isSale) TertiaryFixedColor.copy(alpha = 0.5f) else Color(0xFFFFE9D1)
+
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .shadow(elevation = 8.dp, shape = RoundedCornerShape(20.dp), spotColor = Color.Black.copy(alpha = 0.1f)),
+            .shadow(
+                elevation = 8.dp,
+                shape = RoundedCornerShape(20.dp),
+                spotColor = Color.Black.copy(alpha = 0.1f)
+            ),
         color = Color.White,
         shape = RoundedCornerShape(20.dp)
     ) {
-        Row(modifier = Modifier.fillMaxWidth().height(IntrinsicSize.Min)) {
-            // Vertical accent line
+        Row(modifier = Modifier
+            .fillMaxWidth()
+            .height(IntrinsicSize.Min)) {
+            // Garis aksen vertikal dinamis
             Box(
                 modifier = Modifier
                     .fillMaxHeight()
                     .width(6.dp)
-                    .background(TertiaryColor)
+                    .background(accentColor)
             )
-            
-            Column(modifier = Modifier.padding(18.dp).weight(1f)) {
+
+            Column(modifier = Modifier
+                .padding(18.dp)
+                .weight(1f)) {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Column {
+                        // Badge dinamis (SALE / PURCHASE)
                         Box(
                             modifier = Modifier
                                 .clip(RoundedCornerShape(6.dp))
-                                .background(TertiaryFixedColor.copy(alpha = 0.5f))
+                                .background(badgeBgColor)
                                 .padding(horizontal = 8.dp, vertical = 4.dp)
                         ) {
                             Text(
-                                text = "SALE",
+                                text = transaction.trxType.uppercase(),
                                 fontSize = 10.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = TertiaryColor,
+                                color = accentColor,
                                 letterSpacing = 0.5.sp
                             )
                         }
                     }
                     Text(
-                        text = formatter.format(transaction.totalAmount).replace("Rp", "Rp ").replace(",00", ""),
+                        text = formatter.format(transaction.totalAmount).replace("Rp", "Rp ")
+                            .replace(",00", ""),
                         fontSize = 18.sp,
                         fontWeight = FontWeight.ExtraBold,
                         color = PrimaryColor
                     )
                 }
-                
                 Spacer(modifier = Modifier.height(14.dp))
-                
+
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.Info, contentDescription = null, modifier = Modifier.size(14.dp), tint = GreyTextColor)
+                    Icon(
+                        Icons.Default.Info,
+                        contentDescription = null,
+                        modifier = Modifier.size(14.dp),
+                        tint = GreyTextColor
+                    )
                     Spacer(modifier = Modifier.width(6.dp))
-                    Text(text = transaction.trxDate, fontSize = 12.sp, color = GreyTextColor, fontWeight = FontWeight.Light)
+                    Text(
+                        text = transaction.trxDate,
+                        fontSize = 12.sp,
+                        color = GreyTextColor,
+                        fontWeight = FontWeight.Light
+                    )
                 }
-                
+
                 Spacer(modifier = Modifier.height(4.dp))
-                
+
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(Icons.Default.Person, contentDescription = null, modifier = Modifier.size(14.dp), tint = GreyTextColor)
+                    Icon(
+                        Icons.Default.Person,
+                        contentDescription = null,
+                        modifier = Modifier.size(14.dp),
+                        tint = GreyTextColor
+                    )
                     Spacer(modifier = Modifier.width(6.dp))
                     Text(text = transaction.user.name, fontSize = 12.sp, color = GreyTextColor)
                 }
-                
+
                 Spacer(modifier = Modifier.height(16.dp))
-                
+
                 // Product list in a light gray container
                 Column(
                     modifier = Modifier
@@ -435,7 +509,8 @@ fun PremiumTransactionCard(transaction: TransactionHistory) {
                                 color = OnSurfaceColor.copy(alpha = 0.8f)
                             )
                             Text(
-                                text = formatter.format(item.product.price).replace("Rp", "Rp ").replace(",00", ""),
+                                text = formatter.format(item.product.price).replace("Rp", "Rp ")
+                                    .replace(",00", ""),
                                 fontSize = 12.sp,
                                 color = OnSurfaceColor.copy(alpha = 0.6f)
                             )
@@ -451,7 +526,12 @@ fun PremiumTransactionCard(transaction: TransactionHistory) {
 }
 
 @Composable
-fun PaginationSection(currentPage: Int, lastPage: Int, canLoadMore: Boolean, onLoadMore: () -> Unit) {
+fun PaginationSection(
+    currentPage: Int,
+    lastPage: Int,
+    canLoadMore: Boolean,
+    onLoadMore: () -> Unit
+) {
     Column(
         modifier = Modifier
             .fillMaxWidth()
@@ -477,9 +557,19 @@ fun PaginationSection(currentPage: Int, lastPage: Int, canLoadMore: Boolean, onL
                 border = androidx.compose.foundation.BorderStroke(1.dp, OutlineVariantColor),
                 elevation = ButtonDefaults.buttonElevation(defaultElevation = 0.dp)
             ) {
-                Text(text = "Muat Lebih Banyak", color = PrimaryColor, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                Text(
+                    text = "Muat Lebih Banyak",
+                    color = PrimaryColor,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 14.sp
+                )
                 Spacer(modifier = Modifier.width(8.dp))
-                Icon(Icons.Default.KeyboardArrowDown, contentDescription = null, tint = PrimaryColor, modifier = Modifier.size(20.dp))
+                Icon(
+                    Icons.Default.KeyboardArrowDown,
+                    contentDescription = null,
+                    tint = PrimaryColor,
+                    modifier = Modifier.size(20.dp)
+                )
             }
         }
     }
