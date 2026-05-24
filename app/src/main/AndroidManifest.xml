@@ -16,6 +16,11 @@
         android:usesCleartextTraffic="true"
         tools:targetApi="31">
         <activity
+            android:name=".activity.ProfileActivity"
+            android:exported="false"
+            android:label="@string/title_activity_profile"
+            android:theme="@style/Theme.KasirPAS" />
+        <activity
             android:name=".activity.HistoryActivity"
             android:exported="false"
             android:label="@string/title_activity_history"
