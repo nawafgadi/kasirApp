@@ -39,14 +39,7 @@ android {
 
     buildFeatures {
         viewBinding = true
-
-        // TAMBAH INI
         compose = true
-    }
-
-    // TAMBAH INI
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.14"
     }
 }
 
@@ -79,7 +72,7 @@ dependencies {
     // COMPOSE
     // =========================
 
-    implementation(platform("androidx.compose:compose-bom:2024.09.00"))
+    implementation(platform(libs.androidx.compose.bom))
 
     implementation("androidx.activity:activity-compose:1.9.2")
 
@@ -87,12 +80,19 @@ dependencies {
 
     implementation("androidx.compose.material3:material3")
     implementation("androidx.compose.material:material-icons-extended")
+    implementation("androidx.constraintlayout:constraintlayout-compose:1.1.1")
+    implementation("com.airbnb.android:lottie-compose:6.7.1")
 
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation(libs.androidx.activity.ktx)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.navigation.fragment.ktx)
     implementation(libs.androidx.navigation.ui.ktx)
+    
+    // Testing
+    testImplementation(libs.junit)
+    androidTestImplementation(libs.androidx.junit)
+    androidTestImplementation(libs.androidx.espresso.core)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
 

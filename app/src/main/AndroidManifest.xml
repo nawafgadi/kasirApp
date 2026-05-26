@@ -14,7 +14,39 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.KasirPAS"
         android:usesCleartextTraffic="true"
-        tools:targetApi="31">
+        tools:targetApi="35">
+
+        <!-- Entry Point: SplashActivity -->
+        <activity
+            android:name=".activity.SplashActivity"
+            android:exported="true"
+            android:theme="@style/Theme.KasirPAS">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+        <!-- Main Dashboard -->
+        <activity
+            android:name=".MainActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+
+        <!-- Auth & Onboarding (Compose) -->
+        <activity
+            android:name=".activity.LoginActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".activity.RegisterActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustResize" />
+        <activity
+            android:name=".activity.OnboardingActivity"
+            android:exported="false" />
+
+        <!-- Management & Features -->
         <activity
             android:name=".activity.ProfileActivity"
             android:exported="false"
@@ -23,44 +55,25 @@
         <activity
             android:name=".activity.HistoryActivity"
             android:exported="false"
-            android:label="@string/title_activity_history"
-            android:theme="@style/Theme.KasirPAS" />
+            android:label="@string/title_activity_history" />
         <activity
-            android:name=".activity.AiBussyHoursActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activity.AiStocksActivity"
+            android:name=".activity.KelolaProductActivity"
             android:exported="false" />
         <activity
             android:name=".activity.KelolaKategoriActivity"
             android:exported="false" />
         <activity
-            android:name=".activity.KelolaProductActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activity.SplashActivity"
-            android:exported="true">
-            <intent-filter>
-                <action android:name="android.intent.action.MAIN" />
-
-                <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
-        </activity>
-        <activity
-            android:name=".activity.RegisterActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activity.OnboardingActivity"
-            android:exported="false" />
-        <activity
-            android:name=".activity.LoginActivity"
-            android:exported="false" />
-        <activity
             android:name=".activity.BillingActivity"
             android:exported="false" />
+
+        <!-- AI Features -->
         <activity
-            android:name=".MainActivity"
+            android:name=".activity.AiStocksActivity"
             android:exported="false" />
+        <activity
+            android:name=".activity.AiBussyHoursActivity"
+            android:exported="false" />
+
     </application>
 
 </manifest>
