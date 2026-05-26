@@ -21,7 +21,6 @@ import androidx.lifecycle.lifecycleScope
 import coil.load
 import coil.transform.CircleCropTransformation
 import com.nawaf.kasirpas.activity.BillingActivity
-import com.nawaf.kasirpas.activity.OnboardingActivity
 import com.nawaf.kasirpas.activity.ProfileActivity
 import com.nawaf.kasirpas.activity.main.CheckoutFragment
 import com.nawaf.kasirpas.activity.main.KasirFragment
@@ -57,12 +56,6 @@ class MainActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         
         prefManager = PreferenceManager(this)
-        
-        if (!prefManager.isOnboarded()) {
-            startActivity(Intent(this, OnboardingActivity::class.java))
-            finish()
-            return
-        }
 
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)

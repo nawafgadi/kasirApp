@@ -55,29 +55,37 @@ class SplashActivity : AppCompatActivity() {
 
         lifecycleScope.launch {
             delay(2000)
-            checkSessionAndNavigate()
+            navigateNext()
         }
     }
 
-    private suspend fun checkSessionAndNavigate() {
-        // 1. Cek apakah ada token dan status login
-        val token = prefManager.getToken()
-        if (token == null || !prefManager.isLogin()) {
-            startActivity(Intent(this, LoginActivity::class.java))
+    private suspend fun navigateNext() {
+        // 1. Pertama: Cek onboarding (first install)
+        //    Jika belum pernah onboarding, langsung ke OnboardingActivity.
+        //    Onboarding hanya tampil SEKALI saat pertama kali install.
+        if (!prefManager.isOnboarded()) {
+            startActivity(Intent(this, OnboardingActivity::class.java))
             finish()
             return
         }
 
-        // 2. Verifikasi Session ke Backend
+        // 2. Kedua: Cek apakah user sudah login
+        val token = prefManager.getToken()
+        if (token == null || !prefManager.isLogin()) {
+            navigateToLogin()
+            finish()
+            return
+        }
+
+        // 3. Ketiga: Verifikasi session ke backend (token masih valid?)
         try {
             val response = RetrofitClient.authApi.getSession("Bearer $token")
-            
+
             if (response.isSuccessful) {
                 val body = response.body()
                 if (body?.user != null) {
                     prefManager.saveUser(body.user)
-                    // Jika login valid, baru cek onboarding
-                    navigateToNext()
+                    startActivity(Intent(this, MainActivity::class.java))
                 } else {
                     navigateToLogin()
                 }
@@ -85,18 +93,10 @@ class SplashActivity : AppCompatActivity() {
                 navigateToLogin()
             }
         } catch (e: Exception) {
-            // Jika error koneksi, tetap lanjut ke halaman berikutnya (mode offline)
-            navigateToNext()
+            // Jika error koneksi, tetap lanjut ke MainActivity (mode offline)
+            startActivity(Intent(this, MainActivity::class.java))
         } finally {
             finish()
-        }
-    }
-
-    private fun navigateToNext() {
-        if (!prefManager.isOnboarded()) {
-            startActivity(Intent(this, OnboardingActivity::class.java))
-        } else {
-            startActivity(Intent(this, MainActivity::class.java))
         }
     }
 

@@ -654,9 +654,9 @@ fun SuccessLayout(
         contentPadding = PaddingValues(16.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
-        // Seasonal insight card
         run.seasonalInsight?.let { insight ->
-            if (!insight.insight.isNullOrEmpty()) {
+            val adviceText = insight.insight
+            if (!adviceText.isNullOrEmpty()) {
                 item {
                     Card(
                         shape = RoundedCornerShape(16.dp),
@@ -693,7 +693,7 @@ fun SuccessLayout(
                             }
 
                             Text(
-                                text = insight.insight,
+                                text = adviceText,
                                 style = MaterialTheme.typography.bodyMedium,
                                 color = Color(0xFF312E81),
                                 lineHeight = 20.sp
@@ -807,8 +807,10 @@ fun RecommendationItem(
 
                 // Urgency Badge
                 val (badgeColor, badgeTextColor, badgeLabel) = when (recommendation.riskLevel?.uppercase()) {
+                    "CRITICAL" -> Triple(Color(0xFFFEE2E2), Color(0xFFEF4444), recommendation.restockLabel ?: "Critical")
                     "HIGH" -> Triple(Color(0xFFFEE2E2), Color(0xFFEF4444), recommendation.restockLabel ?: "High Risk")
                     "MEDIUM" -> Triple(Color(0xFFFEF3C7), Color(0xFFF59E0B), recommendation.restockLabel ?: "Medium Risk")
+                    "NORMAL" -> Triple(Color(0xFFD1FAE5), Color(0xFF10B981), recommendation.restockLabel ?: "Normal")
                     else -> Triple(Color(0xFFD1FAE5), Color(0xFF10B981), recommendation.restockLabel ?: "Safe")
                 }
 
@@ -877,7 +879,7 @@ fun RecommendationItem(
                     )
                     recommendation.estimatedEmptyDate?.let { date ->
                         Text(
-                            text = "Estimasi habis: $date (${recommendation.daysUntilEmpty} hari lagi)",
+                            text = "Estimasi habis: $date" + (recommendation.daysUntilEmpty?.let { " ($it hari lagi)" } ?: ""),
                             fontSize = 11.sp,
                             color = Color(0xFF64748B)
                         )
@@ -925,7 +927,7 @@ fun RecommendationItem(
                         color = textActionColor
                     )
                 }
-            } else {
+            } else if (recommendation.riskLevel?.uppercase() != "NORMAL") {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(10.dp)
@@ -983,8 +985,8 @@ fun RestockDialog(
     onConfirm: (Int) -> Unit
 ) {
     // Range restock minimum ke maksimum
-    val minVal = recommendation.restockMin.toFloat().coerceAtLeast(1f)
-    val maxVal = recommendation.restockMax.toFloat().coerceAtLeast(minVal)
+    val minVal = (recommendation.restockMin ?: 1).toFloat().coerceAtLeast(1f)
+    val maxVal = (recommendation.restockMax ?: minVal.toInt()).toFloat().coerceAtLeast(minVal)
     val defaultVal = recommendation.recommendRestockQty.toFloat().coerceIn(minVal, maxVal)
 
     var selectedQty by remember { mutableStateOf(defaultVal.toInt()) }
@@ -1028,7 +1030,7 @@ fun RestockDialog(
                 ) {
                     Column {
                         Text("MINIMAL", fontSize = 10.sp, color = Color(0xFF94A3B8), fontWeight = FontWeight.Bold)
-                        Text("${recommendation.restockMin} Unit", fontWeight = FontWeight.Bold, color = Color(0xFF334155))
+                        Text("${recommendation.restockMin ?: 0} Unit", fontWeight = FontWeight.Bold, color = Color(0xFF334155))
                     }
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
                         Text("AI DEFAULT", fontSize = 10.sp, color = Color(0xFF94A3B8), fontWeight = FontWeight.Bold)
@@ -1036,7 +1038,7 @@ fun RestockDialog(
                     }
                     Column(horizontalAlignment = Alignment.End) {
                         Text("MAKSIMAL", fontSize = 10.sp, color = Color(0xFF94A3B8), fontWeight = FontWeight.Bold)
-                        Text("${recommendation.restockMax} Unit", fontWeight = FontWeight.Bold, color = Color(0xFF334155))
+                        Text("${recommendation.restockMax ?: 0} Unit", fontWeight = FontWeight.Bold, color = Color(0xFF334155))
                     }
                 }
 
@@ -1189,10 +1191,10 @@ fun AiStocksScreenPreview() {
                 generatedAt = "2026-05-21T16:22:29.000000Z",
                 errorMessage = null,
                 seasonalInsight = com.nawaf.kasirpas.model.SeasonalInsight(
-                    insight = "Penjualan meningkat sebesar 25% pada akhir pekan untuk kategori minuman segar.",
-                    trends = listOf("Weekend spike", "Warm weather preference")
+                    insightOverride = "Penjualan meningkat sebesar 25% pada akhir pekan untuk kategori minuman segar.",
+                    trendsOverride = listOf("Weekend spike", "Warm weather preference")
                 ),
-                totalProducts = 1,
+                totalProducts = 2,
                 createdAt = "2026-05-21T16:22:29.000000Z",
                 updatedAt = "2026-05-21T16:22:29.000000Z",
                 aiRecommendations = listOf(
@@ -1209,13 +1211,39 @@ fun AiStocksScreenPreview() {
                         restockMax = 50,
                         restockLabel = "High Restock Needed",
                         targetDaysCoverage = 14,
-                        riskLevel = "HIGH",
+                        riskLevel = "CRITICAL",
                         urgencyDescription = "Stok kritis akan habis dalam kurun waktu 1 hari.",
                         daysUntilEmpty = 1,
                         estimatedEmptyDate = "2026-05-22",
                         risk = "Kehilangan potensi omset harian akibat kehabisan stok.",
                         description = "Stok kritis akan habis dalam kurun waktu 1 hari.",
                         riskPoint = 95,
+                        stockTimeline = listOf(),
+                        createdAt = "2026-05-21T16:22:29.000000Z",
+                        updatedAt = "2026-05-21T16:22:29.000000Z",
+                        product = null,
+                        aiRecommendationActions = listOf()
+                    ),
+                    AiRecommendation(
+                        id = 46,
+                        aiRunId = 12,
+                        productId = 9,
+                        productName = "Minyak Goreng Bimoli 2L",
+                        productPrice = "34000.00",
+                        currentStock = 45,
+                        avgDailySales = "1.20",
+                        recommendRestockQty = 0,
+                        restockMin = 0,
+                        restockMax = 0,
+                        restockLabel = "Stok Aman",
+                        targetDaysCoverage = null,
+                        riskLevel = "NORMAL",
+                        urgencyDescription = "Stok aman dan melimpah.",
+                        daysUntilEmpty = null,
+                        estimatedEmptyDate = null,
+                        risk = "Normal",
+                        description = "Stok aman dan melimpah.",
+                        riskPoint = 10,
                         stockTimeline = listOf(),
                         createdAt = "2026-05-21T16:22:29.000000Z",
                         updatedAt = "2026-05-21T16:22:29.000000Z",

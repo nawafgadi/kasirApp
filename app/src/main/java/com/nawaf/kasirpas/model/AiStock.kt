@@ -17,8 +17,25 @@ data class AiStockRun(
 )
 
 data class SeasonalInsight(
-    val insight: String?,
+    @SerializedName("seasonal_advice") val seasonalAdvice: String? = null,
+    @SerializedName("has_upcoming_holiday") val hasUpcomingHoliday: Boolean? = null,
+    @SerializedName("upcoming_holidays") val upcomingHolidays: List<UpcomingHoliday>? = null,
+    val source: String? = null,
+    val insightOverride: String? = null,
+    val trendsOverride: List<String>? = null
+) {
+    val insight: String?
+        get() = seasonalAdvice ?: insightOverride
+
     val trends: List<String>?
+        get() = upcomingHolidays?.map { "${it.name} (${it.daysAway} hari)" } ?: trendsOverride
+}
+
+data class UpcomingHoliday(
+    val date: String,
+    val name: String,
+    @SerializedName("days_away") val daysAway: Int,
+    val impact: String
 )
 
 data class AiRecommendation(
@@ -30,13 +47,13 @@ data class AiRecommendation(
     @SerializedName("current_stock") val currentStock: Int,
     @SerializedName("avg_daily_sales") val avgDailySales: String,
     @SerializedName("recommed_restok_qty") val recommendRestockQty: Int,
-    @SerializedName("restock_min") val restockMin: Int,
-    @SerializedName("restock_max") val restockMax: Int,
+    @SerializedName("restock_min") val restockMin: Int?,
+    @SerializedName("restock_max") val restockMax: Int?,
     @SerializedName("restock_label") val restockLabel: String?,
-    @SerializedName("target_days_coverage") val targetDaysCoverage: Int,
-    @SerializedName("risk_level") val riskLevel: String?, // "HIGH", "MEDIUM", "LOW"
+    @SerializedName("target_days_coverage") val targetDaysCoverage: Int?,
+    @SerializedName("risk_level") val riskLevel: String?,
     @SerializedName("urgency_description") val urgencyDescription: String?,
-    @SerializedName("days_until_emty") val daysUntilEmpty: Int,
+    @SerializedName("days_until_emty") val daysUntilEmpty: Int?,
     @SerializedName("estimated_emty_date") val estimatedEmptyDate: String?,
     val risk: String?,
     val description: String?,
