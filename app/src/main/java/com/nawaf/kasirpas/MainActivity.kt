@@ -21,7 +21,6 @@ import androidx.lifecycle.lifecycleScope
 import coil.load
 import coil.transform.CircleCropTransformation
 import com.nawaf.kasirpas.activity.BillingActivity
-import com.nawaf.kasirpas.activity.HistoryActivity
 import com.nawaf.kasirpas.activity.OnboardingActivity
 import com.nawaf.kasirpas.activity.ProfileActivity
 import com.nawaf.kasirpas.activity.main.CheckoutFragment
@@ -109,10 +108,6 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun setupHeader() {
-        binding.btnTestHistory.setOnClickListener {
-            startActivity(Intent(this, HistoryActivity::class.java))
-        }
-
         binding.btnUpgrade.setOnClickListener {
             startActivity(Intent(this, BillingActivity::class.java))
         }

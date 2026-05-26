@@ -957,10 +957,18 @@ fun RecommendationItem(
                         Icon(
                             imageVector = Icons.Default.Done,
                             contentDescription = "Agree",
-                            modifier = Modifier.size(16.dp)
+                            modifier = Modifier.size(16.dp),
+                            tint = Color.White
                         )
+
                         Spacer(modifier = Modifier.width(6.dp))
-                        Text("Setuju", fontWeight = FontWeight.Bold, fontSize = 13.sp)
+
+                        Text(
+                            "Setuju",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 13.sp,
+                            color = Color.White
+                        )
                     }
                 }
             }
