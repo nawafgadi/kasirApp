@@ -272,43 +272,162 @@ fun SlideOneVisual() {
         // Background Glass Card
         Box(
             modifier = Modifier
-                .size(230.dp, 170.dp)
-                .rotate(-12f)
-                .offset(y = (-25).dp)
+                .size(240.dp, 180.dp)
+                .rotate(-10f)
+                .offset(x = (-15).dp, y = (-20).dp)
                 .background(LuxuryGlass, RoundedCornerShape(24.dp))
                 .border(BorderStroke(0.5.dp, Color.White.copy(alpha = 0.5f)), RoundedCornerShape(24.dp))
-                .blur(4.dp)
-        )
+        ) {
+            // Faint content inside the background card for depth
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp)
+                    .blur(1.dp)
+            ) {
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Box(
+                        modifier = Modifier
+                            .size(30.dp)
+                            .background(Color.White.copy(alpha = 0.6f), CircleShape)
+                    )
+                    Spacer(Modifier.width(10.dp))
+                    Box(
+                        modifier = Modifier
+                            .size(80.dp, 10.dp)
+                            .background(Color.White.copy(alpha = 0.5f), RoundedCornerShape(4.dp))
+                    )
+                }
+                Spacer(Modifier.height(15.dp))
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(1.dp)
+                        .background(Color.White.copy(alpha = 0.3f))
+                )
+                Spacer(Modifier.height(15.dp))
+                Box(
+                    modifier = Modifier
+                        .size(120.dp, 8.dp)
+                        .background(Color.White.copy(alpha = 0.4f), RoundedCornerShape(4.dp))
+                )
+                Spacer(Modifier.height(10.dp))
+                Box(
+                    modifier = Modifier
+                        .size(90.dp, 8.dp)
+                        .background(Color.White.copy(alpha = 0.4f), RoundedCornerShape(4.dp))
+                )
+            }
+        }
+        
         // Main Foreground Card
         Surface(
             modifier = Modifier
-                .size(250.dp, 190.dp)
+                .size(260.dp, 210.dp)
                 .rotate(6f)
-                .shadow(32.dp, RoundedCornerShape(28.dp), spotColor = LuxuryPrimary.copy(alpha = 0.25f)),
-            shape = RoundedCornerShape(28.dp),
+                .shadow(24.dp, RoundedCornerShape(24.dp), spotColor = LuxuryPrimary.copy(alpha = 0.25f)),
+            shape = RoundedCornerShape(24.dp),
             color = Color.White,
             border = BorderStroke(0.5.dp, Color.White.copy(alpha = 0.5f))
         ) {
             Column(
-                modifier = Modifier.fillMaxSize().padding(20.dp),
-                horizontalAlignment = Alignment.Start
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.SpaceBetween
             ) {
-                Row(verticalAlignment = Alignment.CenterVertically) {
-                    Box(
-                        modifier = Modifier.size(44.dp).background(LuxuryPrimary.copy(0.1f), CircleShape),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(Icons.Rounded.Storefront, null, tint = LuxuryPrimary, modifier = Modifier.size(22.dp))
+                // Header
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(
+                            modifier = Modifier
+                                .size(36.dp)
+                                .background(LuxuryPrimary.copy(0.1f), CircleShape),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.Storefront,
+                                contentDescription = null,
+                                tint = LuxuryPrimary,
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column {
+                            Text(
+                                text = "NawafPOS",
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF2C2C2C)
+                            )
+                            Text(
+                                text = "Meja 04 • Baru saja",
+                                fontSize = 9.sp,
+                                color = Color.Gray
+                            )
+                        }
                     }
-                    Spacer(Modifier.width(14.dp))
-                    Column {
-                        Box(Modifier.size(90.dp, 10.dp).background(Color.LightGray.copy(0.3f), CircleShape))
-                        Spacer(Modifier.height(6.dp))
-                        Box(Modifier.size(50.dp, 8.dp).background(Color.LightGray.copy(0.2f), CircleShape))
+                    Box(
+                        modifier = Modifier
+                            .background(Color(0xFFE8F5E9), RoundedCornerShape(8.dp))
+                            .padding(horizontal = 8.dp, vertical = 4.dp)
+                    ) {
+                        Text(
+                            text = "Lunas",
+                            color = Color(0xFF2E7D32),
+                            fontSize = 9.sp,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
                 }
-                Spacer(Modifier.weight(1f))
-                Box(Modifier.fillMaxWidth().height(44.dp).background(LuxuryPrimary.copy(0.05f), RoundedCornerShape(12.dp)))
+
+                // Divider
+                HorizontalDivider(color = Color.LightGray.copy(alpha = 0.3f), thickness = 1.dp)
+
+                // Items list
+                Column(verticalArrangement = Arrangement.spacedBy(8.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(text = "2x Kopi Susu Aren", fontSize = 11.sp, color = Color(0xFF5C5C5C))
+                        Text(text = "Rp 36.000", fontSize = 11.sp, fontWeight = FontWeight.Medium, color = Color(0xFF2C2C2C))
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(text = "1x Croissant Cokelat", fontSize = 11.sp, color = Color(0xFF5C5C5C))
+                        Text(text = "Rp 22.000", fontSize = 11.sp, fontWeight = FontWeight.Medium, color = Color(0xFF2C2C2C))
+                    }
+                }
+
+                // Divider
+                HorizontalDivider(color = Color.LightGray.copy(alpha = 0.3f), thickness = 1.dp)
+
+                // Total
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = "Total Bayar",
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF2C2C2C)
+                    )
+                    Text(
+                        text = "Rp 58.000",
+                        fontSize = 15.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = LuxuryPrimary
+                    )
+                }
             }
         }
     }
@@ -316,44 +435,187 @@ fun SlideOneVisual() {
 
 @Composable
 fun SlideTwoVisual() {
-    Box(contentAlignment = Alignment.Center) {
+    Box(
+        contentAlignment = Alignment.Center,
+        modifier = Modifier.fillMaxWidth().height(260.dp)
+    ) {
+        // Main Dashboard Card
         Surface(
             modifier = Modifier
-                .offset(x = 110.dp, y = (-90).dp)
-                .shadow(16.dp, CircleShape),
-            shape = CircleShape,
-            color = LuxuryTertiary,
+                .size(270.dp, 210.dp)
+                .shadow(24.dp, RoundedCornerShape(24.dp), spotColor = LuxuryPrimary.copy(alpha = 0.2f)),
+            shape = RoundedCornerShape(24.dp),
+            color = Color.White,
             border = BorderStroke(0.5.dp, Color.White.copy(alpha = 0.5f))
         ) {
-            Text(
-                "AI Optimized",
-                color = Color.White,
-                fontSize = 11.sp,
-                fontWeight = FontWeight.ExtraBold,
-                modifier = Modifier.padding(horizontal = 14.dp, vertical = 7.dp)
-            )
-        }
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                // Header
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(
+                            modifier = Modifier
+                                .size(32.dp)
+                                .background(LuxuryPrimary.copy(0.1f), CircleShape),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.AutoGraph,
+                                contentDescription = null,
+                                tint = LuxuryPrimary,
+                                modifier = Modifier.size(16.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(8.dp))
+                        Column {
+                            Text(
+                                text = "Prediksi Tren AI",
+                                fontSize = 12.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF2C2C2C)
+                            )
+                            Text(
+                                text = "Minggu ini • Akurasi 98%",
+                                fontSize = 9.sp,
+                                color = Color.Gray
+                            )
+                        }
+                    }
+                    
+                    Text(
+                        text = "+42.5%",
+                        color = Color(0xFF2E7D32),
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                }
 
-        Row(
-            modifier = Modifier.height(200.dp),
-            verticalAlignment = Alignment.Bottom,
-            horizontalArrangement = Arrangement.spacedBy(14.dp)
-        ) {
-            listOf(0.4f, 0.7f, 1f, 0.6f, 0.9f).forEachIndexed { i, heightFraction ->
-                val animatedHeight by animateFloatAsState(
-                    targetValue = heightFraction,
-                    animationSpec = tween(1200, delayMillis = i * 150, easing = FastOutSlowInEasing),
-                    label = "chart"
-                )
+                // Chart Area
                 Box(
                     modifier = Modifier
-                        .width(28.dp)
-                        .fillMaxHeight(animatedHeight)
-                        .background(
-                            brush = Brush.verticalGradient(listOf(LuxuryPrimary, LuxuryPrimary.copy(0.4f))),
-                            shape = RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp)
+                        .fillMaxWidth()
+                        .height(95.dp),
+                    contentAlignment = Alignment.BottomCenter
+                ) {
+                    // Grid lines (subtle background)
+                    Column(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        repeat(3) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(1.dp)
+                                    .background(Color.LightGray.copy(alpha = 0.15f))
+                            )
+                        }
+                        Spacer(modifier = Modifier.height(1.dp))
+                    }
+
+                    // Bar Chart
+                    Row(
+                        modifier = Modifier.fillMaxSize().padding(horizontal = 8.dp),
+                        verticalAlignment = Alignment.Bottom,
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        val days = listOf("Sen", "Sel", "Rab", "Kam", "Jum", "Sab")
+                        val heightFractions = listOf(0.4f, 0.6f, 0.9f, 0.7f, 1.0f, 0.85f)
+                        
+                        heightFractions.forEachIndexed { i, heightFraction ->
+                            val animatedHeight by animateFloatAsState(
+                                targetValue = heightFraction,
+                                animationSpec = tween(1000, delayMillis = i * 100, easing = FastOutSlowInEasing),
+                                label = "chart"
+                            )
+                            Column(
+                                horizontalAlignment = Alignment.CenterHorizontally,
+                                verticalArrangement = Arrangement.Bottom,
+                                modifier = Modifier.weight(1f)
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .width(18.dp)
+                                        .fillMaxHeight(animatedHeight * 0.8f) // Scale down slightly to fit labels
+                                        .background(
+                                            brush = Brush.verticalGradient(
+                                                listOf(
+                                                    LuxuryPrimary,
+                                                    LuxuryPrimary.copy(alpha = 0.4f)
+                                                )
+                                            ),
+                                            shape = RoundedCornerShape(topStart = 6.dp, topEnd = 6.dp)
+                                        )
+                                )
+                                Spacer(modifier = Modifier.height(4.dp))
+                                Text(
+                                    text = days[i],
+                                    fontSize = 8.sp,
+                                    fontWeight = FontWeight.Medium,
+                                    color = Color.Gray
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // AI Insight Notification Banner
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(LuxuryPrimary.copy(alpha = 0.05f), RoundedCornerShape(12.dp))
+                        .padding(horizontal = 10.dp, vertical = 6.dp)
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Text(
+                            text = "⚡",
+                            fontSize = 11.sp,
+                            modifier = Modifier.padding(end = 4.dp)
                         )
-                        .border(BorderStroke(0.5.dp, Color.White.copy(alpha = 0.2f)), RoundedCornerShape(topStart = 10.dp, topEnd = 10.dp))
+                        Text(
+                            text = "Jam sibuk diprediksi pukul 16.00 - 18.00.",
+                            fontSize = 9.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = LuxuryPrimary
+                        )
+                    }
+                }
+            }
+        }
+
+        // Floating AI Pill (at the top right, overlapping)
+        Surface(
+            modifier = Modifier
+                .align(Alignment.TopEnd)
+                .offset(x = (-10).dp, y = (-12).dp)
+                .shadow(8.dp, CircleShape),
+            shape = CircleShape,
+            color = LuxuryTertiary,
+            border = BorderStroke(0.5.dp, Color.White.copy(alpha = 0.6f))
+        ) {
+            Row(
+                modifier = Modifier.padding(horizontal = 10.dp, vertical = 5.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(4.dp)
+            ) {
+                Box(
+                    modifier = Modifier
+                        .size(6.dp)
+                        .background(Color(0xFF00FFCC), CircleShape)
+                )
+                Text(
+                    text = "AI Aktif",
+                    color = Color.White,
+                    fontSize = 9.sp,
+                    fontWeight = FontWeight.Bold
                 )
             }
         }
@@ -365,28 +627,129 @@ fun SlideThreeVisual() {
     Box(contentAlignment = Alignment.Center) {
         Surface(
             modifier = Modifier
-                .size(210.dp, 270.dp)
-                .rotate(-5f)
-                .shadow(40.dp, RoundedCornerShape(20.dp), spotColor = Color.Black.copy(0.12f)),
-            shape = RoundedCornerShape(20.dp),
-            color = Color.White.copy(alpha = 0.85f),
-            border = BorderStroke(0.5.dp, Color.White.copy(alpha = 0.6f))
+                .size(240.dp, 230.dp)
+                .rotate(-4f)
+                .shadow(24.dp, RoundedCornerShape(24.dp), spotColor = Color.Black.copy(0.15f)),
+            shape = RoundedCornerShape(24.dp),
+            color = Color.White,
+            border = BorderStroke(0.5.dp, Color.White.copy(alpha = 0.5f))
         ) {
-            Column(Modifier.padding(24.dp)) {
-                Box(Modifier.size(36.dp).background(Color(0xFF4CAF50).copy(0.12f), CircleShape), contentAlignment = Alignment.Center) {
-                    Icon(Icons.Rounded.Check, null, tint = Color(0xFF4CAF50), modifier = Modifier.size(22.dp))
-                }
-                Spacer(Modifier.height(20.dp))
-                Box(Modifier.fillMaxWidth().height(2.dp).background(Color.LightGray.copy(0.3f)))
-                Spacer(Modifier.height(20.dp))
-                repeat(4) {
-                    Row(Modifier.fillMaxWidth().padding(vertical = 5.dp), horizontalArrangement = Arrangement.SpaceBetween) {
-                        Box(Modifier.size(70.dp, 10.dp).background(Color.LightGray.copy(0.4f), CircleShape))
-                        Box(Modifier.size(45.dp, 10.dp).background(Color.LightGray.copy(0.2f), CircleShape))
+            Column(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .padding(16.dp),
+                verticalArrangement = Arrangement.SpaceBetween
+            ) {
+                // Header
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Box(
+                            modifier = Modifier
+                                .size(34.dp)
+                                .background(Color(0xFFE8F5E9), CircleShape),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Rounded.TrendingUp,
+                                contentDescription = null,
+                                tint = Color(0xFF2E7D32),
+                                modifier = Modifier.size(18.dp)
+                            )
+                        }
+                        Spacer(modifier = Modifier.width(10.dp))
+                        Column {
+                            Text(
+                                text = "Laporan Ringkas",
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF2C2C2C)
+                            )
+                            Text(
+                                text = "Bulan Mei • Otomatis",
+                                fontSize = 9.sp,
+                                color = Color.Gray
+                            )
+                        }
                     }
                 }
-                Spacer(Modifier.weight(1f))
-                Box(Modifier.fillMaxWidth().height(34.dp).background(Color.Black.copy(0.06f), RoundedCornerShape(10.dp)))
+
+                // Divider
+                HorizontalDivider(color = Color.LightGray.copy(alpha = 0.3f), thickness = 1.dp)
+
+                // Sales Metric Display
+                Column {
+                    Text(
+                        text = "Total Pendapatan",
+                        fontSize = 10.sp,
+                        color = Color.Gray,
+                        fontWeight = FontWeight.Medium
+                    )
+                    Text(
+                        text = "Rp 24.850.000",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.ExtraBold,
+                        color = Color(0xFF1B5E20),
+                        letterSpacing = (-0.5).sp
+                    )
+                }
+
+                // Mini table rows
+                Column(verticalArrangement = Arrangement.spacedBy(6.dp)) {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(text = "Total Transaksi", fontSize = 11.sp, color = Color(0xFF5C5C5C))
+                        Text(text = "582 Order", fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF2C2C2C))
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(text = "Produk Terlaris", fontSize = 11.sp, color = Color(0xFF5C5C5C))
+                        Text(text = "Kopi Susu Aren", fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF2C2C2C))
+                    }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
+                    ) {
+                        Text(text = "Rata-rata Order", fontSize = 11.sp, color = Color(0xFF5C5C5C))
+                        Text(text = "Rp 42.600", fontSize = 11.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF2C2C2C))
+                    }
+                }
+
+                // Bottom CTA inside card
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(34.dp)
+                        .background(LuxuryPrimary.copy(alpha = 0.08f), RoundedCornerShape(10.dp)),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center,
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        Icon(
+                            imageVector = Icons.AutoMirrored.Rounded.ReceiptLong,
+                            contentDescription = null,
+                            tint = LuxuryPrimary,
+                            modifier = Modifier.size(14.dp)
+                        )
+                        Spacer(modifier = Modifier.width(6.dp))
+                        Text(
+                            text = "Ekspor Laporan (PDF)",
+                            color = LuxuryPrimary,
+                            fontSize = 10.sp,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                }
             }
         }
     }
