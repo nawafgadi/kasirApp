@@ -1,5 +1,6 @@
 package com.nawaf.kasirpas.activity.main
 
+import android.content.Intent
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -43,6 +44,7 @@ import androidx.fragment.app.viewModels
 import androidx.lifecycle.LiveData
 import com.nawaf.kasirpas.MainActivity
 import com.nawaf.kasirpas.R
+import com.nawaf.kasirpas.activity.HistoryActivity
 import com.nawaf.kasirpas.activity.ui.theme.KasirAppTheme
 import com.nawaf.kasirpas.response.*
 import com.nawaf.kasirpas.utils.PreferenceManager
@@ -1158,6 +1160,24 @@ fun RecentTransactionsSection(transactions: List<TransaksiTerakhir>) {
                         )
                     }
                     HorizontalDivider(color = Color(0xFFF1F5F9), modifier = Modifier.padding(top = 8.dp))
+                }
+            }
+
+            if (transactions.isNotEmpty()) {
+                val context = LocalContext.current
+                Spacer(modifier = Modifier.height(12.dp))
+                TextButton(
+                    onClick = {
+                        context.startActivity(Intent(context, HistoryActivity::class.java))
+                    },
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                ) {
+                    Text(
+                        "Lihat Semua Transaksi",
+                        color = Color(0xFF653DA7),
+                        fontSize = 13.sp,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
         }
