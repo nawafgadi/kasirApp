@@ -1,5 +1,6 @@
 package com.nawaf.kasirpas.api
 
+import com.nawaf.kasirpas.response.DashboardReportResponse
 import com.nawaf.kasirpas.response.SalesHistoryResponse
 import retrofit2.Response
 import retrofit2.http.GET
@@ -22,4 +23,10 @@ interface ReportApiService {
         @Header("Authorization") token: String,
         @Url url: String
     ): Response<SalesHistoryResponse>
+
+    @GET("reports")
+    suspend fun getDashboardReports(
+        @Header("Authorization") token: String
+    ): Response<DashboardReportResponse>
 }
+

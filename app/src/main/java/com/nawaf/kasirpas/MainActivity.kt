@@ -23,6 +23,7 @@ import coil.transform.CircleCropTransformation
 import com.nawaf.kasirpas.activity.BillingActivity
 import com.nawaf.kasirpas.activity.HistoryActivity
 import com.nawaf.kasirpas.activity.OnboardingActivity
+import com.nawaf.kasirpas.activity.ProfileActivity
 import com.nawaf.kasirpas.activity.main.CheckoutFragment
 import com.nawaf.kasirpas.activity.main.KasirFragment
 import com.nawaf.kasirpas.activity.main.LaporanFragment
@@ -90,17 +91,19 @@ class MainActivity : AppCompatActivity() {
     override fun onResume() {
         super.onResume()
         checkActiveSubscription()
+        fetchProfileHeader()
     }
 
     private fun setupSwipeRefresh() {
         binding.swipeRefresh.setColorSchemeResources(R.color.primary)
         binding.swipeRefresh.setOnRefreshListener {
             checkActiveSubscription()
+            fetchProfileHeader()
             
             // Juga merefresh fragment yang sedang aktif jika diperlukan
             val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
             if (currentFragment is LaporanFragment) {
-                // Kamu bisa menambahkan fungsi refresh di LaporanFragment nanti
+                currentFragment.refreshData()
             }
         }
     }
@@ -114,9 +117,38 @@ class MainActivity : AppCompatActivity() {
             startActivity(Intent(this, BillingActivity::class.java))
         }
 
+        binding.ivProfile.setOnClickListener {
+            startActivity(Intent(this, ProfileActivity::class.java))
+        }
+
         binding.ivProfile.load("https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?semt=ais_hybrid&w=740&q=80") {
             crossfade(true)
             transformations(CircleCropTransformation())
+        }
+    }
+
+    private fun fetchProfileHeader() {
+        val token = prefManager.getToken() ?: return
+        lifecycleScope.launch {
+            try {
+                val response = RetrofitClient.profileApi.getProfile("Bearer $token")
+                if (response.isSuccessful) {
+                    val imageUrl = response.body()?.data?.imageUrl
+                    if (!imageUrl.isNullOrBlank()) {
+                        binding.ivProfile.load(imageUrl) {
+                            crossfade(true)
+                            transformations(CircleCropTransformation())
+                        }
+                    } else {
+                        binding.ivProfile.load("https://img.freepik.com/free-vector/businessman-character-avatar-isolated_24877-60111.jpg?semt=ais_hybrid&w=740&q=80") {
+                            crossfade(true)
+                            transformations(CircleCropTransformation())
+                        }
+                    }
+                }
+            } catch (e: Exception) {
+                e.printStackTrace()
+            }
         }
     }
 
