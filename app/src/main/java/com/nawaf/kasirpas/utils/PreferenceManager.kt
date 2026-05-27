@@ -15,7 +15,17 @@ class PreferenceManager(context: Context) {
         private const val KEY_USER = "user"
         private const val KEY_IS_LOGIN = "is_login"
         private const val KEY_IS_ONBOARDED = "is_onboarded"
+        private const val KEY_PRINTER_ADDRESS = "printer_address"
     }
+
+    fun savePrinterAddress(address: String?) {
+        prefs.edit().putString(KEY_PRINTER_ADDRESS, address).apply()
+    }
+
+    fun getPrinterAddress(): String? {
+        return prefs.getString(KEY_PRINTER_ADDRESS, null)
+    }
+
 
     fun saveToken(token: String) {
         prefs.edit().putString(KEY_TOKEN, token).apply()

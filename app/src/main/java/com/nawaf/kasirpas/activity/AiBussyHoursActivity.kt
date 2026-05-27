@@ -5,7 +5,6 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
-import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.BorderStroke
@@ -21,18 +20,20 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.AutoAwesome
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.LocalFireDepartment
 import androidx.compose.material.icons.filled.Payments
 import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.filled.WorkspacePremium
+import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
@@ -52,8 +53,6 @@ import com.nawaf.kasirpas.model.HourlyPrediction
 import com.nawaf.kasirpas.model.ProductPrediction
 import com.nawaf.kasirpas.utils.PreferenceManager
 import kotlinx.coroutines.launch
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody.Companion.toRequestBody
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -78,7 +77,8 @@ class AiBussyHoursActivity : ComponentActivity() {
     private var aiRunState by mutableStateOf<AiRun?>(null)
     private var selectedForecastState by mutableStateOf<DailyForecast?>(null)
     private var isLoadingState by mutableStateOf(true)
-    private var isAnalyzingState by mutableStateOf(false)
+    private var isProUser by mutableStateOf(true) // default to true, checked in fetchData
+    private var dataLoaded = false // prevent re-fetching on every resume
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -91,17 +91,25 @@ class AiBussyHoursActivity : ComponentActivity() {
                     aiRun = aiRunState,
                     selectedForecast = selectedForecastState,
                     isLoading = isLoadingState,
-                    isAnalyzing = isAnalyzingState,
+                    isProUser = isProUser,
                     onBack = { finish() },
-                    onRefresh = { fetchData() },
-                    onAnalyze = { triggerAnalyze() },
-                    onForecastSelected = { selectedForecastState = it }
+                    onRefresh = {
+                        dataLoaded = false
+                        fetchData()
+                    },
+                    onForecastSelected = { selectedForecastState = it },
+                    onUpgradeClick = {
+                        startActivity(Intent(this, BillingActivity::class.java))
+                    }
                 )
             }
         }
 
-        fetchData()
+        if (!dataLoaded) {
+            fetchData()
+        }
     }
+
 
     private fun fetchData() {
         val token = prefManager.getToken() ?: return
@@ -109,6 +117,21 @@ class AiBussyHoursActivity : ComponentActivity() {
 
         lifecycleScope.launch {
             try {
+                // Check active subscription first!
+                val subResponse = RetrofitClient.billingApi.getActiveSubscription("Bearer $token")
+                val isSubActive = if (subResponse.isSuccessful) {
+                    val activeSub = subResponse.body()?.data
+                    activeSub != null && activeSub.status == "ACTIVE"
+                } else {
+                    false
+                }
+
+                isProUser = isSubActive
+                if (!isSubActive) {
+                    isLoadingState = false
+                    return@launch
+                }
+
                 val response = RetrofitClient.aiApi.getLatestBusyHours("Bearer $token")
                 if (response.isSuccessful && response.body()?.success == true) {
                     val aiRun = response.body()?.data
@@ -133,40 +156,18 @@ class AiBussyHoursActivity : ComponentActivity() {
                         selectedForecastState = null
                     }
                 } else {
-                    Toast.makeText(this@AiBussyHoursActivity, "Data analisis belum tersedia. Jalankan analisis baru!", Toast.LENGTH_LONG).show()
+                    Toast.makeText(this@AiBussyHoursActivity, "Data analisis belum tersedia.", Toast.LENGTH_LONG).show()
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
                 Toast.makeText(this@AiBussyHoursActivity, "Terjadi kesalahan saat memuat data", Toast.LENGTH_SHORT).show()
             } finally {
                 isLoadingState = false
+                dataLoaded = true
             }
         }
     }
 
-    private fun triggerAnalyze() {
-        val token = prefManager.getToken() ?: return
-        isAnalyzingState = true
-
-        lifecycleScope.launch {
-            try {
-                val emptyBody = "{}".toRequestBody("application/json".toMediaTypeOrNull())
-                val response = RetrofitClient.aiApi.analyzeBusyHours("Bearer $token", emptyBody)
-
-                if (response.isSuccessful && response.body()?.success == true) {
-                    Toast.makeText(this@AiBussyHoursActivity, "Analisis AI Jam Sibuk berhasil diselesaikan!", Toast.LENGTH_SHORT).show()
-                    fetchData()
-                } else {
-                    Toast.makeText(this@AiBussyHoursActivity, "Gagal menjalankan analisis AI", Toast.LENGTH_SHORT).show()
-                }
-            } catch (e: Exception) {
-                e.printStackTrace()
-                Toast.makeText(this@AiBussyHoursActivity, "Terjadi kesalahan koneksi", Toast.LENGTH_SHORT).show()
-            } finally {
-                isAnalyzingState = false
-            }
-        }
-    }
 }
 
 @Composable
@@ -174,11 +175,11 @@ fun AiBussyHoursContent(
     aiRun: AiRun?,
     selectedForecast: DailyForecast?,
     isLoading: Boolean,
-    isAnalyzing: Boolean,
+    isProUser: Boolean,
     onBack: () -> Unit,
     onRefresh: () -> Unit,
-    onAnalyze: () -> Unit,
-    onForecastSelected: (DailyForecast) -> Unit
+    onForecastSelected: (DailyForecast) -> Unit,
+    onUpgradeClick: () -> Unit
 ) {
     Scaffold(
         modifier = Modifier.navigationBarsPadding(),
@@ -202,12 +203,14 @@ fun AiBussyHoursContent(
                     }
                 },
                 actions = {
-                    IconButton(onClick = onRefresh, enabled = !isLoading && !isAnalyzing) {
-                        Icon(
-                            Icons.Default.Refresh,
-                            contentDescription = "Refresh",
-                            tint = BusyPrimary
-                        )
+                    if (isProUser) {
+                        IconButton(onClick = onRefresh, enabled = !isLoading) {
+                            Icon(
+                                Icons.Default.Refresh,
+                                contentDescription = "Refresh",
+                                tint = BusyPrimary
+                            )
+                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
@@ -225,6 +228,8 @@ fun AiBussyHoursContent(
                     modifier = Modifier.align(Alignment.Center),
                     color = BusyPrimary
                 )
+            } else if (!isProUser) {
+                ProUpgradeLayout(onUpgradeClick = onUpgradeClick)
             } else if (aiRun == null) {
                 // Empty state
                 Column(
@@ -249,21 +254,11 @@ fun AiBussyHoursContent(
                     )
                     Spacer(modifier = Modifier.height(8.dp))
                     Text(
-                        "Gunakan kecerdasan buatan untuk menganalisis dan memprediksi kapan warung Anda akan paling ramai.",
+                        "Data analisis jam sibuk belum tersedia. Analisis akan dijalankan secara otomatis oleh sistem.",
                         fontSize = 13.sp,
                         color = BusyOnSurfaceVariant,
                         textAlign = TextAlign.Center
                     )
-                    Spacer(modifier = Modifier.height(24.dp))
-                    Button(
-                        onClick = onAnalyze,
-                        shape = RoundedCornerShape(14.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = BusyPrimary)
-                    ) {
-                        Icon(Icons.Default.AutoAwesome, contentDescription = null)
-                        Spacer(modifier = Modifier.width(8.dp))
-                        Text("Mulai Analisis AI Sekarang", fontWeight = FontWeight.Bold)
-                    }
                 }
             } else {
                 // Main Content
@@ -312,22 +307,6 @@ fun AiBussyHoursContent(
                                             fontSize = 22.sp,
                                             fontWeight = FontWeight.Black
                                         )
-                                    }
-                                    
-                                    Button(
-                                        onClick = onAnalyze,
-                                        shape = RoundedCornerShape(12.dp),
-                                        colors = ButtonDefaults.buttonColors(containerColor = Color.White.copy(alpha = 0.2f)),
-                                        contentPadding = PaddingValues(horizontal = 12.dp, vertical = 6.dp)
-                                    ) {
-                                        Icon(
-                                            Icons.Default.AutoAwesome,
-                                            contentDescription = null,
-                                            tint = Color.White,
-                                            modifier = Modifier.size(16.dp)
-                                        )
-                                        Spacer(modifier = Modifier.width(6.dp))
-                                        Text("Re-Analyze", color = Color.White, fontSize = 12.sp, fontWeight = FontWeight.Bold)
                                     }
                                 }
                                 
@@ -501,9 +480,6 @@ fun AiBussyHoursContent(
             }
         }
     }
-
-    // Loading analysis overlay
-    LoadingDialog(show = isAnalyzing, message = "Menganalisis data jam sibuk...")
 }
 
 @Composable
@@ -965,11 +941,91 @@ fun AiBussyHoursScreenPreview() {
             aiRun = mockRun,
             selectedForecast = mockRun.dailyForecasts[0],
             isLoading = false,
-            isAnalyzing = false,
+            isProUser = true,
             onBack = {},
             onRefresh = {},
-            onAnalyze = {},
-            onForecastSelected = {}
+            onForecastSelected = {},
+            onUpgradeClick = {}
         )
+    }
+}
+
+@Composable
+private fun ProUpgradeLayout(onUpgradeClick: () -> Unit) {
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(32.dp)
+            .verticalScroll(rememberScrollState()),
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Box(
+            modifier = Modifier
+                .size(100.dp)
+                .background(
+                    Brush.radialGradient(
+                        listOf(Color(0xFFFEF3C7), Color(0xFFFFFBEB))
+                    ),
+                    shape = CircleShape
+                ),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(
+                imageVector = Icons.Outlined.Lock,
+                contentDescription = "Locked Feature",
+                tint = Color(0xFFD97706),
+                modifier = Modifier.size(54.dp)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(28.dp))
+
+        Text(
+            text = "Prediksi Jam Sibuk AI (Fitur PRO)",
+            style = MaterialTheme.typography.headlineSmall,
+            fontWeight = FontWeight.Bold,
+            color = Color(0xFF1E293B),
+            textAlign = TextAlign.Center
+        )
+
+        Spacer(modifier = Modifier.height(12.dp))
+
+        Text(
+            text = "Gunakan kecerdasan buatan untuk memprediksi jam sibuk dan omset pendapatan per jam secara cerdas.",
+            style = MaterialTheme.typography.bodyMedium,
+            color = Color(0xFF64748B),
+            textAlign = TextAlign.Center,
+            lineHeight = 22.sp
+        )
+
+        Spacer(modifier = Modifier.height(32.dp))
+
+        Button(
+            onClick = onUpgradeClick,
+            shape = RoundedCornerShape(14.dp),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = Color(0xFFD97706)
+            ),
+            modifier = Modifier
+                .fillMaxWidth()
+                .height(54.dp)
+                .shadow(
+                    elevation = 6.dp,
+                    shape = RoundedCornerShape(14.dp),
+                    spotColor = Color(0xFFD97706)
+                )
+        ) {
+            Icon(
+                imageVector = Icons.Default.WorkspacePremium,
+                contentDescription = "Premium Icon"
+            )
+            Spacer(modifier = Modifier.width(8.dp))
+            Text(
+                text = "Upgrade Langganan PRO",
+                fontWeight = FontWeight.Bold,
+                fontSize = 16.sp
+            )
+        }
     }
 }

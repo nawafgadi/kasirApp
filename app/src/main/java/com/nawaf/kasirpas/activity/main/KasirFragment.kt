@@ -52,7 +52,6 @@ class KasirFragment : Fragment() {
         prefManager = PreferenceManager(requireContext())
         setupRecyclerViews()
         setupSearch()
-        setupSwipeRefresh()
         observeViewModel()
 
         val token = prefManager.getToken() ?: ""
@@ -65,14 +64,9 @@ class KasirFragment : Fragment() {
         }
     }
 
-    private fun setupSwipeRefresh() {
-        binding.swipeRefresh.setOnRefreshListener {
-            val token = prefManager.getToken() ?: ""
-            viewModel.loadProducts(token, forceRefresh = true)
-        }
-
-        // Customize SwipeRefreshLayout colors
-        binding.swipeRefresh.setColorSchemeResources(R.color.primary)
+    fun refreshData() {
+        val token = prefManager.getToken() ?: ""
+        viewModel.loadProducts(token, forceRefresh = true)
     }
 
     private fun observeViewModel() {
@@ -84,14 +78,14 @@ class KasirFragment : Fragment() {
         }
 
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->
-            // Use SwipeRefresh indicator for all loading states
-            binding.swipeRefresh.isRefreshing = isLoading
+            // Use MainActivity's SwipeRefresh indicator for loading states to avoid double spinners
+            (activity as? MainActivity)?.findViewById<androidx.swiperefreshlayout.widget.SwipeRefreshLayout>(R.id.swipeRefresh)?.isRefreshing = isLoading
         }
 
         viewModel.error.observe(viewLifecycleOwner) { errorMsg ->
             errorMsg?.let {
                 Toast.makeText(requireContext(), it, Toast.LENGTH_SHORT).show()
-                binding.swipeRefresh.isRefreshing = false
+                (activity as? MainActivity)?.findViewById<androidx.swiperefreshlayout.widget.SwipeRefreshLayout>(R.id.swipeRefresh)?.isRefreshing = false
             }
         }
 

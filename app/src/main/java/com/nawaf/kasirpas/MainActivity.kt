@@ -96,6 +96,8 @@ class MainActivity : AppCompatActivity() {
             val currentFragment = supportFragmentManager.findFragmentById(R.id.fragmentContainer)
             if (currentFragment is LaporanFragment) {
                 currentFragment.refreshData()
+            } else if (currentFragment is KasirFragment) {
+                currentFragment.refreshData()
             }
         }
     }
