@@ -26,10 +26,20 @@ import com.nawaf.kasirpas.request.TransactionRequest
 import com.nawaf.kasirpas.utils.PreferenceManager
 import com.nawaf.kasirpas.viewmodel.ProductViewModel
 import kotlinx.coroutines.launch
+import android.content.pm.PackageManager
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.core.content.ContextCompat
+import com.nawaf.kasirpas.adapter.BluetoothDeviceAdapter
+import com.nawaf.kasirpas.databinding.LayoutBluetoothPickerBinding
+import com.nawaf.kasirpas.databinding.LayoutTransactionSuccessBinding
+import com.nawaf.kasirpas.utils.ReceiptPrinterHelper
+import com.nawaf.kasirpas.viewmodel.CartItem
+import com.dantsu.escposprinter.connection.bluetooth.BluetoothConnection
 import java.text.NumberFormat
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
+
 
 class CheckoutFragment : Fragment() {
 
@@ -40,6 +50,29 @@ class CheckoutFragment : Fragment() {
     private lateinit var checkoutAdapter: CheckoutAdapter
     private lateinit var preferenceManager: PreferenceManager
     private var loadingDialog: Dialog? = null
+
+    // Temp variables for receipt printing
+    private var tempCartItems: List<CartItem> = listOf()
+    private var tempTotal: Double = 0.0
+    private var tempPaymentMethod: String = ""
+    private var tempTransactionId: String = ""
+
+    private val requestMultiplePermissionsLauncher = registerForActivityResult(
+        ActivityResultContracts.RequestMultiplePermissions()
+    ) { permissions ->
+        val connectGranted = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            permissions[android.Manifest.permission.BLUETOOTH_CONNECT] ?: false
+        } else {
+            permissions[android.Manifest.permission.ACCESS_FINE_LOCATION] ?: false
+        }
+        
+        if (connectGranted) {
+            startPrintingFlow()
+        } else {
+            Toast.makeText(requireContext(), "Izin Bluetooth diperlukan untuk print struk", Toast.LENGTH_SHORT).show()
+        }
+    }
+
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -153,12 +186,30 @@ class CheckoutFragment : Fragment() {
                 val response = RetrofitClient.transactionApi.storeTransaction("Bearer $token", request)
                 hideLoading()
                 if (response.isSuccessful) {
-                    Toast.makeText(requireContext(), "Transaksi Berhasil!", Toast.LENGTH_SHORT).show()
-                    viewModel.clearCart() 
-                    dialog.dismiss()
+                    // Store details in temp variables for printing
+                    tempCartItems = cartItems.toList()
+                    tempTotal = viewModel.getCartTotal()
+                    tempPaymentMethod = paymentMethod
                     
-                    // Navigate back to Kasir and sync BottomNav
-                    (activity as? MainActivity)?.setSelectedTab(R.id.nav_kasir)
+                    // Parse transaction ID if available
+                    tempTransactionId = ""
+                    try {
+                        val bodyString = response.body()?.string()
+                        if (!bodyString.isNullOrEmpty()) {
+                            val jsonObject = org.json.JSONObject(bodyString)
+                            if (jsonObject.has("data")) {
+                                val dataObj = jsonObject.getJSONObject("data")
+                                if (dataObj.has("id")) {
+                                    tempTransactionId = dataObj.getInt("id").toString()
+                                }
+                            }
+                        }
+                    } catch (e: Exception) {
+                        e.printStackTrace()
+                    }
+
+                    dialog.dismiss()
+                    showSuccessDialog()
                 } else {
                     Toast.makeText(requireContext(), "Gagal: ${response.message()}", Toast.LENGTH_SHORT).show()
                 }
@@ -168,6 +219,144 @@ class CheckoutFragment : Fragment() {
             }
         }
     }
+
+    private fun showSuccessDialog() {
+        val successDialog = BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)
+        val successBinding = LayoutTransactionSuccessBinding.inflate(layoutInflater)
+        successDialog.setContentView(successBinding.root)
+        successDialog.setCancelable(false)
+
+        val format = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
+        val formattedTotal = format.format(tempTotal).replace("Rp", "Rp ")
+        
+        val sdf = SimpleDateFormat("dd-MM-yyyy HH:mm", Locale.getDefault())
+        val dateStr = sdf.format(Date())
+
+        successBinding.tvTransactionTotal.text = formattedTotal
+        successBinding.tvTransactionDate.text = dateStr
+        successBinding.tvPaymentMethod.text = tempPaymentMethod
+
+        successBinding.btnPrintReceipt.setOnClickListener {
+            if (checkBluetoothPermissions()) {
+                startPrintingFlow()
+            } else {
+                requestBluetoothPermissions()
+            }
+        }
+
+        successBinding.btnFinish.setOnClickListener {
+            viewModel.clearCart()
+            successDialog.dismiss()
+            (activity as? MainActivity)?.setSelectedTab(R.id.nav_kasir)
+        }
+
+        successDialog.show()
+    }
+
+    private fun checkBluetoothPermissions(): Boolean {
+        return if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            ContextCompat.checkSelfPermission(
+                requireContext(),
+                android.Manifest.permission.BLUETOOTH_CONNECT
+            ) == PackageManager.PERMISSION_GRANTED
+        } else {
+            ContextCompat.checkSelfPermission(
+                requireContext(),
+                android.Manifest.permission.ACCESS_FINE_LOCATION
+            ) == PackageManager.PERMISSION_GRANTED
+        }
+    }
+
+    private fun requestBluetoothPermissions() {
+        if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.S) {
+            requestMultiplePermissionsLauncher.launch(
+                arrayOf(
+                    android.Manifest.permission.BLUETOOTH_CONNECT,
+                    android.Manifest.permission.BLUETOOTH_SCAN
+                )
+            )
+        } else {
+            requestMultiplePermissionsLauncher.launch(
+                arrayOf(
+                    android.Manifest.permission.ACCESS_FINE_LOCATION,
+                    android.Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+            )
+        }
+    }
+
+    private fun startPrintingFlow() {
+        val savedAddress = preferenceManager.getPrinterAddress()
+        if (savedAddress != null) {
+            val printers = ReceiptPrinterHelper.getPairedPrinters()
+            val savedPrinter = printers.find { it.device.address == savedAddress }
+            if (savedPrinter != null) {
+                printToPrinter(savedPrinter)
+                return
+            }
+        }
+        showBluetoothPicker()
+    }
+
+    private fun showBluetoothPicker() {
+        val pickerDialog = BottomSheetDialog(requireContext(), R.style.BottomSheetDialogTheme)
+        val pickerBinding = LayoutBluetoothPickerBinding.inflate(layoutInflater)
+        pickerDialog.setContentView(pickerBinding.root)
+
+        val devices = ReceiptPrinterHelper.getPairedPrinters()
+        val adapter = BluetoothDeviceAdapter(devices) { selectedConnection ->
+            preferenceManager.savePrinterAddress(selectedConnection.device.address)
+            printToPrinter(selectedConnection)
+            pickerDialog.dismiss()
+        }
+
+        pickerBinding.rvBluetoothDevices.layoutManager = LinearLayoutManager(requireContext())
+        pickerBinding.rvBluetoothDevices.adapter = adapter
+
+        val updateViews = {
+            val updatedDevices = ReceiptPrinterHelper.getPairedPrinters()
+            adapter.updateData(updatedDevices)
+            if (updatedDevices.isEmpty()) {
+                pickerBinding.layoutEmptyBluetooth.visibility = View.VISIBLE
+                pickerBinding.rvBluetoothDevices.visibility = View.GONE
+            } else {
+                pickerBinding.layoutEmptyBluetooth.visibility = View.GONE
+                pickerBinding.rvBluetoothDevices.visibility = View.VISIBLE
+            }
+        }
+
+        updateViews()
+
+        pickerBinding.btnRefreshBluetooth.setOnClickListener {
+            updateViews()
+        }
+
+        pickerDialog.show()
+    }
+
+    private fun printToPrinter(connection: BluetoothConnection) {
+        val cashierName = preferenceManager.getUser()?.name ?: "Kasir"
+        showLoading("Sedang mencetak struk...")
+        lifecycleScope.launch {
+            val success = ReceiptPrinterHelper.printReceipt(
+                requireContext(),
+                connection,
+                tempTransactionId,
+                tempCartItems,
+                tempTotal,
+                tempPaymentMethod,
+                cashierName
+            )
+            hideLoading()
+            if (success) {
+                Toast.makeText(requireContext(), "Struk berhasil dicetak!", Toast.LENGTH_SHORT).show()
+            } else {
+                Toast.makeText(requireContext(), "Gagal mencetak struk. Pastikan printer menyala dan terhubung.", Toast.LENGTH_LONG).show()
+                showBluetoothPicker()
+            }
+        }
+    }
+
 
     private fun setupRecyclerView() {
         checkoutAdapter = CheckoutAdapter(

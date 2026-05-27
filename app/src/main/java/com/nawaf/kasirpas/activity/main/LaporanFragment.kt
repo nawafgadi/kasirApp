@@ -76,7 +76,7 @@ class LaporanFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        refreshData()
+        // Data loading is optimized to use caching and is initiated inside the Compose LaporanScreen's LaunchedEffect
     }
 
     fun refreshData() {

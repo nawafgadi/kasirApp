@@ -49,8 +49,6 @@ import com.nawaf.kasirpas.model.AiStockRun
 import com.nawaf.kasirpas.request.AiActionRequest
 import com.nawaf.kasirpas.utils.PreferenceManager
 import kotlinx.coroutines.launch
-import okhttp3.MediaType.Companion.toMediaTypeOrNull
-import okhttp3.RequestBody.Companion.toRequestBody
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
@@ -63,7 +61,7 @@ class AiStocksActivity : ComponentActivity() {
     private var uiState by mutableStateOf(AiStocksUiState.LOADING)
     private var errorMessage by mutableStateOf("")
     private var aiStockRun by mutableStateOf<AiStockRun?>(null)
-    private var isAnalyzing by mutableStateOf(false)
+    private var dataLoaded = false // prevent re-fetching on every resume
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -76,10 +74,11 @@ class AiStocksActivity : ComponentActivity() {
                     uiState = uiState,
                     errorMessage = errorMessage,
                     aiStockRun = aiStockRun,
-                    isAnalyzing = isAnalyzing,
                     onBackClick = { finish() },
-                    onRefresh = { fetchData() },
-                    onAnalyzeClick = { triggerAnalyze() },
+                    onRefresh = {
+                        dataLoaded = false
+                        fetchData()
+                    },
                     onActionClick = { recommendationId, actionType, customQty ->
                         updateAction(recommendationId, actionType, customQty)
                     },
@@ -90,7 +89,9 @@ class AiStocksActivity : ComponentActivity() {
             }
         }
 
-        fetchData()
+        if (!dataLoaded) {
+            fetchData()
+        }
     }
 
     private fun fetchData() {
@@ -104,6 +105,20 @@ class AiStocksActivity : ComponentActivity() {
         uiState = AiStocksUiState.LOADING
         lifecycleScope.launch {
             try {
+                // Check active subscription first!
+                val subResponse = RetrofitClient.billingApi.getActiveSubscription("Bearer $token")
+                val isSubActive = if (subResponse.isSuccessful) {
+                    val activeSub = subResponse.body()?.data
+                    activeSub != null && activeSub.status == "ACTIVE"
+                } else {
+                    false
+                }
+
+                if (!isSubActive) {
+                    uiState = AiStocksUiState.PRO
+                    return@launch
+                }
+
                 val response = RetrofitClient.aiApi.getLatestStocks("Bearer $token")
                 if (response.isSuccessful && response.body()?.success == true) {
                     val runData = response.body()?.data
@@ -136,38 +151,8 @@ class AiStocksActivity : ComponentActivity() {
                 e.printStackTrace()
                 uiState = AiStocksUiState.ERROR
                 errorMessage = "Terjadi kesalahan koneksi. Pastikan internet Anda aktif."
-            }
-        }
-    }
-
-    private fun triggerAnalyze() {
-        val token = prefManager.getToken() ?: return
-        isAnalyzing = true
-
-        lifecycleScope.launch {
-            try {
-                val response = RetrofitClient.aiApi.analyzeStocks("Bearer $token")
-                isAnalyzing = false
-                if (response.isSuccessful && response.body()?.success == true) {
-                    Toast.makeText(this@AiStocksActivity, "Analisis AI berhasil dijalankan!", Toast.LENGTH_SHORT).show()
-                    fetchData()
-                } else {
-                    if (response.code() == 403) {
-                        uiState = AiStocksUiState.PRO
-                    } else {
-                        val errorBody = response.errorBody()?.string()
-                        val errorMsg = try {
-                            org.json.JSONObject(errorBody ?: "").getString("message")
-                        } catch (e: Exception) {
-                            "Gagal menjalankan analisis"
-                        }
-                        Toast.makeText(this@AiStocksActivity, errorMsg, Toast.LENGTH_LONG).show()
-                    }
-                }
-            } catch (e: Exception) {
-                isAnalyzing = false
-                e.printStackTrace()
-                Toast.makeText(this@AiStocksActivity, "Terjadi kesalahan saat memicu analisis AI", Toast.LENGTH_LONG).show()
+            } finally {
+                dataLoaded = true
             }
         }
     }
@@ -264,10 +249,8 @@ fun AiStocksScreen(
     uiState: AiStocksUiState,
     errorMessage: String,
     aiStockRun: AiStockRun?,
-    isAnalyzing: Boolean,
     onBackClick: () -> Unit,
     onRefresh: () -> Unit,
-    onAnalyzeClick: () -> Unit,
     onActionClick: (Int, String, Int?) -> Unit,
     onUpgradeClick: () -> Unit
 ) {
@@ -294,29 +277,12 @@ fun AiStocksScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = onRefresh, enabled = !isAnalyzing) {
+                    IconButton(onClick = onRefresh, enabled = uiState != AiStocksUiState.LOADING) {
                         Icon(
                             imageVector = Icons.Default.Refresh,
                             contentDescription = "Segarkan",
                             tint = Color(0xFF1E293B)
                         )
-                    }
-                    if (uiState != AiStocksUiState.PRO && uiState != AiStocksUiState.LOADING) {
-                        TextButton(
-                            onClick = onAnalyzeClick,
-                            enabled = !isAnalyzing,
-                            colors = ButtonDefaults.textButtonColors(contentColor = Color(0xFF4F46E5))
-                        ) {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
-                                Icon(
-                                    imageVector = Icons.Outlined.AutoAwesome,
-                                    contentDescription = "Analisis",
-                                    modifier = Modifier.size(16.dp)
-                                )
-                                Spacer(modifier = Modifier.width(4.dp))
-                                Text("Analisis", fontWeight = FontWeight.Bold)
-                            }
-                        }
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(
@@ -343,7 +309,7 @@ fun AiStocksScreen(
                 }
 
                 AiStocksUiState.EMPTY -> {
-                    EmptyLayout(onAnalyzeClick = onAnalyzeClick, isAnalyzing = isAnalyzing)
+                    EmptyLayout()
                 }
 
                 AiStocksUiState.ERROR -> {
@@ -358,55 +324,7 @@ fun AiStocksScreen(
                             onIgnoreClick = { rec -> onActionClick(rec.id, "IGNORE", null) }
                         )
                     } else {
-                        EmptyLayout(onAnalyzeClick = onAnalyzeClick, isAnalyzing = isAnalyzing)
-                    }
-                }
-            }
-
-            // Overlay Penganalisisan AI
-            AnimatedVisibility(
-                visible = isAnalyzing,
-                enter = fadeIn(),
-                exit = fadeOut()
-            ) {
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(Color.Black.copy(alpha = 0.5f)),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Card(
-                        shape = RoundedCornerShape(20.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color.White),
-                        modifier = Modifier
-                            .fillMaxWidth(0.85f)
-                            .padding(24.dp)
-                    ) {
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(24.dp),
-                            horizontalAlignment = Alignment.CenterHorizontally,
-                            verticalArrangement = Arrangement.spacedBy(16.dp)
-                        ) {
-                            CircularProgressIndicator(
-                                color = Color(0xFF4F46E5),
-                                strokeWidth = 4.dp,
-                                modifier = Modifier.size(48.dp)
-                            )
-                            Text(
-                                text = "Menganalisis Data...",
-                                style = MaterialTheme.typography.titleMedium,
-                                fontWeight = FontWeight.Bold,
-                                color = Color(0xFF1E293B)
-                            )
-                            Text(
-                                text = "Mesin AI sedang memproses data transaksi Anda untuk memprediksi stok 14 hari ke depan.",
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = Color(0xFF64748B),
-                                textAlign = TextAlign.Center
-                            )
-                        }
+                        EmptyLayout()
                     }
                 }
             }
@@ -449,7 +367,7 @@ fun LoadingLayout() {
 }
 
 @Composable
-fun ProUpgradeLayout(onUpgradeClick: () -> Unit) {
+private fun ProUpgradeLayout(onUpgradeClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -529,10 +447,7 @@ fun ProUpgradeLayout(onUpgradeClick: () -> Unit) {
 }
 
 @Composable
-fun EmptyLayout(
-    onAnalyzeClick: () -> Unit,
-    isAnalyzing: Boolean
-) {
+fun EmptyLayout() {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -559,36 +474,12 @@ fun EmptyLayout(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "AI belum menganalisis riwayat transaksi penjualan Anda. Jalankan analisis sekarang untuk memprediksi tingkat stok yang ideal.",
+            text = "Data analisis stok belum tersedia. Analisis akan dijalankan secara otomatis oleh sistem.",
             style = MaterialTheme.typography.bodyMedium,
             color = Color(0xFF64748B),
             textAlign = TextAlign.Center,
             lineHeight = 20.sp
         )
-
-        Spacer(modifier = Modifier.height(28.dp))
-
-        Button(
-            onClick = onAnalyzeClick,
-            enabled = !isAnalyzing,
-            shape = RoundedCornerShape(12.dp),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF4F46E5)
-            ),
-            modifier = Modifier
-                .fillMaxWidth(0.85f)
-                .height(48.dp)
-        ) {
-            Icon(
-                imageVector = Icons.Default.AutoAwesome,
-                contentDescription = "AI Star"
-            )
-            Spacer(modifier = Modifier.width(8.dp))
-            Text(
-                text = "Jalankan Analisis AI",
-                fontWeight = FontWeight.Bold
-            )
-        }
     }
 }
 
@@ -1252,10 +1143,8 @@ fun AiStocksScreenPreview() {
                     )
                 )
             ),
-            isAnalyzing = false,
             onBackClick = {},
             onRefresh = {},
-            onAnalyzeClick = {},
             onActionClick = { _, _, _ -> },
             onUpgradeClick = {}
         )
