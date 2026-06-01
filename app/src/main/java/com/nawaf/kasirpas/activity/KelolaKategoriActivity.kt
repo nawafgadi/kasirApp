@@ -291,6 +291,8 @@ class KelolaKategoriActivity : ComponentActivity() {
                                 focusedLabelColor = Color(0xFF653DA7),
                                 unfocusedBorderColor = Color(0xFFD1D5DB),
                                 unfocusedLabelColor = Color(0xFF6B7280),
+                                focusedTextColor = Color(0xFF1C1B1B),
+                                unfocusedTextColor = Color(0xFF1C1B1B),
                                 cursorColor = Color(0xFF653DA7)
                             )
                         )

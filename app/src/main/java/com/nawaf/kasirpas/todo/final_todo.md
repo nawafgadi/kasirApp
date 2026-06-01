@@ -1,0 +1,4 @@
+- [x] Nama Aplikasi ini adalah LuxePOS jadi ubah yang ada nama aplikasi
+- [x] Kenapa saat input itu kadang text yang di dalam input itu kelihatan jelas namun kadang ga keliatan jelas tergantu device yang di pakai nah kamu perbaiki ini
+- [x] Ubah splash Screen ke jetpack compose dan perbagus screen ini agar ga boring
+- [x] Perbagus untuk input kayak yang ada  dropdown

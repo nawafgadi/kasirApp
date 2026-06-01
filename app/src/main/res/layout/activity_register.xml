@@ -94,7 +94,9 @@
                         android:layout_height="52dp"
                         android:hint="Enter your full name"
                         android:inputType="textPersonName"
-                        android:padding="0dp" />
+                        android:padding="0dp"
+                        android:textColor="@color/on_surface"
+                        android:textColorHint="@color/outline" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <TextView
@@ -128,7 +130,9 @@
                         android:layout_height="52dp"
                         android:hint="name@company.com"
                         android:inputType="textEmailAddress"
-                        android:padding="0dp" />
+                        android:padding="0dp"
+                        android:textColor="@color/on_surface"
+                        android:textColorHint="@color/outline" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <TextView
@@ -163,7 +167,9 @@
                         android:layout_height="52dp"
                         android:hint="Create a strong password"
                         android:inputType="textPassword"
-                        android:padding="0dp" />
+                        android:padding="0dp"
+                        android:textColor="@color/on_surface"
+                        android:textColorHint="@color/outline" />
                 </com.google.android.material.textfield.TextInputLayout>
 
                 <com.google.android.material.button.MaterialButton
