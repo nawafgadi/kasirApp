@@ -190,13 +190,6 @@ fun LaporanContent(
                     )
                 }
 
-                // Status banner if demo data
-                if (isUsingMock) {
-                    item {
-                        DemoDataBanner()
-                    }
-                }
-
                 // Key Metric Cards
                 item {
                     MetricsGrid(summary = selectedSummary)
@@ -381,34 +374,6 @@ fun PeriodTabsSelector(selectedTab: Int, onTabSelected: (Int) -> Unit) {
                 )
             }
         }
-    }
-}
-
-@Composable
-fun DemoDataBanner() {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp)
-            .padding(bottom = 12.dp)
-            .background(Color(0xFFFFF3CD), RoundedCornerShape(12.dp))
-            .border(1.dp, Color(0xFFFFEEBA), RoundedCornerShape(12.dp))
-            .padding(12.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Icon(
-            imageVector = Icons.Default.Info,
-            contentDescription = "Demo Info",
-            tint = Color(0xFF856404),
-            modifier = Modifier.size(20.dp)
-        )
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(
-            text = "Menampilkan data demo interaktif. Hubungkan API backend Anda di REPORT.md untuk mensinkronisasi data riil.",
-            color = Color(0xFF856404),
-            fontSize = 11.sp,
-            fontWeight = FontWeight.Medium
-        )
     }
 }
 

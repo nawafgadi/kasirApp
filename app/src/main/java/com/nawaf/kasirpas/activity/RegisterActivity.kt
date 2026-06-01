@@ -182,7 +182,10 @@ fun RegisterScreen(
                             enabled = !isLoading,
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = LuxuryPrimary,
-                                unfocusedBorderColor = Color.LightGray.copy(alpha = 0.4f)
+                                unfocusedBorderColor = Color.LightGray.copy(alpha = 0.4f),
+                                focusedTextColor = Color(0xFF1C1B1B),
+                                unfocusedTextColor = Color(0xFF1C1B1B),
+                                cursorColor = LuxuryPrimary
                             )
                         )
 
@@ -202,7 +205,10 @@ fun RegisterScreen(
                             enabled = !isLoading,
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = LuxuryPrimary,
-                                unfocusedBorderColor = Color.LightGray.copy(alpha = 0.4f)
+                                unfocusedBorderColor = Color.LightGray.copy(alpha = 0.4f),
+                                focusedTextColor = Color(0xFF1C1B1B),
+                                unfocusedTextColor = Color(0xFF1C1B1B),
+                                cursorColor = LuxuryPrimary
                             )
                         )
 
@@ -228,7 +234,10 @@ fun RegisterScreen(
                             singleLine = true,
                             colors = OutlinedTextFieldDefaults.colors(
                                 focusedBorderColor = LuxuryPrimary,
-                                unfocusedBorderColor = Color.LightGray.copy(alpha = 0.4f)
+                                unfocusedBorderColor = Color.LightGray.copy(alpha = 0.4f),
+                                focusedTextColor = Color(0xFF1C1B1B),
+                                unfocusedTextColor = Color(0xFF1C1B1B),
+                                cursorColor = LuxuryPrimary
                             )
                         )
 

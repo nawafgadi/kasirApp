@@ -63,7 +63,7 @@ object ReceiptPrinterHelper {
             }
 
             val formattedText = """
-                [C]<b><font size='big'>KASIR PAS</font></b>
+                [C]<b><font size='big'>LuxePOS</font></b>
                 [C]================================
                 [L]No. Resi : $receiptNum
                 [L]Tanggal  : $dateStr

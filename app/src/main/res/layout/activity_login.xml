@@ -133,6 +133,7 @@
                             android:layout_height="wrap_content"
                             android:hint="name@luxepos.com"
                             android:textColor="@color/on_surface"
+                            android:textColorHint="@color/outline"
                             android:inputType="textEmailAddress" />
                     </com.google.android.material.textfield.TextInputLayout>
 
@@ -181,6 +182,7 @@
                             android:layout_height="wrap_content"
                             android:hint="••••••••"
                             android:textColor="@color/on_surface"
+                            android:textColorHint="@color/outline"
                             android:inputType="textPassword" />
                     </com.google.android.material.textfield.TextInputLayout>
 

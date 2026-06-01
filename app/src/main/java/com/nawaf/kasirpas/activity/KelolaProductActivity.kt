@@ -12,6 +12,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -28,6 +29,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -423,6 +428,8 @@ class KelolaProductActivity : ComponentActivity() {
                                 focusedLabelColor = Color(0xFF653DA7),
                                 unfocusedBorderColor = Color(0xFFD1D5DB),
                                 unfocusedLabelColor = Color(0xFF6B7280),
+                                focusedTextColor = Color(0xFF1C1B1B),
+                                unfocusedTextColor = Color(0xFF1C1B1B),
                                 cursorColor = Color(0xFF653DA7)
                             )
                         )
@@ -453,6 +460,8 @@ class KelolaProductActivity : ComponentActivity() {
                                     focusedLabelColor = Color(0xFF653DA7),
                                     unfocusedBorderColor = Color(0xFFD1D5DB),
                                     unfocusedLabelColor = Color(0xFF6B7280),
+                                    focusedTextColor = Color(0xFF1C1B1B),
+                                    unfocusedTextColor = Color(0xFF1C1B1B),
                                     cursorColor = Color(0xFF653DA7)
                                 )
                             )
@@ -477,6 +486,8 @@ class KelolaProductActivity : ComponentActivity() {
                                     focusedLabelColor = Color(0xFF653DA7),
                                     unfocusedBorderColor = Color(0xFFD1D5DB),
                                     unfocusedLabelColor = Color(0xFF6B7280),
+                                    focusedTextColor = Color(0xFF1C1B1B),
+                                    unfocusedTextColor = Color(0xFF1C1B1B),
                                     cursorColor = Color(0xFF653DA7)
                                 )
                             )
@@ -486,49 +497,106 @@ class KelolaProductActivity : ComponentActivity() {
 
                         // Category Dropdown Box
                         var expanded by remember { mutableStateOf(false) }
-                        Box(modifier = Modifier.fillMaxWidth()) {
-                            OutlinedTextField(
-                                value = categoriesList.find { it.id == selectedCategoryId }?.name ?: "",
-                                onValueChange = {},
-                                readOnly = true,
-                                label = { Text("Kategori") },
-                                trailingIcon = {
-                                    IconButton(onClick = { expanded = true }) {
-                                        Icon(
-                                            imageVector = Icons.Default.ArrowDropDown,
-                                            contentDescription = "Pilih Kategori",
-                                            tint = Color(0xFF6B7280)
-                                        )
-                                    }
-                                },
-                                modifier = Modifier.fillMaxWidth(),
-                                enabled = false,
-                                shape = RoundedCornerShape(12.dp),
-                                colors = OutlinedTextFieldDefaults.colors(
-                                    disabledBorderColor = Color(0xFFD1D5DB),
-                                    disabledLabelColor = Color(0xFF6B7280),
-                                    disabledTextColor = Color(0xFF1C1B1B)
-                                )
+                        val rotationAngle by animateFloatAsState(
+                            targetValue = if (expanded) 180f else 0f,
+                            animationSpec = tween(durationMillis = 300, easing = FastOutSlowInEasing),
+                            label = "dropdown_arrow"
+                        )
+                        
+                        Column(
+                            modifier = Modifier.fillMaxWidth()
+                        ) {
+                            Text(
+                                text = "Kategori Produk",
+                                fontSize = 13.sp,
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF653DA7),
+                                modifier = Modifier.padding(bottom = 6.dp)
                             )
+                            
                             Box(
                                 modifier = Modifier
-                                    .matchParentSize()
-                                    .clickable { expanded = true }
-                            )
-                            DropdownMenu(
-                                expanded = expanded,
-                                onDismissRequest = { expanded = false },
-                                modifier = Modifier.fillMaxWidth(0.85f),
-                                containerColor = Color.White
-                            ) {
-                                categoriesList.forEach { category ->
-                                    DropdownMenuItem(
-                                        text = { Text(category.name) },
-                                        onClick = {
-                                            selectedCategoryId = category.id
-                                            expanded = false
-                                        }
+                                    .fillMaxWidth()
+                                    .height(58.dp)
+                                    .background(Color(0xFFF9FAFB), RoundedCornerShape(14.dp))
+                                    .border(
+                                        width = 1.dp,
+                                        color = if (expanded) Color(0xFF653DA7) else Color(0xFFD1D5DB),
+                                        shape = RoundedCornerShape(14.dp)
                                     )
+                                    .clickable { expanded = true }
+                                    .padding(horizontal = 16.dp),
+                                contentAlignment = Alignment.CenterStart
+                            ) {
+                                Row(
+                                    modifier = Modifier.fillMaxWidth(),
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    horizontalArrangement = Arrangement.SpaceBetween
+                                ) {
+                                    Row(
+                                        verticalAlignment = Alignment.CenterVertically,
+                                        modifier = Modifier.weight(1f)
+                                    ) {
+                                        Icon(
+                                            imageVector = Icons.Default.Folder,
+                                            contentDescription = null,
+                                            tint = Color(0xFF653DA7),
+                                            modifier = Modifier.size(20.dp)
+                                        )
+                                        Spacer(modifier = Modifier.width(12.dp))
+                                        val selectedCategoryName = categoriesList.find { it.id == selectedCategoryId }?.name
+                                        Text(
+                                            text = selectedCategoryName ?: "Pilih Kategori",
+                                            color = if (selectedCategoryName != null) Color(0xFF1C1B1B) else Color(0xFF9CA3AF),
+                                            fontSize = 15.sp,
+                                            fontWeight = if (selectedCategoryName != null) FontWeight.SemiBold else FontWeight.Normal
+                                        )
+                                    }
+                                    
+                                    Icon(
+                                        imageVector = Icons.Default.KeyboardArrowDown,
+                                        contentDescription = "Pilih Kategori",
+                                        tint = Color(0xFF6B7280),
+                                        modifier = Modifier
+                                            .size(24.dp)
+                                            .graphicsLayer { rotationZ = rotationAngle }
+                                    )
+                                }
+                                
+                                DropdownMenu(
+                                    expanded = expanded,
+                                    onDismissRequest = { expanded = false },
+                                    modifier = Modifier
+                                        .fillMaxWidth(0.85f)
+                                        .background(Color.White, RoundedCornerShape(16.dp))
+                                        .border(0.5.dp, Color(0xFFE5E7EB), RoundedCornerShape(16.dp)),
+                                    containerColor = Color.White
+                                ) {
+                                    categoriesList.forEach { category ->
+                                        DropdownMenuItem(
+                                            text = {
+                                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                                    Icon(
+                                                        imageVector = Icons.Default.Folder,
+                                                        contentDescription = null,
+                                                        tint = if (selectedCategoryId == category.id) Color(0xFF653DA7) else Color(0xFF9CA3AF),
+                                                        modifier = Modifier.size(18.dp)
+                                                    )
+                                                    Spacer(modifier = Modifier.width(12.dp))
+                                                    Text(
+                                                        text = category.name,
+                                                        fontWeight = if (selectedCategoryId == category.id) FontWeight.Bold else FontWeight.Normal,
+                                                        color = if (selectedCategoryId == category.id) Color(0xFF653DA7) else Color(0xFF1C1B1B)
+                                                    )
+                                                }
+                                            },
+                                            onClick = {
+                                                selectedCategoryId = category.id
+                                                expanded = false
+                                            },
+                                            modifier = Modifier.fillMaxWidth()
+                                        )
+                                    }
                                 }
                             }
                         }
