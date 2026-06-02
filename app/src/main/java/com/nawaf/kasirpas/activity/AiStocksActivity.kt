@@ -378,34 +378,52 @@ private fun ProUpgradeLayout(onUpgradeClick: () -> Unit) {
     ) {
         Box(
             modifier = Modifier
-                .size(100.dp)
+                .size(104.dp)
                 .background(
                     Brush.radialGradient(
-                        listOf(Color(0xFFFEF3C7), Color(0xFFFFFBEB))
+                        listOf(Color(0xFF653DA7).copy(alpha = 0.15f), Color.Transparent)
                     ),
                     shape = CircleShape
+                )
+                .border(
+                    2.dp, Color(0xFF653DA7).copy(alpha = 0.2f), CircleShape
                 ),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = Icons.Outlined.Lock,
                 contentDescription = "Locked Feature",
-                tint = Color(0xFFD97706),
-                modifier = Modifier.size(54.dp)
+                tint = Color(0xFF653DA7),
+                modifier = Modifier.size(50.dp)
             )
         }
 
-        Spacer(modifier = Modifier.height(28.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            text = "Optimasi Stok AI (Fitur PRO)",
+            text = "Optimasi Stok AI",
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
             color = Color(0xFF1E293B),
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Surface(
+            shape = RoundedCornerShape(6.dp),
+            color = Color(0xFF653DA7).copy(alpha = 0.1f)
+        ) {
+            Text(
+                text = "Fitur PRO",
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF653DA7)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Text(
             text = "Prediksikan stok barang Anda secara cerdas selama 14 hari ke depan untuk menghindari kekurangan stok dan memaksimalkan pendapatan.",
@@ -415,33 +433,71 @@ private fun ProUpgradeLayout(onUpgradeClick: () -> Unit) {
             lineHeight = 22.sp
         )
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(28.dp))
+
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            BenefitRow(
+                icon = Icons.Default.Inventory,
+                title = "Prediksi Stok 14 Hari",
+                desc = "Analisis kebutuhan stok 14 hari ke depan dengan akurasi AI"
+            )
+            BenefitRow(
+                icon = Icons.Default.TrendingUp,
+                title = "Insight Musiman",
+                desc = "Rekomendasi berdasarkan tren penjualan musiman"
+            )
+        }
+
+        Spacer(modifier = Modifier.height(28.dp))
 
         Button(
             onClick = onUpgradeClick,
             shape = RoundedCornerShape(14.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFFD97706)
+                containerColor = Color(0xFF653DA7),
+                contentColor = Color.White
             ),
             modifier = Modifier
                 .fillMaxWidth()
                 .height(54.dp)
                 .shadow(
-                    elevation = 6.dp,
+                    elevation = 8.dp,
                     shape = RoundedCornerShape(14.dp),
-                    spotColor = Color(0xFFD97706)
+                    spotColor = Color(0xFF653DA7).copy(alpha = 0.4f)
                 )
         ) {
-            Icon(
-                imageVector = Icons.Default.WorkspacePremium,
-                contentDescription = "Premium Icon"
-            )
+            Icon(imageVector = Icons.Default.WorkspacePremium, contentDescription = null)
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = "Upgrade Langganan PRO",
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp
             )
+        }
+    }
+}
+
+@Composable
+private fun BenefitRow(icon: androidx.compose.ui.graphics.vector.ImageVector, title: String, desc: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color(0xFFF8FAFC), shape = RoundedCornerShape(12.dp))
+            .padding(14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(14.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(40.dp)
+                .background(Color(0xFF653DA7).copy(alpha = 0.1f), shape = CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(icon, contentDescription = null, tint = Color(0xFF653DA7), modifier = Modifier.size(20.dp))
+        }
+        Column(modifier = Modifier.weight(1f)) {
+            Text(title, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF1E293B))
+            Text(desc, fontSize = 12.sp, color = Color(0xFF64748B))
         }
     }
 }
