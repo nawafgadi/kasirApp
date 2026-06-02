@@ -5,10 +5,12 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
@@ -28,6 +30,7 @@ import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.WorkspacePremium
 import androidx.compose.material.icons.outlined.Lock
 import androidx.compose.material.icons.automirrored.filled.TrendingUp
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -82,7 +85,12 @@ class AiBussyHoursActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.light(
+                android.graphics.Color.TRANSPARENT,
+                android.graphics.Color.TRANSPARENT
+            )
+        )
         prefManager = PreferenceManager(this)
 
         setContent {
@@ -962,34 +970,52 @@ private fun ProUpgradeLayout(onUpgradeClick: () -> Unit) {
     ) {
         Box(
             modifier = Modifier
-                .size(100.dp)
+                .size(104.dp)
                 .background(
                     Brush.radialGradient(
-                        listOf(Color(0xFFFEF3C7), Color(0xFFFFFBEB))
+                        listOf(Color(0xFF653DA7).copy(alpha = 0.15f), Color.Transparent)
                     ),
                     shape = CircleShape
+                )
+                .border(
+                    2.dp, Color(0xFF653DA7).copy(alpha = 0.2f), CircleShape
                 ),
             contentAlignment = Alignment.Center
         ) {
             Icon(
                 imageVector = Icons.Outlined.Lock,
                 contentDescription = "Locked Feature",
-                tint = Color(0xFFD97706),
-                modifier = Modifier.size(54.dp)
+                tint = Color(0xFF653DA7),
+                modifier = Modifier.size(50.dp)
             )
         }
 
-        Spacer(modifier = Modifier.height(28.dp))
+        Spacer(modifier = Modifier.height(24.dp))
 
         Text(
-            text = "Prediksi Jam Sibuk AI (Fitur PRO)",
+            text = "Prediksi Jam Sibuk AI",
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.Bold,
             color = Color(0xFF1E293B),
             textAlign = TextAlign.Center
         )
 
-        Spacer(modifier = Modifier.height(12.dp))
+        Spacer(modifier = Modifier.height(4.dp))
+
+        Surface(
+            shape = RoundedCornerShape(6.dp),
+            color = Color(0xFF653DA7).copy(alpha = 0.1f)
+        ) {
+            Text(
+                text = "Fitur PRO",
+                modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+                fontSize = 12.sp,
+                fontWeight = FontWeight.Bold,
+                color = Color(0xFF653DA7)
+            )
+        }
+
+        Spacer(modifier = Modifier.height(16.dp))
 
         Text(
             text = "Gunakan kecerdasan buatan untuk memprediksi jam sibuk dan omset pendapatan per jam secara cerdas.",
@@ -999,33 +1025,76 @@ private fun ProUpgradeLayout(onUpgradeClick: () -> Unit) {
             lineHeight = 22.sp
         )
 
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(28.dp))
+
+        Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+            BenefitRow(
+                icon = Icons.Default.Schedule,
+                title = "Prediksi Per Jam",
+                desc = "Ketahui jam sibuk dan sepi setiap hari secara detail"
+            )
+            BenefitRow(
+                icon = Icons.Default.Payments,
+                title = "Proyeksi Pendapatan",
+                desc = "Estimasi pendapatan per jam untuk perencanaan lebih baik"
+            )
+            BenefitRow(
+                icon = Icons.Default.ShoppingCart,
+                title = "Produk Terlaris",
+                desc = "Lihat produk yang perlu diprioritaskan di setiap jam"
+            )
+        }
+
+        Spacer(modifier = Modifier.height(28.dp))
 
         Button(
             onClick = onUpgradeClick,
             shape = RoundedCornerShape(14.dp),
             colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFFD97706)
+                containerColor = Color(0xFF653DA7),
+                contentColor = Color.White
             ),
             modifier = Modifier
                 .fillMaxWidth()
                 .height(54.dp)
                 .shadow(
-                    elevation = 6.dp,
+                    elevation = 8.dp,
                     shape = RoundedCornerShape(14.dp),
-                    spotColor = Color(0xFFD97706)
+                    spotColor = Color(0xFF653DA7).copy(alpha = 0.4f)
                 )
         ) {
-            Icon(
-                imageVector = Icons.Default.WorkspacePremium,
-                contentDescription = "Premium Icon"
-            )
+            Icon(imageVector = Icons.Default.WorkspacePremium, contentDescription = null)
             Spacer(modifier = Modifier.width(8.dp))
             Text(
                 text = "Upgrade Langganan PRO",
                 fontWeight = FontWeight.Bold,
                 fontSize = 16.sp
             )
+        }
+    }
+}
+
+@Composable
+private fun BenefitRow(icon: androidx.compose.ui.graphics.vector.ImageVector, title: String, desc: String) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .background(Color(0xFFF8FAFC), shape = RoundedCornerShape(12.dp))
+            .padding(14.dp),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(14.dp)
+    ) {
+        Box(
+            modifier = Modifier
+                .size(40.dp)
+                .background(Color(0xFF653DA7).copy(alpha = 0.1f), shape = CircleShape),
+            contentAlignment = Alignment.Center
+        ) {
+            Icon(icon, contentDescription = null, tint = Color(0xFF653DA7), modifier = Modifier.size(20.dp))
+        }
+        Column(modifier = Modifier.weight(1f)) {
+            Text(title, fontSize = 14.sp, fontWeight = FontWeight.SemiBold, color = Color(0xFF1E293B))
+            Text(desc, fontSize = 12.sp, color = Color(0xFF64748B))
         }
     }
 }

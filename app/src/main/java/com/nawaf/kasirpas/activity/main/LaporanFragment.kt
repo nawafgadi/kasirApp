@@ -26,6 +26,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
@@ -144,8 +145,12 @@ fun LaporanContent(
 
     // Sync SwipeRefreshLayout state from MainActivity to only be enabled when at top
     val context = LocalContext.current
-    LaunchedEffect(scrollState.firstVisibleItemIndex, scrollState.firstVisibleItemScrollOffset) {
-        val isAtTop = scrollState.firstVisibleItemIndex == 0 && scrollState.firstVisibleItemScrollOffset == 0
+    val isAtTop by remember {
+        derivedStateOf {
+            scrollState.firstVisibleItemIndex == 0 && scrollState.firstVisibleItemScrollOffset == 0
+        }
+    }
+    LaunchedEffect(isAtTop) {
         try {
             (context as? MainActivity)?.findViewById<androidx.swiperefreshlayout.widget.SwipeRefreshLayout>(R.id.swipeRefresh)?.isEnabled = isAtTop
         } catch (e: Exception) {
@@ -760,8 +765,25 @@ fun InteractiveCanvasChart(
     val primaryColor = Color(0xFF653DA7)
     val gridColor = Color(0xFFF1F5F9)
 
+    // Optimize Paint allocations by remembering them outside draw scope
+    val textPaintY = remember {
+        android.graphics.Paint().apply {
+            color = android.graphics.Color.parseColor("#94A3B8")
+            textSize = 28f
+            typeface = android.graphics.Typeface.DEFAULT_BOLD
+        }
+    }
+    
+    val textPaintX = remember {
+        android.graphics.Paint().apply {
+            color = android.graphics.Color.parseColor("#64748B")
+            textSize = 26f
+            textAlign = android.graphics.Paint.Align.CENTER
+        }
+    }
+
     Box(modifier = modifier) {
-        Canvas(
+        Spacer(
             modifier = Modifier
                 .fillMaxSize()
                 .pointerInput(labels, values) {
@@ -780,98 +802,55 @@ fun InteractiveCanvasChart(
                         }
                     )
                 }
-        ) {
-            val width = size.width
-            val height = size.height
+                .drawWithCache {
+                    val width = size.width
+                    val height = size.height
 
-            val paddingLeft = 110f
-            val paddingRight = 40f
-            val paddingTop = 40f
-            val paddingBottom = 60f
+                    val paddingLeft = 110f
+                    val paddingRight = 40f
+                    val paddingTop = 40f
+                    val paddingBottom = 60f
 
-            val chartWidth = width - paddingLeft - paddingRight
-            val chartHeight = height - paddingTop - paddingBottom
+                    val chartWidth = width - paddingLeft - paddingRight
+                    val chartHeight = height - paddingTop - paddingBottom
 
-            // Draw 4 Horizontal Grid Lines and Y labels
-            val gridLinesCount = 3
-            for (i in 0..gridLinesCount) {
-                val ratio = i.toFloat() / gridLinesCount
-                val y = paddingTop + chartHeight * (1 - ratio)
+                    val stepX = chartWidth / (values.size - 1).coerceAtLeast(1)
 
-                drawLine(
-                    color = gridColor,
-                    start = Offset(paddingLeft, y),
-                    end = Offset(width - paddingRight, y),
-                    strokeWidth = 2f
-                )
-
-                val labelVal = minValue + range * ratio
-                drawContext.canvas.nativeCanvas.drawText(
-                    formatCompactCurrency(labelVal),
-                    10f,
-                    y + 10f,
-                    android.graphics.Paint().apply {
-                        color = android.graphics.Color.parseColor("#94A3B8")
-                        textSize = 28f
-                        typeface = android.graphics.Typeface.DEFAULT_BOLD
+                    // Generate Path points once when size or data changes
+                    val points = values.mapIndexed { idx, valItem ->
+                        val x = paddingLeft + idx * stepX
+                        val yRatio = if (range != 0.0) ((valItem - minValue) / range).toFloat() else 0.5f
+                        val y = paddingTop + chartHeight * (1 - yRatio)
+                        Offset(x, y)
                     }
-                )
-            }
 
-            val stepX = chartWidth / (values.size - 1).coerceAtLeast(1)
+                    // Pre-build the paths so they are not constructed in the draw phase
+                    val strokePath = Path()
+                    val fillPath = Path()
 
-            // Generate Path points
-            val points = values.mapIndexed { idx, valItem ->
-                val x = paddingLeft + idx * stepX
-                val yRatio = if (range != 0.0) ((valItem - minValue) / range).toFloat() else 0.5f
-                val y = paddingTop + chartHeight * (1 - yRatio)
-                Offset(x, y)
-            }
+                    if (points.isNotEmpty()) {
+                        strokePath.moveTo(points[0].x, points[0].y)
+                        fillPath.moveTo(points[0].x, points[0].y)
 
-            // Draw X coordinates labels
-            for (i in values.indices) {
-                val x = paddingLeft + i * stepX
-                drawContext.canvas.nativeCanvas.drawText(
-                    labels.getOrElse(i) { "" },
-                    x,
-                    height - 10f,
-                    android.graphics.Paint().apply {
-                        color = android.graphics.Color.parseColor("#64748B")
-                        textSize = 26f
-                        textAlign = android.graphics.Paint.Align.CENTER
+                        for (i in 1 until points.size) {
+                            val pPrev = points[i - 1]
+                            val pCurr = points[i]
+                            
+                            val controlX1 = pPrev.x + (stepX / 2f)
+                            val controlY1 = pPrev.y
+                            val controlX2 = pCurr.x - (stepX / 2f)
+                            val controlY2 = pCurr.y
+
+                            strokePath.cubicTo(controlX1, controlY1, controlX2, controlY2, pCurr.x, pCurr.y)
+                            fillPath.cubicTo(controlX1, controlY1, controlX2, controlY2, pCurr.x, pCurr.y)
+                        }
+
+                        fillPath.lineTo(points.last().x, paddingTop + chartHeight)
+                        fillPath.lineTo(points[0].x, paddingTop + chartHeight)
+                        fillPath.close()
                     }
-                )
-            }
 
-            // Smooth Bezier Curve Path Drawing
-            if (points.isNotEmpty()) {
-                val strokePath = Path()
-                val fillPath = Path()
-
-                strokePath.moveTo(points[0].x, points[0].y)
-                fillPath.moveTo(points[0].x, points[0].y)
-
-                for (i in 1 until points.size) {
-                    val pPrev = points[i - 1]
-                    val pCurr = points[i]
-                    
-                    val controlX1 = pPrev.x + (stepX / 2f)
-                    val controlY1 = pPrev.y
-                    val controlX2 = pCurr.x - (stepX / 2f)
-                    val controlY2 = pCurr.y
-
-                    strokePath.cubicTo(controlX1, controlY1, controlX2, controlY2, pCurr.x, pCurr.y)
-                    fillPath.cubicTo(controlX1, controlY1, controlX2, controlY2, pCurr.x, pCurr.y)
-                }
-
-                fillPath.lineTo(points.last().x, paddingTop + chartHeight)
-                fillPath.lineTo(points[0].x, paddingTop + chartHeight)
-                fillPath.close()
-
-                // Area Gradient Filling
-                drawPath(
-                    path = fillPath,
-                    brush = Brush.verticalGradient(
+                    val fillGradient = Brush.verticalGradient(
                         colors = listOf(
                             primaryColor.copy(alpha = 0.35f),
                             primaryColor.copy(alpha = 0.0f)
@@ -879,43 +858,81 @@ fun InteractiveCanvasChart(
                         startY = paddingTop,
                         endY = paddingTop + chartHeight
                     )
-                )
 
-                // Thick Curve Line Stroke Drawing
-                drawPath(
-                    path = strokePath,
-                    color = primaryColor,
-                    style = Stroke(width = 6f, cap = StrokeCap.Round)
-                )
-            }
+                    onDrawBehind {
+                        // 1. Draw 4 Horizontal Grid Lines and Y labels
+                        val gridLinesCount = 3
+                        for (i in 0..gridLinesCount) {
+                            val ratio = i.toFloat() / gridLinesCount
+                            val y = paddingTop + chartHeight * (1 - ratio)
 
-            // Render interactive tap highlight nodes
-            if (selectedIndex in values.indices) {
-                val pt = points[selectedIndex]
-                
-                // Vertical anchor dash line
-                drawLine(
-                    color = primaryColor.copy(alpha = 0.4f),
-                    start = Offset(pt.x, paddingTop),
-                    end = Offset(pt.x, paddingTop + chartHeight),
-                    strokeWidth = 2f,
-                    pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
-                )
+                            drawLine(
+                                color = gridColor,
+                                start = Offset(paddingLeft, y),
+                                end = Offset(width - paddingRight, y),
+                                strokeWidth = 2f
+                            )
 
-                // White outer indicator ring
-                drawCircle(
-                    color = Color.White,
-                    radius = 16f,
-                    center = pt
-                )
-                // Solid colored inner node dot
-                drawCircle(
-                    color = primaryColor,
-                    radius = 10f,
-                    center = pt
-                )
-            }
-        }
+                            val labelVal = minValue + range * ratio
+                            drawContext.canvas.nativeCanvas.drawText(
+                                formatCompactCurrency(labelVal),
+                                10f,
+                                y + 10f,
+                                textPaintY
+                            )
+                        }
+
+                        // 2. Draw X coordinates labels
+                        for (i in values.indices) {
+                            val x = paddingLeft + i * stepX
+                            drawContext.canvas.nativeCanvas.drawText(
+                                labels.getOrElse(i) { "" },
+                                x,
+                                height - 10f,
+                                textPaintX
+                            )
+                        }
+
+                        // 3. Draw Area Gradient & Path Line
+                        if (points.isNotEmpty()) {
+                            drawPath(
+                                path = fillPath,
+                                brush = fillGradient
+                            )
+
+                            drawPath(
+                                path = strokePath,
+                                color = primaryColor,
+                                style = Stroke(width = 6f, cap = StrokeCap.Round)
+                            )
+                        }
+
+                        // 4. Draw selected indicator node & dash line
+                        if (selectedIndex in values.indices) {
+                            val pt = points[selectedIndex]
+                            
+                            drawLine(
+                                color = primaryColor.copy(alpha = 0.4f),
+                                start = Offset(pt.x, paddingTop),
+                                end = Offset(pt.x, paddingTop + chartHeight),
+                                strokeWidth = 2f,
+                                pathEffect = PathEffect.dashPathEffect(floatArrayOf(10f, 10f), 0f)
+                            )
+
+                            drawCircle(
+                                color = Color.White,
+                                radius = 16f,
+                                center = pt
+                            )
+                            drawCircle(
+                                color = primaryColor,
+                                radius = 10f,
+                                center = pt
+                            )
+                        }
+                    }
+                }
+        )
 
         // Animated popover Tooltip UI overlay
         if (selectedIndex in values.indices) {
@@ -1150,9 +1167,12 @@ fun RecentTransactionsSection(transactions: List<TransaksiTerakhir>) {
 }
 
 // Helpers functions
+private val rupiahFormatter = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
+
 fun formatRupiah(amount: Double): String {
-    val format = NumberFormat.getCurrencyInstance(Locale("id", "ID"))
-    return format.format(amount).replace("Rp", "Rp ")
+    synchronized(rupiahFormatter) {
+        return rupiahFormatter.format(amount).replace("Rp", "Rp ")
+    }
 }
 
 fun formatCompactCurrency(value: Double): String {

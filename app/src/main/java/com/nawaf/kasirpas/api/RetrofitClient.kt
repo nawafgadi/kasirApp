@@ -9,7 +9,7 @@ object RetrofitClient {
 //    private const val BASE_URL = "http://192.168.0.2:8000/api/"
 //private const val BASE_URL = "http://192.168.1.7:8000/api/"// rona
  //private const val BASE_URL = "http://10.212.77.134:8000/api/"
-    private const val BASE_URL = "https://kitty-uncompromised-audiometrically.ngrok-free.dev/api/"
+    private const val BASE_URL = "https://paskelompok2.online/api/"
 
     private val retrofit: Retrofit by lazy {
         Retrofit.Builder()

@@ -19,6 +19,7 @@ import com.nawaf.kasirpas.R
 import com.nawaf.kasirpas.adapter.CategoryAdapter
 import com.nawaf.kasirpas.adapter.ProductAdapter
 import com.nawaf.kasirpas.databinding.FragmentKasirBinding
+import com.nawaf.kasirpas.model.Category
 import com.nawaf.kasirpas.utils.PreferenceManager
 import com.nawaf.kasirpas.viewmodel.ProductViewModel
 import java.text.NumberFormat
@@ -71,10 +72,13 @@ class KasirFragment : Fragment() {
 
     private fun observeViewModel() {
         viewModel.products.observe(viewLifecycleOwner) { products ->
-            productAdapter.updateData(products)
-            // Update categories if they are empty or haven't been loaded properly
-            val categories = products.mapNotNull { it.category }.distinctBy { it.id }
-            categoryAdapter.updateData(categories)
+            applyFilters()
+        }
+
+        viewModel.categories.observe(viewLifecycleOwner) { categories ->
+            val activeCategories = categories.filter { it.isActive == 1 }
+            categoryAdapter.updateData(activeCategories)
+            applyFilters()
         }
 
         viewModel.isLoading.observe(viewLifecycleOwner) { isLoading ->

@@ -126,7 +126,7 @@ fun OnboardingScreen(onFinish: () -> Unit) {
         ) {
             Surface(
                 onClick = onFinish,
-                color = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f),
+                color = LuxuryPrimary.copy(alpha = 0.08f), // Constant light purple tint matching the luxury theme
                 shape = CircleShape,
                 modifier = Modifier.size(86.dp, 40.dp)
             ) {
@@ -192,6 +192,7 @@ fun OnboardingScreen(onFinish: () -> Unit) {
                 ) {
                     Text(
                         text = if (isLastPage) "Mulai Berbisnis" else "Lanjutkan",
+                        color = Color.White, // Explicitly white to contrast with LuxuryPrimary background
                         fontSize = 18.sp,
                         fontWeight = FontWeight.ExtraBold,
                         letterSpacing = 0.5.sp
@@ -359,7 +360,7 @@ fun SlideOneVisual() {
                         Spacer(modifier = Modifier.width(10.dp))
                         Column {
                             Text(
-                                text = "NawafPOS",
+                                text = "LuxePOS",
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.Bold,
                                 color = Color(0xFF2C2C2C)

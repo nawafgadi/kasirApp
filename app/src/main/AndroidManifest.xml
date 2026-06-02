@@ -28,7 +28,7 @@
         <activity
             android:name=".activity.SplashActivity"
             android:exported="true"
-            android:theme="@style/Theme.KasirPAS">
+            android:theme="@style/Theme.KasirPAS.Splash">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />

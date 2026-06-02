@@ -38,6 +38,18 @@ data class UpcomingHoliday(
     val impact: String
 )
 
+data class SeasonalRecommendation(
+    val id: Int,
+    @SerializedName("ai_recommendation_id") val aiRecommendationId: Int,
+    val min: Int?,
+    val max: Int?,
+    val label: String?,
+    val holiday: String?,
+    val reason: String?,
+    @SerializedName("created_at") val createdAt: String?,
+    @SerializedName("updated_at") val updatedAt: String?
+)
+
 data class AiRecommendation(
     val id: Int,
     @SerializedName("ai_run_id") val aiRunId: Int,
@@ -62,7 +74,8 @@ data class AiRecommendation(
     @SerializedName("created_at") val createdAt: String,
     @SerializedName("updated_at") val updatedAt: String,
     val product: SimpleProductStock?,
-    @SerializedName("ai_recommendation_actions") val aiRecommendationActions: List<AiRecommendationAction>?
+    @SerializedName("ai_recommendation_actions") val aiRecommendationActions: List<AiRecommendationAction>?,
+    @SerializedName("seasonal_recommendation") val seasonalRecommendation: SeasonalRecommendation? = null
 )
 
 data class StockTimeline(
