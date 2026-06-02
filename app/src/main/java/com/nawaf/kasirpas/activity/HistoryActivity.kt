@@ -210,13 +210,13 @@ fun HistoryScreen(onBack: () -> Unit, prefManager: PreferenceManager) {
                                 letterSpacing = (-0.5).sp
                             )
                         }
-                        IconButton(onClick = { /* Filter */ }) {
-                            Icon(
-                                Icons.AutoMirrored.Filled.List,
-                                contentDescription = "Filter",
-                                tint = OnSurfaceColor
-                            )
-                        }
+//                        IconButton(onClick = { /* Filter */ }) {
+//                            Icon(
+//                                Icons.AutoMirrored.Filled.List,
+//                                contentDescription = "Filter",
+//                                tint = OnSurfaceColor
+//                            )
+//                        }
                     }
                     HorizontalDivider(
                         color = OutlineVariantColor.copy(alpha = 0.5f),
@@ -399,10 +399,16 @@ fun PremiumFilterChip(
     }
 }
 
+private val rupiahFormatter = NumberFormat.getCurrencyInstance(Locale("in", "ID"))
+
+private fun formatRupiah(amount: Double): String {
+    synchronized(rupiahFormatter) {
+        return rupiahFormatter.format(amount).replace("Rp", "Rp ").replace(",00", "")
+    }
+}
+
 @Composable
 fun PremiumTransactionCard(transaction: TransactionHistory) {
-    val formatter = NumberFormat.getCurrencyInstance(Locale("in", "ID"))
-
     // Logika penentuan warna berdasarkan tipe transaksi
     val isSale = transaction.trxType.equals("SALE", ignoreCase = true)
     val accentColor = if (isSale) TertiaryColor else Color(0xFFF59E0B) // Cyan vs Amber
@@ -456,8 +462,7 @@ fun PremiumTransactionCard(transaction: TransactionHistory) {
                         }
                     }
                     Text(
-                        text = formatter.format(transaction.totalAmount).replace("Rp", "Rp ")
-                            .replace(",00", ""),
+                        text = formatRupiah(transaction.totalAmount),
                         fontSize = 18.sp,
                         fontWeight = FontWeight.ExtraBold,
                         color = PrimaryColor
@@ -516,8 +521,7 @@ fun PremiumTransactionCard(transaction: TransactionHistory) {
                                 color = OnSurfaceColor.copy(alpha = 0.8f)
                             )
                             Text(
-                                text = formatter.format(item.product.price).replace("Rp", "Rp ")
-                                    .replace(",00", ""),
+                                text = formatRupiah(item.product.price),
                                 fontSize = 12.sp,
                                 color = OnSurfaceColor.copy(alpha = 0.6f)
                             )

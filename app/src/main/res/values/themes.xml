@@ -8,6 +8,12 @@
 
     <style name="Theme.KasirPAS" parent="Base.Theme.KasirPAS" />
 
+    <!-- Theme khusus SplashActivity tanpa system splash screen -->
+    <style name="Theme.KasirPAS.Splash" parent="Theme.KasirPAS">
+        <item name="android:windowIsTranslucent">true</item>
+        <item name="android:windowBackground">@android:color/transparent</item>
+    </style>
+
     <!-- Style untuk Bottom Navigation tanpa indikator bermasalah -->
     <style name="Widget.App.BottomNavigationView" parent="Widget.Material3.BottomNavigationView">
         <item name="itemIconTint">@color/primary</item>

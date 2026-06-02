@@ -5,7 +5,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.nawaf.kasirpas.api.RetrofitClient
+import com.nawaf.kasirpas.model.Category
 import com.nawaf.kasirpas.model.Product
+import kotlinx.coroutines.async
+import kotlinx.coroutines.coroutineScope
 import kotlinx.coroutines.launch
 
 data class CartItem(
@@ -17,6 +20,9 @@ class ProductViewModel : ViewModel() {
 
     private val _products = MutableLiveData<List<Product>>()
     val products: LiveData<List<Product>> get() = _products
+
+    private val _categories = MutableLiveData<List<Category>>()
+    val categories: LiveData<List<Category>> get() = _categories
 
     private val _isLoading = MutableLiveData<Boolean>()
     val isLoading: LiveData<Boolean> get() = _isLoading
@@ -32,21 +38,46 @@ class ProductViewModel : ViewModel() {
     val toastMessage: LiveData<String?> get() = _toastMessage
 
     private var allProductsList: List<Product> = listOf()
+    private var allCategoriesList: List<Category> = listOf()
 
     fun loadProducts(token: String, forceRefresh: Boolean = false) {
-        if (allProductsList.isNotEmpty() && !forceRefresh) return
+        if (allProductsList.isNotEmpty() && allCategoriesList.isNotEmpty() && !forceRefresh) return
 
         _isLoading.value = true
         viewModelScope.launch {
             try {
-                val response = RetrofitClient.productApi.getProducts("Bearer $token")
-                if (response.isSuccessful) {
-                    val data = response.body()?.data ?: listOf()
-                    allProductsList = data
-                    _products.value = data
-                    _error.value = null
-                } else {
-                    _error.value = "Gagal memuat produk"
+                coroutineScope {
+                    val categoriesDeferred = async {
+                        try {
+                            val response = RetrofitClient.categoryApi.getCategories("Bearer $token")
+                            if (response.isSuccessful) {
+                                response.body()?.data ?: listOf()
+                            } else {
+                                listOf()
+                            }
+                        } catch (e: Exception) {
+                            e.printStackTrace()
+                            listOf()
+                        }
+                    }
+
+                    val productsDeferred = async {
+                        RetrofitClient.productApi.getProducts("Bearer $token")
+                    }
+
+                    val categoriesData = categoriesDeferred.await()
+                    allCategoriesList = categoriesData
+                    _categories.value = categoriesData
+
+                    val response = productsDeferred.await()
+                    if (response.isSuccessful) {
+                        val data = response.body()?.data ?: listOf()
+                        allProductsList = data
+                        _products.value = data
+                        _error.value = null
+                    } else {
+                        _error.value = "Gagal memuat produk"
+                    }
                 }
             } catch (e: Exception) {
                 _error.value = e.localizedMessage ?: "Terjadi kesalahan"
@@ -108,7 +139,19 @@ class ProductViewModel : ViewModel() {
     }
 
     fun getFilteredProducts(query: String, categoryId: Int?): List<Product> {
-        var filtered = allProductsList
+        var filtered = allProductsList.filter { product ->
+            val pCategoryId = product.categoryId
+            if (pCategoryId == null) {
+                true
+            } else {
+                val matchedCategory = allCategoriesList.find { it.id == pCategoryId }
+                if (matchedCategory != null) {
+                    matchedCategory.isActive == 1
+                } else {
+                    product.category == null || product.category.isActive == 1
+                }
+            }
+        }
         if (categoryId != null) {
             filtered = filtered.filter { it.categoryId == categoryId }
         }

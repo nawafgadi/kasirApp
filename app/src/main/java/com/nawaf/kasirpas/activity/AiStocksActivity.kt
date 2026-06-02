@@ -4,6 +4,7 @@ import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedVisibility
@@ -53,8 +54,27 @@ import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class AiStocksActivity : ComponentActivity() {
+fun formatDateString(dateStr: String): String {
+    val cleanDateStr = when {
+        dateStr.contains("T") -> dateStr.substringBefore("T")
+        dateStr.contains(" ") -> dateStr.substringBefore(" ")
+        else -> dateStr
+    }
+    return try {
+        val parser = SimpleDateFormat("yyyy-MM-dd", Locale.US)
+        val date = parser.parse(cleanDateStr)
+        if (date != null) {
+            val formatter = SimpleDateFormat("dd MMM yyyy", Locale("id", "ID"))
+            formatter.format(date)
+        } else {
+            cleanDateStr
+        }
+    } catch (e: Exception) {
+        cleanDateStr
+    }
+}
 
+class AiStocksActivity : ComponentActivity() {
     private lateinit var prefManager: PreferenceManager
 
     // State pemantauan UI
@@ -66,7 +86,12 @@ class AiStocksActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         prefManager = PreferenceManager(this)
-        enableEdgeToEdge()
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.light(
+                android.graphics.Color.TRANSPARENT,
+                android.graphics.Color.TRANSPARENT
+            )
+        )
 
         setContent {
             KasirAppTheme {
@@ -169,10 +194,11 @@ class AiStocksActivity : ComponentActivity() {
                 )
 
                 if (response.isSuccessful && response.body()?.success == true) {
+                    val productName = aiStockRun?.aiRecommendations?.find { it.id == recommendationId }?.productName ?: "Produk"
                     val successMsg = if (actionType == "DONE") {
-                        "Rekomendasi disetujui dengan kuantitas: ${customQty ?: 0} unit!"
+                        "Restok produk $productName disetujui: ${customQty ?: 0} unit!"
                     } else {
-                        "Rekomendasi berhasil diabaikan."
+                        "Rekomendasi $productName berhasil diabaikan."
                     }
                     Toast.makeText(this@AiStocksActivity, successMsg, Toast.LENGTH_SHORT).show()
 
@@ -826,7 +852,7 @@ fun RecommendationItem(
                     )
                     recommendation.estimatedEmptyDate?.let { date ->
                         Text(
-                            text = "Estimasi habis: $date" + (recommendation.daysUntilEmpty?.let { " ($it hari lagi)" } ?: ""),
+                            text = "Estimasi habis: ${formatDateString(date)}" + (recommendation.daysUntilEmpty?.let { " ($it hari lagi)" } ?: ""),
                             fontSize = 11.sp,
                             color = Color(0xFF64748B)
                         )
@@ -849,6 +875,52 @@ fun RecommendationItem(
                         color = Color(0xFF64748B),
                         lineHeight = 16.sp
                     )
+                }
+            }
+
+            // Rekomendasi Musiman (jika ada)
+            recommendation.seasonalRecommendation?.let { seasonal ->
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(Color(0xFFF5F3FF), shape = RoundedCornerShape(10.dp))
+                        .border(1.dp, Color(0xFFDDD6FE), shape = RoundedCornerShape(10.dp))
+                        .padding(12.dp),
+                    verticalArrangement = Arrangement.spacedBy(4.dp)
+                ) {
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(6.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Outlined.Event,
+                            contentDescription = "Event Musiman",
+                            tint = Color(0xFF7C3AED),
+                            modifier = Modifier.size(16.dp)
+                        )
+                        Text(
+                            text = "Rekomendasi Musiman (${seasonal.holiday ?: "Event"})",
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF7C3AED)
+                        )
+                    }
+                    seasonal.label?.let { label ->
+                        Text(
+                            text = label,
+                            fontSize = 12.sp,
+                            fontWeight = FontWeight.SemiBold,
+                            color = Color(0xFF5B21B6)
+                        )
+                    }
+                    if (!seasonal.reason.isNullOrBlank()) {
+                        Text(
+                            text = seasonal.reason,
+                            fontSize = 11.sp,
+                            color = Color(0xFF6D28D9),
+                            lineHeight = 16.sp
+                        )
+                    }
                 }
             }
 
@@ -905,7 +977,7 @@ fun RecommendationItem(
                     ) {
                         Icon(
                             imageVector = Icons.Default.Done,
-                            contentDescription = "Agree",
+                            contentDescription = "Restock",
                             modifier = Modifier.size(16.dp),
                             tint = Color.White
                         )
@@ -913,7 +985,7 @@ fun RecommendationItem(
                         Spacer(modifier = Modifier.width(6.dp))
 
                         Text(
-                            "Setuju",
+                            "Restok",
                             fontWeight = FontWeight.Bold,
                             fontSize = 13.sp,
                             color = Color.White
@@ -931,10 +1003,14 @@ fun RestockDialog(
     onDismiss: () -> Unit,
     onConfirm: (Int) -> Unit
 ) {
-    // Range restock minimum ke maksimum
-    val minVal = (recommendation.restockMin ?: 1).toFloat().coerceAtLeast(1f)
-    val maxVal = (recommendation.restockMax ?: minVal.toInt()).toFloat().coerceAtLeast(minVal)
-    val defaultVal = recommendation.recommendRestockQty.toFloat().coerceIn(minVal, maxVal)
+    // Range restock minimum ke maksimum (menggunakan seasonal recommendation jika ada)
+    val minVal = (recommendation.seasonalRecommendation?.min ?: recommendation.restockMin ?: 1).toFloat().coerceAtLeast(1f)
+    val maxVal = (recommendation.seasonalRecommendation?.max ?: recommendation.restockMax ?: minVal.toInt()).toFloat().coerceAtLeast(minVal)
+    val defaultVal = (if (recommendation.seasonalRecommendation != null) {
+        recommendation.seasonalRecommendation.max ?: recommendation.recommendRestockQty
+    } else {
+        recommendation.recommendRestockQty
+    }).toFloat().coerceIn(minVal, maxVal)
 
     var selectedQty by remember { mutableStateOf(defaultVal.toInt()) }
 
@@ -952,9 +1028,9 @@ fun RestockDialog(
                     .padding(24.dp),
                 verticalArrangement = Arrangement.spacedBy(16.dp)
             ) {
-                // Title
+                // Title (tambahkan nama produk secara jelas agar user tahu produk apa yang di-restok)
                 Text(
-                    text = "Konfirmasi Restock",
+                    text = "Konfirmasi Restok:\n${recommendation.productName}",
                     style = MaterialTheme.typography.titleMedium,
                     fontWeight = FontWeight.Bold,
                     color = Color(0xFF1E293B)
@@ -977,15 +1053,63 @@ fun RestockDialog(
                 ) {
                     Column {
                         Text("MINIMAL", fontSize = 10.sp, color = Color(0xFF94A3B8), fontWeight = FontWeight.Bold)
-                        Text("${recommendation.restockMin ?: 0} Unit", fontWeight = FontWeight.Bold, color = Color(0xFF334155))
+                        Text("${recommendation.seasonalRecommendation?.min ?: recommendation.restockMin ?: 0} Unit", fontWeight = FontWeight.Bold, color = Color(0xFF334155))
                     }
                     Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("AI DEFAULT", fontSize = 10.sp, color = Color(0xFF94A3B8), fontWeight = FontWeight.Bold)
-                        Text("${recommendation.recommendRestockQty} Unit", fontWeight = FontWeight.Bold, color = Color(0xFF4F46E5))
+                        Text(
+                            text = if (recommendation.seasonalRecommendation != null) "AI MUSIMAN" else "AI DEFAULT",
+                            fontSize = 10.sp,
+                            color = Color(0xFF94A3B8),
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "${recommendation.seasonalRecommendation?.max ?: recommendation.recommendRestockQty} Unit",
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF4F46E5)
+                        )
                     }
                     Column(horizontalAlignment = Alignment.End) {
                         Text("MAKSIMAL", fontSize = 10.sp, color = Color(0xFF94A3B8), fontWeight = FontWeight.Bold)
-                        Text("${recommendation.restockMax ?: 0} Unit", fontWeight = FontWeight.Bold, color = Color(0xFF334155))
+                        Text("${recommendation.seasonalRecommendation?.max ?: recommendation.restockMax ?: 0} Unit", fontWeight = FontWeight.Bold, color = Color(0xFF334155))
+                    }
+                }
+
+                // seasonal recommendation info box (jika ada)
+                recommendation.seasonalRecommendation?.let { seasonal ->
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .background(Color(0xFFF5F3FF), shape = RoundedCornerShape(12.dp))
+                            .border(1.dp, Color(0xFFDDD6FE), shape = RoundedCornerShape(12.dp))
+                            .padding(12.dp)
+                    ) {
+                        Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
+                                horizontalArrangement = Arrangement.spacedBy(6.dp)
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Event,
+                                    contentDescription = "Event Musiman",
+                                    tint = Color(0xFF7C3AED),
+                                    modifier = Modifier.size(16.dp)
+                                )
+                                Text(
+                                    text = "Rekomendasi Musiman (${seasonal.holiday ?: "Event"})",
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color(0xFF7C3AED)
+                                )
+                            }
+                            seasonal.label?.let { label ->
+                                Text(
+                                    text = label,
+                                    fontSize = 12.sp,
+                                    fontWeight = FontWeight.SemiBold,
+                                    color = Color(0xFF5B21B6)
+                                )
+                            }
+                        }
                     }
                 }
 
@@ -1076,9 +1200,14 @@ fun RestockDialog(
                                 fontSize = 11.sp,
                                 color = Color(0xFF94A3B8)
                             )
-                            if (selectedQty == recommendation.recommendRestockQty) {
+                            val isRecommendedQtySelected = if (recommendation.seasonalRecommendation != null) {
+                                selectedQty == recommendation.seasonalRecommendation.max
+                            } else {
+                                selectedQty == recommendation.recommendRestockQty
+                            }
+                            if (isRecommendedQtySelected) {
                                 Text(
-                                    text = "Rekomendasi AI Terpilih",
+                                    text = if (recommendation.seasonalRecommendation != null) "Rekomendasi Musiman Terpilih" else "Rekomendasi AI Terpilih",
                                     fontSize = 11.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = Color(0xFF10B981)
@@ -1110,12 +1239,15 @@ fun RestockDialog(
                     Button(
                         onClick = { onConfirm(selectedQty) },
                         shape = RoundedCornerShape(12.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF4F46E5)),
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = Color(0xFF4F46E5),
+                            contentColor = Color.White
+                        ),
                         modifier = Modifier
                             .weight(1.3f)
                             .height(48.dp)
                     ) {
-                        Text("Setuju & Restock", fontWeight = FontWeight.Bold)
+                        Text("Terima", fontWeight = FontWeight.Bold, color = Color.White)
                     }
                 }
             }
@@ -1169,7 +1301,18 @@ fun AiStocksScreenPreview() {
                         createdAt = "2026-05-21T16:22:29.000000Z",
                         updatedAt = "2026-05-21T16:22:29.000000Z",
                         product = null,
-                        aiRecommendationActions = listOf()
+                        aiRecommendationActions = listOf(),
+                        seasonalRecommendation = com.nawaf.kasirpas.model.SeasonalRecommendation(
+                            id = 1,
+                            aiRecommendationId = 45,
+                            min = 40,
+                            max = 60,
+                            label = "Restok musiman 40 - 60 item untuk Hari Raya.",
+                            holiday = "Hari Raya",
+                            reason = "Hari Raya meningkatkan penjualan minuman manis.",
+                            createdAt = "2026-05-21T16:22:29.000000Z",
+                            updatedAt = "2026-05-21T16:22:29.000000Z"
+                        )
                     ),
                     AiRecommendation(
                         id = 46,
@@ -1195,7 +1338,8 @@ fun AiStocksScreenPreview() {
                         createdAt = "2026-05-21T16:22:29.000000Z",
                         updatedAt = "2026-05-21T16:22:29.000000Z",
                         product = null,
-                        aiRecommendationActions = listOf()
+                        aiRecommendationActions = listOf(),
+                        seasonalRecommendation = null
                     )
                 )
             ),
@@ -1204,5 +1348,95 @@ fun AiStocksScreenPreview() {
             onActionClick = { _, _, _ -> },
             onUpgradeClick = {}
         )
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun RestockDialogWithSeasonalPreview() {
+    KasirAppTheme {
+        Box(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+            RestockDialog(
+                recommendation = AiRecommendation(
+                    id = 45,
+                    aiRunId = 12,
+                    productId = 8,
+                    productName = "Kopi Susu Gula Aren",
+                    productPrice = "18000.00",
+                    currentStock = 5,
+                    avgDailySales = "12.50",
+                    recommendRestockQty = 50,
+                    restockMin = 20,
+                    restockMax = 50,
+                    restockLabel = "High Restock Needed",
+                    targetDaysCoverage = 14,
+                    riskLevel = "CRITICAL",
+                    urgencyDescription = "Stok kritis akan habis dalam kurun waktu 1 hari.",
+                    daysUntilEmpty = 1,
+                    estimatedEmptyDate = "2026-05-22",
+                    risk = "Kehilangan potensi omset harian akibat kehabisan stok.",
+                    description = "Stok kritis akan habis dalam kurun waktu 1 hari.",
+                    riskPoint = 95,
+                    stockTimeline = listOf(),
+                    createdAt = "2026-05-21T16:22:29.000000Z",
+                    updatedAt = "2026-05-21T16:22:29.000000Z",
+                    product = null,
+                    aiRecommendationActions = listOf(),
+                    seasonalRecommendation = com.nawaf.kasirpas.model.SeasonalRecommendation(
+                        id = 1,
+                        aiRecommendationId = 45,
+                        min = 40,
+                        max = 60,
+                        label = "Restok musiman 40 - 60 item untuk Hari Raya.",
+                        holiday = "Hari Raya",
+                        reason = "Hari Raya meningkatkan penjualan minuman manis.",
+                        createdAt = "2026-05-21T16:22:29.000000Z",
+                        updatedAt = "2026-05-21T16:22:29.000000Z"
+                    )
+                ),
+                onDismiss = {},
+                onConfirm = {}
+            )
+        }
+    }
+}
+
+@Preview(showBackground = true)
+@Composable
+fun RestockDialogWithoutSeasonalPreview() {
+    KasirAppTheme {
+        Box(modifier = Modifier.fillMaxWidth().padding(16.dp)) {
+            RestockDialog(
+                recommendation = AiRecommendation(
+                    id = 46,
+                    aiRunId = 12,
+                    productId = 9,
+                    productName = "Minyak Goreng Bimoli 2L",
+                    productPrice = "34000.00",
+                    currentStock = 45,
+                    avgDailySales = "1.20",
+                    recommendRestockQty = 20,
+                    restockMin = 10,
+                    restockMax = 30,
+                    restockLabel = "Stok Aman",
+                    targetDaysCoverage = null,
+                    riskLevel = "NORMAL",
+                    urgencyDescription = "Stok aman.",
+                    daysUntilEmpty = null,
+                    estimatedEmptyDate = null,
+                    risk = "Normal",
+                    description = "Stok aman.",
+                    riskPoint = 10,
+                    stockTimeline = listOf(),
+                    createdAt = "2026-05-21T16:22:29.000000Z",
+                    updatedAt = "2026-05-21T16:22:29.000000Z",
+                    product = null,
+                    aiRecommendationActions = listOf(),
+                    seasonalRecommendation = null
+                ),
+                onDismiss = {},
+                onConfirm = {}
+            )
+        }
     }
 }

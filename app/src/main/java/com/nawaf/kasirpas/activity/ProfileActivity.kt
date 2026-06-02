@@ -7,6 +7,7 @@ import android.net.Uri
 import android.os.Bundle
 import android.widget.Toast
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -85,10 +86,16 @@ class ProfileActivity : ComponentActivity() {
     private var isSavingState by mutableStateOf(false)
     private var bioTextState by mutableStateOf("")
     private var selectedImageUriState by mutableStateOf<Uri?>(null)
+    private var isProState by mutableStateOf(false)
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge()
+        enableEdgeToEdge(
+            statusBarStyle = SystemBarStyle.light(
+                android.graphics.Color.TRANSPARENT,
+                android.graphics.Color.TRANSPARENT
+            )
+        )
         preferenceManager = PreferenceManager(this)
 
         // Load data from preference manager
@@ -99,6 +106,7 @@ class ProfileActivity : ComponentActivity() {
                 ProfileScreen(
                     profile = profileState,
                     user = userState,
+                    isPro = isProState,
                     isLoading = isLoadingState,
                     isSaving = isSavingState,
                     bioText = bioTextState,
@@ -137,8 +145,18 @@ class ProfileActivity : ComponentActivity() {
                 } else {
                     Toast.makeText(this@ProfileActivity, "Gagal mengambil data profil", Toast.LENGTH_SHORT).show()
                 }
+
+                // Check active subscription to determine if user is PRO
+                val subResponse = RetrofitClient.billingApi.getActiveSubscription("Bearer $token")
+                isProState = if (subResponse.isSuccessful) {
+                    val activeSub = subResponse.body()?.data
+                    activeSub != null && activeSub.status == "ACTIVE"
+                } else {
+                    profileState?.aiPortfolio != null
+                }
             } catch (e: Exception) {
                 e.printStackTrace()
+                isProState = profileState?.aiPortfolio != null
                 Toast.makeText(this@ProfileActivity, "Error koneksi: ${e.message}", Toast.LENGTH_SHORT).show()
             } finally {
                 isLoadingState = false
@@ -243,6 +261,7 @@ class ProfileActivity : ComponentActivity() {
 fun ProfileScreen(
     profile: Profile?,
     user: User?,
+    isPro: Boolean,
     isLoading: Boolean,
     isSaving: Boolean,
     bioText: String,
@@ -384,7 +403,7 @@ fun ProfileScreen(
                                     fontSize = 18.sp,
                                     fontWeight = FontWeight.Bold
                                 )
-                                if (profile?.aiPortfolio != null) {
+                                if (isPro) {
                                     Spacer(modifier = Modifier.width(4.dp))
                                     Icon(
                                         Icons.Default.Verified,
@@ -583,8 +602,8 @@ fun ProfileScreen(
                         }
 
                         // AI weekly Portfolio analysis
-                        if (profile?.aiPortfolio != null) {
-                            profile.aiPortfolio.portfolioInsight?.let { insight ->
+                        if (isPro) {
+                            profile?.aiPortfolio?.portfolioInsight?.let { insight ->
                                 PortfolioInsightSection(insight)
                             } ?: Card(
                                 modifier = Modifier.fillMaxWidth(),
@@ -1023,6 +1042,7 @@ fun ProfilePreview() {
                 name = "Warung Nawaf",
                 email = "nawaf@example.com"
             ),
+            isPro = false,
             isLoading = false,
             isSaving = false,
             bioText = "Warung Serba Ada yang menyediakan kebutuhan harian Anda.",
@@ -1087,6 +1107,7 @@ fun ProfileProPreview() {
                 name = "Nawaf Pro Store",
                 email = "pro@nawaf.com"
             ),
+            isPro = true,
             isLoading = false,
             isSaving = false,
             bioText = "Toko kelontong modern dengan layanan prima.",
@@ -1108,6 +1129,7 @@ fun ProfileLoadingPreview() {
         ProfileScreen(
             profile = null,
             user = null,
+            isPro = false,
             isLoading = true,
             isSaving = false,
             bioText = "",

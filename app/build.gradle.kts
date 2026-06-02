@@ -18,13 +18,44 @@ android {
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
+    signingConfigs {
+        create("release") {
+            storeFile = file("release.keystore")
+            storePassword = "123456"
+            keyAlias = "key0"
+            keyPassword = "123456"
+        }
+    }
+
     buildTypes {
         release {
+            signingConfig = signingConfigs.getByName("release")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+    }
+
+    tasks.whenTaskAdded {
+        if (name.contains("assembleDebug")) {
+            doLast {
+                copy {
+                    from("build/outputs/apk/debug/app-debug.apk")
+                    into("build/outputs/apk/debug/")
+                    rename("app-debug.apk", "LuxePOS.apk")
+                }
+            }
+        }
+        if (name.contains("assembleRelease")) {
+            doLast {
+                copy {
+                    from("build/outputs/apk/release/app-release.apk")
+                    into("build/outputs/apk/release/")
+                    rename("app-release.apk", "LuxePOS.apk")
+                }
+            }
         }
     }
 

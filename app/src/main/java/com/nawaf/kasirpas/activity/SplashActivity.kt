@@ -46,6 +46,10 @@ private val LuxuryPrimary = Color(0xFF653DA7)
 private val LuxuryAccent = Color(0xFF8E7AB5)
 private val LuxurySurface = Color(0xFFFCF9F8)
 
+// Premium Easings for Smooth Animations
+private val SmoothEaseInOut = CubicBezierEasing(0.42f, 0.0f, 0.58f, 1.0f)
+private val SmoothEaseOut = CubicBezierEasing(0.16f, 1.0f, 0.3f, 1.0f)
+
 class SplashActivity : ComponentActivity() {
 
     private lateinit var prefManager: PreferenceManager
@@ -63,18 +67,12 @@ class SplashActivity : ComponentActivity() {
 
         setContent {
             KasirAppTheme {
-                SplashScreen()
+                SplashScreen(onAnimationFinished = {
+                    lifecycleScope.launch {
+                        navigateNext()
+                    }
+                })
             }
-        }
-
-        startAppFlow()
-    }
-
-    private fun startAppFlow() {
-        lifecycleScope.launch {
-            // Wait for 2 seconds to match the progress animation duration
-            delay(2000)
-            navigateNext()
         }
     }
 
@@ -82,6 +80,7 @@ class SplashActivity : ComponentActivity() {
         // 1. Pertama: Cek onboarding (first install)
         if (!prefManager.isOnboarded()) {
             startActivity(Intent(this, OnboardingActivity::class.java))
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
             finish()
             return
         }
@@ -113,6 +112,7 @@ class SplashActivity : ComponentActivity() {
             // Jika error koneksi, tetap lanjut ke MainActivity (mode offline)
             startActivity(Intent(this, MainActivity::class.java))
         } finally {
+            overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
             finish()
         }
     }
@@ -120,24 +120,44 @@ class SplashActivity : ComponentActivity() {
     private fun navigateToLogin() {
         prefManager.setLogin(false)
         startActivity(Intent(this, LoginActivity::class.java))
+        overridePendingTransition(android.R.anim.fade_in, android.R.anim.fade_out)
     }
 }
 
 @Composable
-fun SplashScreen() {
-    // Entrance Anim States
-    var isLogoVisible by remember { mutableStateOf(false) }
-    var isBrandVisible by remember { mutableStateOf(false) }
-    var isProgressVisible by remember { mutableStateOf(false) }
-
+fun SplashScreen(onAnimationFinished: () -> Unit) {
+    var startAnimations by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
-        delay(100)
-        isLogoVisible = true
-        delay(300)
-        isBrandVisible = true
-        delay(300)
-        isProgressVisible = true
+        startAnimations = true
     }
+
+    // Logo entrance animations
+    val logoAlpha by animateFloatAsState(
+        targetValue = if (startAnimations) 1f else 0f,
+        animationSpec = tween(durationMillis = 1000, delayMillis = 100, easing = SmoothEaseOut),
+        label = "logo_alpha"
+    )
+    val logoScale by animateFloatAsState(
+        targetValue = if (startAnimations) 1f else 0.6f,
+        animationSpec = tween(durationMillis = 1000, delayMillis = 100, easing = SmoothEaseOut),
+        label = "logo_scale"
+    )
+
+    // Wait until logo finished scaling/fading in before starting bobbing
+    var isLogoEntranceFinished by remember { mutableStateOf(false) }
+    LaunchedEffect(startAnimations) {
+        if (startAnimations) {
+            delay(1100) // delay (100) + animation duration (1000)
+            isLogoEntranceFinished = true
+        }
+    }
+
+    // Smooth multiplier to fade-in the bobbing animation to prevent jumps
+    val floatMultiplier by animateFloatAsState(
+        targetValue = if (isLogoEntranceFinished) 1f else 0f,
+        animationSpec = tween(1200, easing = SmoothEaseInOut),
+        label = "float_multiplier"
+    )
 
     // Floating and breathing animations for the logo
     val infiniteTransition = rememberInfiniteTransition(label = "logo_pulse")
@@ -145,19 +165,47 @@ fun SplashScreen() {
         initialValue = -8f,
         targetValue = 8f,
         animationSpec = infiniteRepeatable(
-            animation = tween(2200, easing = FastOutSlowInEasing),
+            animation = tween(2200, easing = SmoothEaseInOut),
             repeatMode = RepeatMode.Reverse
         ),
         label = "float"
     )
 
-    // Smooth loading progress bar simulation (0 to 1f over 2000ms)
+    // Brand entrance animations
+    val brandAlpha by animateFloatAsState(
+        targetValue = if (startAnimations) 1f else 0f,
+        animationSpec = tween(durationMillis = 1000, delayMillis = 400, easing = SmoothEaseOut),
+        label = "brand_alpha"
+    )
+    val brandOffsetY by animateFloatAsState(
+        targetValue = if (startAnimations) 0f else 40f,
+        animationSpec = tween(durationMillis = 1000, delayMillis = 400, easing = SmoothEaseOut),
+        label = "brand_offset"
+    )
+
+    // Progress entrance animations
+    val progressAlpha by animateFloatAsState(
+        targetValue = if (startAnimations) 1f else 0f,
+        animationSpec = tween(durationMillis = 800, delayMillis = 700, easing = SmoothEaseOut),
+        label = "progress_alpha"
+    )
+    val progressOffsetY by animateFloatAsState(
+        targetValue = if (startAnimations) 0f else 30f,
+        animationSpec = tween(durationMillis = 800, delayMillis = 700, easing = SmoothEaseOut),
+        label = "progress_offset"
+    )
+
+    // Smooth loading progress bar simulation
     val animatedProgress = remember { Animatable(0f) }
-    LaunchedEffect(Unit) {
-        animatedProgress.animateTo(
-            targetValue = 1f,
-            animationSpec = tween(durationMillis = 2000, easing = LinearEasing)
-        )
+    LaunchedEffect(startAnimations) {
+        if (startAnimations) {
+            delay(700) // Start filling when progress bar fades in
+            animatedProgress.animateTo(
+                targetValue = 1f,
+                animationSpec = tween(durationMillis = 1500, easing = SmoothEaseInOut)
+            )
+            onAnimationFinished()
+        }
     }
 
     // Determine status text based on current progress
@@ -192,101 +240,101 @@ fun SplashScreen() {
                 verticalArrangement = Arrangement.Center
             ) {
                 // Floating Soft Glow Logo Icon
-                AnimatedVisibility(
-                    visible = isLogoVisible,
-                    enter = fadeIn(tween(1000)) + scaleIn(tween(1000, easing = android.view.animation.OvershootInterpolator().toEasing()))
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(110.dp)
-                            .graphicsLayer { translationY = logoFloat }
-                            .shadow(24.dp, CircleShape, spotColor = LuxuryPrimary.copy(alpha = 0.5f))
-                            .background(
-                                brush = Brush.radialGradient(
-                                    colors = listOf(LuxuryPrimary, LuxuryPrimary.copy(alpha = 0.8f))
-                                ),
-                                shape = CircleShape
-                            )
-                            .border(3.dp, Color.White.copy(alpha = 0.7f), CircleShape),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Rounded.Storefront,
-                            contentDescription = "LuxePOS Logo",
-                            tint = Color.White,
-                            modifier = Modifier.size(48.dp)
+                Box(
+                    modifier = Modifier
+                        .size(110.dp)
+                        .graphicsLayer {
+                            alpha = logoAlpha
+                            scaleX = logoScale
+                            scaleY = logoScale
+                            translationY = logoFloat * floatMultiplier
+                        }
+                        .shadow(24.dp, CircleShape, spotColor = LuxuryPrimary.copy(alpha = 0.5f))
+                        .background(
+                            brush = Brush.radialGradient(
+                                colors = listOf(LuxuryPrimary, LuxuryPrimary.copy(alpha = 0.8f))
+                            ),
+                            shape = CircleShape
                         )
-                    }
+                        .border(3.dp, Color.White.copy(alpha = 0.7f), CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Rounded.Storefront,
+                        contentDescription = "LuxePOS Logo",
+                        tint = Color.White,
+                        modifier = Modifier.size(48.dp)
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(28.dp))
 
                 // Brand Name & Tagline
-                AnimatedVisibility(
-                    visible = isBrandVisible,
-                    enter = fadeIn(tween(1000)) + slideInVertically(tween(1000)) { it / 2 }
-                ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text(
-                            text = stringResource(R.string.brand_name),
-                            fontSize = 38.sp,
-                            fontWeight = FontWeight.Black,
-                            color = LuxuryPrimary,
-                            letterSpacing = (-1).sp
-                        )
-                        Spacer(modifier = Modifier.height(6.dp))
-                        Text(
-                            text = stringResource(R.string.tagline),
-                            fontSize = 12.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = LuxuryAccent,
-                            letterSpacing = 2.sp
-                        )
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    modifier = Modifier.graphicsLayer {
+                        alpha = brandAlpha
+                        translationY = brandOffsetY
                     }
+                ) {
+                    Text(
+                        text = stringResource(R.string.brand_name),
+                        fontSize = 38.sp,
+                        fontWeight = FontWeight.Black,
+                        color = LuxuryPrimary,
+                        letterSpacing = (-1).sp
+                    )
+                    Spacer(modifier = Modifier.height(6.dp))
+                    Text(
+                        text = stringResource(R.string.tagline),
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = LuxuryAccent,
+                        letterSpacing = 2.sp
+                    )
                 }
             }
 
             // Bottom Content: Progress Bar and Initializing Text
-            AnimatedVisibility(
-                visible = isProgressVisible,
-                enter = fadeIn(tween(800)) + slideInVertically(tween(800)) { it / 3 }
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = 64.dp)
+                    .graphicsLayer {
+                        alpha = progressAlpha
+                        translationY = progressOffsetY
+                    },
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Column(
+                // Modern Elegant Progress Bar
+                Box(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 64.dp),
-                    horizontalAlignment = Alignment.CenterHorizontally
+                        .width(180.dp)
+                        .height(4.dp)
+                        .background(Color.LightGray.copy(alpha = 0.3f), RoundedCornerShape(2.dp))
                 ) {
-                    // Modern Elegant Progress Bar
                     Box(
                         modifier = Modifier
-                            .width(180.dp)
-                            .height(4.dp)
-                            .background(Color.LightGray.copy(alpha = 0.3f), RoundedCornerShape(2.dp))
-                    ) {
-                        Box(
-                            modifier = Modifier
-                                .fillMaxHeight()
-                                .fillMaxWidth(animatedProgress.value)
-                                .background(
-                                    brush = Brush.horizontalGradient(
-                                        colors = listOf(LuxuryPrimary, LuxuryAccent)
-                                    ),
-                                    shape = RoundedCornerShape(2.dp)
-                                )
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(14.dp))
-
-                    Text(
-                        text = statusText.uppercase(),
-                        fontSize = 10.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = Color.Gray,
-                        letterSpacing = 1.5.sp
+                            .fillMaxHeight()
+                            .fillMaxWidth(animatedProgress.value)
+                            .background(
+                                brush = Brush.horizontalGradient(
+                                    colors = listOf(LuxuryPrimary, LuxuryAccent)
+                                ),
+                                shape = RoundedCornerShape(2.dp)
+                            )
                     )
                 }
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                Text(
+                    text = statusText.uppercase(),
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Gray,
+                    letterSpacing = 1.5.sp
+                )
             }
         }
     }
@@ -296,7 +344,7 @@ fun SplashScreen() {
 @Composable
 fun SplashScreenPreview() {
     KasirAppTheme {
-        SplashScreen()
+        SplashScreen(onAnimationFinished = {})
     }
 }
 
@@ -312,7 +360,7 @@ private fun MeshBackground() {
         initialValue = 0f,
         targetValue = 1f,
         animationSpec = infiniteRepeatable(
-            animation = tween(12000, easing = LinearEasing),
+            animation = tween(12000, easing = SmoothEaseInOut),
             repeatMode = RepeatMode.Reverse
         ),
         label = "offset"
