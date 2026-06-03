@@ -34,7 +34,9 @@ import androidx.compose.ui.graphics.*
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.ComposeView
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.font.FontWeight
+import androidx.lifecycle.findViewTreeLifecycleOwner
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
@@ -86,17 +88,23 @@ class LaporanFragment : Fragment() {
     }
 }
 
-// Custom LiveData Observer helper to prevent runtime dependencies issues
+// Custom LiveData Observer helper with proper lifecycle awareness
 @Composable
 fun <T> LiveData<T>.observeAsStateHelper(initial: T): State<T> {
+    val view = LocalView.current
+    val lifecycleOwner = view.findViewTreeLifecycleOwner()
     val state = remember { mutableStateOf(initial) }
-    DisposableEffect(this) {
+    DisposableEffect(lifecycleOwner, this) {
         val observer = androidx.lifecycle.Observer<T> { value ->
             if (value != null) {
                 state.value = value
             }
         }
-        observeForever(observer)
+        if (lifecycleOwner != null) {
+            observe(lifecycleOwner, observer)
+        } else {
+            observeForever(observer)
+        }
         onDispose {
             removeObserver(observer)
         }
@@ -584,41 +592,39 @@ fun ChartCardSection(selectedTab: Int, grafikData: GrafikData, summary: ReportSu
 
             when (selectedTab) {
                 0 -> {
-                    // Today Comparison layout
                     TodayComparisonWidget(summary)
                 }
                 1 -> {
-                    // Weekly line chart
+                    val period = grafikData.mingguIni
                     InteractiveCanvasChart(
-                        labels = grafikData.mingguIni.labels,
-                        values = grafikData.mingguIni.values,
+                        labels = period.labels,
+                        values = period.values,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(200.dp)
                     )
                 }
                 2 -> {
-                    // Monthly line chart
+                    val period = grafikData.bulanIni
                     InteractiveCanvasChart(
-                        labels = grafikData.bulanIni.labels,
-                        values = grafikData.bulanIni.values,
+                        labels = period.labels,
+                        values = period.values,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(200.dp)
                     )
                 }
                 3 -> {
-                    // Yearly line chart
+                    val period = grafikData.tahunIni
                     InteractiveCanvasChart(
-                        labels = grafikData.tahunIni.labels,
-                        values = grafikData.tahunIni.values,
+                        labels = period.labels,
+                        values = period.values,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(200.dp)
                     )
                 }
                 else -> {
-                    // All time graphic
                     AllTimeProgressWidget(summary)
                 }
             }

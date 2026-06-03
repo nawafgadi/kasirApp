@@ -116,31 +116,6 @@ fun OnboardingScreen(onFinish: () -> Unit) {
         MeshGradientBackground()
         FloatingBubbles()
 
-        // 2. Skip Button with Immersive Padding
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .statusBarsPadding()
-                .padding(top = 24.dp, end = 24.dp),
-            contentAlignment = Alignment.TopEnd
-        ) {
-            Surface(
-                onClick = onFinish,
-                color = LuxuryPrimary.copy(alpha = 0.08f), // Constant light purple tint matching the luxury theme
-                shape = CircleShape,
-                modifier = Modifier.size(86.dp, 40.dp)
-            ) {
-                Box(contentAlignment = Alignment.Center) {
-                    Text(
-                        text = "Lewati",
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = LuxuryPrimary
-                    )
-                }
-            }
-        }
-
         // 3. Main Content Pager
         Column(modifier = Modifier.fillMaxSize()) {
             HorizontalPager(
@@ -200,6 +175,31 @@ fun OnboardingScreen(onFinish: () -> Unit) {
                 }
                 
                 Spacer(modifier = Modifier.navigationBarsPadding())
+            }
+        }
+
+        // 2. Skip Button (placed after content so it's on top layer)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .statusBarsPadding()
+                .padding(top = 24.dp, end = 24.dp),
+            contentAlignment = Alignment.TopEnd
+        ) {
+            Surface(
+                onClick = onFinish,
+                color = LuxuryPrimary.copy(alpha = 0.08f),
+                shape = CircleShape,
+                modifier = Modifier.size(86.dp, 40.dp)
+            ) {
+                Box(contentAlignment = Alignment.Center) {
+                    Text(
+                        text = "Lewati",
+                        fontSize = 14.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = LuxuryPrimary
+                    )
+                }
             }
         }
     }
