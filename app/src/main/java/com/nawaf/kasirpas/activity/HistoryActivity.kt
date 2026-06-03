@@ -41,6 +41,7 @@ import androidx.compose.ui.unit.sp
 import com.nawaf.kasirpas.api.RetrofitClient
 import com.nawaf.kasirpas.response.TransactionHistory
 import com.nawaf.kasirpas.utils.PreferenceManager
+import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import java.text.NumberFormat
@@ -96,22 +97,24 @@ fun HistoryScreen(onBack: () -> Unit, prefManager: PreferenceManager) {
 
     val listState = rememberLazyListState()
     val scope = rememberCoroutineScope()
+    var fetchJob by remember { mutableStateOf<Job?>(null) }
 
     fun fetchHistory(pageToLoad: Int = 1, isRefresh: Boolean = false) {
         val token = prefManager.getToken() ?: return
-        if (isLoading) return
 
-        // Prevent loading the same page multiple times unless refreshing
-        if (!isRefresh && pageToLoad <= lastLoadedPage) return
-
-        isLoading = true
+        // Cancel any ongoing fetch for refresh/search to prevent stale results
         if (isRefresh) {
+            fetchJob?.cancel()
             lastLoadedPage = 1
         } else {
+            if (isLoading) return
+            if (pageToLoad <= lastLoadedPage) return
             lastLoadedPage = pageToLoad
         }
 
-        scope.launch {
+        isLoading = true
+
+        fetchJob = scope.launch {
             try {
                 val response = RetrofitClient.reportApiService.getSalesHistory(
                     token = "Bearer $token",
@@ -126,7 +129,6 @@ fun HistoryScreen(onBack: () -> Unit, prefManager: PreferenceManager) {
                         if (isRefresh) {
                             transactions = it.transactions
                         } else {
-                            // Filter duplicates just in case
                             val existingIds = transactions.map { t -> t.id }.toSet()
                             val newTrx =
                                 it.transactions.filter { nt -> !existingIds.contains(nt.id) }
@@ -138,6 +140,7 @@ fun HistoryScreen(onBack: () -> Unit, prefManager: PreferenceManager) {
                     }
                 }
             } catch (e: Exception) {
+                if (e is kotlinx.coroutines.CancellationException) throw e
                 e.printStackTrace()
             } finally {
                 isLoading = false
@@ -153,7 +156,8 @@ fun HistoryScreen(onBack: () -> Unit, prefManager: PreferenceManager) {
         if (searchQuery.isNotEmpty()) {
             delay(600)
             fetchHistory(1, true)
-        } else if (transactions.isNotEmpty() || currentPage > 1) {
+        } else {
+            delay(300)
             fetchHistory(1, true)
         }
     }

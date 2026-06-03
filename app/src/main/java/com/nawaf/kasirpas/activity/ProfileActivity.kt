@@ -749,7 +749,7 @@ fun PortfolioInsightSection(insight: PortfolioInsight) {
                         color = ProfilePrimary
                     )
                     Text(
-                        "Periode: ${insight.periode ?: "-"}",
+                        formatDateDisplay(insight.periode),
                         fontSize = 11.sp,
                         color = ProfileOnSurfaceVariant
                     )
@@ -833,10 +833,16 @@ fun PortfolioInsightSection(insight: PortfolioInsight) {
                                 fontWeight = FontWeight.Medium
                             )
                             Text(
-                                "${insight.hariRamaiTanggal} (Omset: Rp ${formatRupiah(insight.hariRamaiOmset)})",
+                                text = formatDateDisplay(insight.hariRamaiTanggal),
                                 fontSize = 13.sp,
                                 fontWeight = FontWeight.SemiBold,
                                 color = ProfileOnSurface
+                            )
+                            Text(
+                                text = "Omset: Rp ${formatRupiah(insight.hariRamaiOmset)}",
+                                fontSize = 12.sp,
+                                color = ProfileOnSurfaceVariant,
+                                fontWeight = FontWeight.Medium
                             )
                         }
                     }
@@ -862,34 +868,46 @@ fun PortfolioInsightSection(insight: PortfolioInsight) {
                 ) {
                     Column(
                         modifier = Modifier.padding(12.dp),
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                        verticalArrangement = Arrangement.spacedBy(10.dp)
                     ) {
                         bintang.forEach { item ->
                             Row(
                                 modifier = Modifier.fillMaxWidth(),
-                                horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
                             ) {
-                                Row(verticalAlignment = Alignment.CenterVertically) {
-                                    Box(
-                                        modifier = Modifier
-                                            .size(8.dp)
-                                            .clip(CircleShape)
-                                            .background(ProfilePrimary)
-                                    )
-                                    Spacer(modifier = Modifier.width(8.dp))
+                                Box(
+                                    modifier = Modifier
+                                        .size(8.dp)
+                                        .clip(CircleShape)
+                                        .background(ProfilePrimary)
+                                )
+                                Spacer(modifier = Modifier.width(10.dp))
+                                Column(modifier = Modifier.weight(1f)) {
                                     Text(
                                         item.nama,
-                                        fontSize = 13.sp,
+                                        fontSize = 14.sp,
                                         fontWeight = FontWeight.SemiBold,
                                         color = ProfileOnSurface
                                     )
+                                    Text(
+                                        "${item.terjual} terjual",
+                                        fontSize = 11.sp,
+                                        color = ProfileOnSurfaceVariant,
+                                        fontWeight = FontWeight.Medium
+                                    )
                                 }
                                 Text(
-                                    "${item.terjual} terjual (Rp ${formatRupiah(item.omset.toString())})",
-                                    fontSize = 12.sp,
-                                    color = ProfileOnSurfaceVariant,
-                                    fontWeight = FontWeight.Medium
+                                    "Rp${formatRupiah(item.omset.toString())}",
+                                    fontSize = 14.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = ProfilePrimary,
+                                    textAlign = TextAlign.End
+                                )
+                            }
+                            if (item != bintang.last()) {
+                                HorizontalDivider(
+                                    color = ProfileOutline.copy(alpha = 0.1f),
+                                    modifier = Modifier.padding(start = 18.dp)
                                 )
                             }
                         }
@@ -993,20 +1011,24 @@ fun MetricBox(
         border = BorderStroke(1.dp, ProfileOutline.copy(alpha = 0.2f))
     ) {
         Column(
-            modifier = Modifier.padding(12.dp)
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(12.dp)
         ) {
             Text(
                 title,
                 fontSize = 10.sp,
                 color = ProfileOnSurfaceVariant,
-                fontWeight = FontWeight.Medium
+                fontWeight = FontWeight.Medium,
+                maxLines = 1
             )
-            Spacer(modifier = Modifier.height(4.dp))
+            Spacer(modifier = Modifier.height(6.dp))
             Text(
                 value,
                 fontSize = 14.sp,
                 fontWeight = FontWeight.Bold,
-                color = ProfileOnSurface
+                color = ProfileOnSurface,
+                maxLines = 1
             )
         }
     }
@@ -1020,6 +1042,21 @@ private fun formatRupiah(amount: String?): String {
         formatter.format(parsed).replace(",", ".")
     } catch (e: Exception) {
         amount
+    }
+}
+
+private fun formatDateDisplay(dateStr: String?): String {
+    if (dateStr == null) return "-"
+    if (!dateStr.contains('T')) return dateStr
+    return try {
+        val clean = dateStr.replace("Z", "").substringBefore("+").substringBeforeLast(".")
+        val sdf = java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", java.util.Locale("id", "ID"))
+        sdf.timeZone = java.util.TimeZone.getTimeZone("UTC")
+        val date = sdf.parse(clean)
+        val out = java.text.SimpleDateFormat("dd MMM yyyy", java.util.Locale("id", "ID"))
+        out.format(date!!)
+    } catch (e: Exception) {
+        dateStr
     }
 }
 
