@@ -129,6 +129,55 @@ fun RegisterScreen(
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
+    var nameError by remember { mutableStateOf<String?>(null) }
+    var emailError by remember { mutableStateOf<String?>(null) }
+    var passwordError by remember { mutableStateOf<String?>(null) }
+
+    fun validateName(): Boolean {
+        return if (name.isBlank()) {
+            nameError = "Nama lengkap tidak boleh kosong"
+            false
+        } else if (name.length < 2) {
+            nameError = "Nama minimal 2 karakter"
+            false
+        } else {
+            nameError = null
+            true
+        }
+    }
+
+    fun validateEmail(): Boolean {
+        return if (email.isBlank()) {
+            emailError = "Email tidak boleh kosong"
+            false
+        } else if (!email.contains("@") || !email.contains(".")) {
+            emailError = "Format email tidak valid"
+            false
+        } else {
+            emailError = null
+            true
+        }
+    }
+
+    fun validatePassword(): Boolean {
+        return if (password.isBlank()) {
+            passwordError = "Password tidak boleh kosong"
+            false
+        } else if (password.length < 6) {
+            passwordError = "Password minimal 6 karakter"
+            false
+        } else {
+            passwordError = null
+            true
+        }
+    }
+
+    fun validateAll(): Boolean {
+        val n = validateName()
+        val e = validateEmail()
+        val p = validatePassword()
+        return n && e && p
+    }
 
     var startAnimations by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
@@ -233,7 +282,10 @@ fun RegisterScreen(
                     // Input Name
                     OutlinedTextField(
                         value = name,
-                        onValueChange = { name = it },
+                        onValueChange = {
+                            name = it
+                            nameError = null
+                        },
                         label = { Text("Nama Lengkap") },
                         placeholder = { Text("John Doe") },
                         modifier = Modifier.fillMaxWidth(),
@@ -241,12 +293,15 @@ fun RegisterScreen(
                         leadingIcon = { Icon(Icons.Rounded.Person, null, tint = LuxuryPrimary) },
                         singleLine = true,
                         enabled = !isLoading,
+                        isError = nameError != null,
+                        supportingText = nameError?.let { { Text(it, color = Color(0xFFB00020)) } },
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = LuxuryPrimary,
                             unfocusedBorderColor = Color.LightGray.copy(alpha = 0.4f),
                             focusedTextColor = Color(0xFF1C1B1B),
                             unfocusedTextColor = Color(0xFF1C1B1B),
-                            cursorColor = LuxuryPrimary
+                            cursorColor = LuxuryPrimary,
+                            errorBorderColor = Color(0xFFB00020)
                         )
                     )
 
@@ -255,7 +310,10 @@ fun RegisterScreen(
                     // Input Email
                     OutlinedTextField(
                         value = email,
-                        onValueChange = { email = it },
+                        onValueChange = {
+                            email = it
+                            emailError = null
+                        },
                         label = { Text("Email") },
                         placeholder = { Text("email@bisnis.com") },
                         modifier = Modifier.fillMaxWidth(),
@@ -264,12 +322,15 @@ fun RegisterScreen(
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                         singleLine = true,
                         enabled = !isLoading,
+                        isError = emailError != null,
+                        supportingText = emailError?.let { { Text(it, color = Color(0xFFB00020)) } },
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = LuxuryPrimary,
                             unfocusedBorderColor = Color.LightGray.copy(alpha = 0.4f),
                             focusedTextColor = Color(0xFF1C1B1B),
                             unfocusedTextColor = Color(0xFF1C1B1B),
-                            cursorColor = LuxuryPrimary
+                            cursorColor = LuxuryPrimary,
+                            errorBorderColor = Color(0xFFB00020)
                         )
                     )
 
@@ -278,7 +339,10 @@ fun RegisterScreen(
                     // Input Password
                     OutlinedTextField(
                         value = password,
-                        onValueChange = { password = it },
+                        onValueChange = {
+                            password = it
+                            passwordError = null
+                        },
                         label = { Text("Password") },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp),
@@ -290,6 +354,8 @@ fun RegisterScreen(
                             }
                         },
                         enabled = !isLoading,
+                        isError = passwordError != null,
+                        supportingText = passwordError?.let { { Text(it, color = Color(0xFFB00020)) } },
                         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                         singleLine = true,
@@ -298,7 +364,8 @@ fun RegisterScreen(
                             unfocusedBorderColor = Color.LightGray.copy(alpha = 0.4f),
                             focusedTextColor = Color(0xFF1C1B1B),
                             unfocusedTextColor = Color(0xFF1C1B1B),
-                            cursorColor = LuxuryPrimary
+                            cursorColor = LuxuryPrimary,
+                            errorBorderColor = Color(0xFFB00020)
                         )
                     )
 
@@ -306,8 +373,12 @@ fun RegisterScreen(
 
                     // Gradient Register Button
                     Button(
-                        onClick = { onRegister(name, email, password) },
-                        enabled = !isLoading && name.isNotEmpty() && email.isNotEmpty() && password.isNotEmpty(),
+                        onClick = {
+                            if (validateAll()) {
+                                onRegister(name, email, password)
+                            }
+                        },
+                        enabled = !isLoading,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(60.dp)

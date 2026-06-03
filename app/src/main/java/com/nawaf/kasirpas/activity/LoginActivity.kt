@@ -151,6 +151,40 @@ fun LoginScreen(
     var email by rememberSaveable { mutableStateOf("") }
     var password by rememberSaveable { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
+    var emailError by remember { mutableStateOf<String?>(null) }
+    var passwordError by remember { mutableStateOf<String?>(null) }
+
+    fun validateEmail(): Boolean {
+        return if (email.isBlank()) {
+            emailError = "Email tidak boleh kosong"
+            false
+        } else if (!email.contains("@") || !email.contains(".")) {
+            emailError = "Format email tidak valid"
+            false
+        } else {
+            emailError = null
+            true
+        }
+    }
+
+    fun validatePassword(): Boolean {
+        return if (password.isBlank()) {
+            passwordError = "Password tidak boleh kosong"
+            false
+        } else if (password.length < 6) {
+            passwordError = "Password minimal 6 karakter"
+            false
+        } else {
+            passwordError = null
+            true
+        }
+    }
+
+    fun validateAll(): Boolean {
+        val e = validateEmail()
+        val p = validatePassword()
+        return e && p
+    }
     
     var startAnimations by remember { mutableStateOf(false) }
     LaunchedEffect(Unit) {
@@ -257,7 +291,10 @@ fun LoginScreen(
                     // Input Email
                     OutlinedTextField(
                         value = email,
-                        onValueChange = { email = it },
+                        onValueChange = {
+                            email = it
+                            emailError = null
+                        },
                         label = { Text("Email") },
                         placeholder = { Text("email@bisnis.com") },
                         modifier = Modifier.fillMaxWidth(),
@@ -266,12 +303,15 @@ fun LoginScreen(
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
                         singleLine = true,
                         enabled = !isLoading,
+                        isError = emailError != null,
+                        supportingText = emailError?.let { { Text(it, color = Color(0xFFB00020)) } },
                         colors = OutlinedTextFieldDefaults.colors(
                             focusedBorderColor = LuxuryPrimary,
                             unfocusedBorderColor = Color.LightGray.copy(alpha = 0.4f),
                             focusedTextColor = Color(0xFF1C1B1B),
                             unfocusedTextColor = Color(0xFF1C1B1B),
-                            cursorColor = LuxuryPrimary
+                            cursorColor = LuxuryPrimary,
+                            errorBorderColor = Color(0xFFB00020)
                         )
                     )
 
@@ -280,7 +320,10 @@ fun LoginScreen(
                     // Input Password
                     OutlinedTextField(
                         value = password,
-                        onValueChange = { password = it },
+                        onValueChange = {
+                            password = it
+                            passwordError = null
+                        },
                         label = { Text("Password") },
                         modifier = Modifier.fillMaxWidth(),
                         shape = RoundedCornerShape(16.dp),
@@ -292,6 +335,8 @@ fun LoginScreen(
                             }
                         },
                         enabled = !isLoading,
+                        isError = passwordError != null,
+                        supportingText = passwordError?.let { { Text(it, color = Color(0xFFB00020)) } },
                         visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
                         keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
                         singleLine = true,
@@ -300,7 +345,8 @@ fun LoginScreen(
                             unfocusedBorderColor = Color.LightGray.copy(alpha = 0.4f),
                             focusedTextColor = Color(0xFF1C1B1B),
                             unfocusedTextColor = Color(0xFF1C1B1B),
-                            cursorColor = LuxuryPrimary
+                            cursorColor = LuxuryPrimary,
+                            errorBorderColor = Color(0xFFB00020)
                         )
                     )
 
@@ -308,8 +354,12 @@ fun LoginScreen(
 
                     // Gradient Primary Button
                     Button(
-                        onClick = { onLogin(email, password) },
-                        enabled = !isLoading && email.isNotEmpty() && password.isNotEmpty(),
+                        onClick = {
+                            if (validateAll()) {
+                                onLogin(email, password)
+                            }
+                        },
+                        enabled = !isLoading,
                         modifier = Modifier
                             .fillMaxWidth()
                             .height(60.dp)
