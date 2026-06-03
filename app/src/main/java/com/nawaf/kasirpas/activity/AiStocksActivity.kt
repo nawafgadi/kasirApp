@@ -628,49 +628,51 @@ fun SuccessLayout(
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         run.seasonalInsight?.let { insight ->
-            val adviceText = insight.insight
-            if (!adviceText.isNullOrEmpty()) {
-                item {
-                    Card(
-                        shape = RoundedCornerShape(16.dp),
-                        colors = CardDefaults.cardColors(containerColor = Color(0xFFEEF2FF)),
-                        border = BorderStroke(1.dp, Color(0xFFC7D2FE)),
-                        modifier = Modifier.fillMaxWidth()
+            item {
+                Card(
+                    shape = RoundedCornerShape(16.dp),
+                    colors = CardDefaults.cardColors(containerColor = Color(0xFFEEF2FF)),
+                    border = BorderStroke(1.dp, Color(0xFFC7D2FE)),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Column(
+                        modifier = Modifier.padding(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        Column(
-                            modifier = Modifier.padding(16.dp),
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
-                            Row(
-                                verticalAlignment = Alignment.CenterVertically,
-                                horizontalArrangement = Arrangement.spacedBy(8.dp)
+                            Box(
+                                modifier = Modifier
+                                    .background(Color(0xFF818CF8), shape = CircleShape)
+                                    .padding(4.dp)
                             ) {
-                                Box(
-                                    modifier = Modifier
-                                        .background(Color(0xFF818CF8), shape = CircleShape)
-                                        .padding(4.dp)
-                                ) {
-                                    Icon(
-                                        imageVector = Icons.Default.Lightbulb,
-                                        contentDescription = "Insight Musiman",
-                                        tint = Color.White,
-                                        modifier = Modifier.size(16.dp)
-                                    )
-                                }
-                                Text(
-                                    text = "Insight Penjualan AI",
-                                    fontWeight = FontWeight.Bold,
-                                    color = Color(0xFF3730A3),
-                                    fontSize = 15.sp
+                                Icon(
+                                    imageVector = Icons.Default.Lightbulb,
+                                    contentDescription = "Insight Musiman",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(16.dp)
                                 )
                             }
-
                             Text(
-                                text = adviceText,
-                                style = MaterialTheme.typography.bodyMedium,
-                                color = Color(0xFF312E81),
-                                lineHeight = 20.sp
+                                text = "Insight Penjualan AI",
+                                fontWeight = FontWeight.Bold,
+                                color = Color(0xFF3730A3),
+                                fontSize = 15.sp
                             )
+                        }
+
+                        if (insight.hasUpcomingHoliday == true) {
+                            val adviceText = insight.insight
+                            if (!adviceText.isNullOrEmpty()) {
+                                Text(
+                                    text = adviceText,
+                                    style = MaterialTheme.typography.bodyMedium,
+                                    color = Color(0xFF312E81),
+                                    lineHeight = 20.sp
+                                )
+                            }
 
                             insight.trends?.let { trends ->
                                 if (trends.isNotEmpty()) {
@@ -698,6 +700,13 @@ fun SuccessLayout(
                                     }
                                 }
                             }
+                        } else {
+                            Text(
+                                text = "Tidak ada hari raya dalam beberapa hari ke depan. Terima kasih.",
+                                style = MaterialTheme.typography.bodyMedium,
+                                color = Color(0xFF64748B),
+                                lineHeight = 20.sp
+                            )
                         }
                     }
                 }
