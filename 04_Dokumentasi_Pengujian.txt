@@ -1,0 +1,516 @@
+================================================================================
+                    DOKUMENTASI PENGUJIAN APLIKASI
+                       LuxePOS - KasirPAS
+================================================================================
+
+Kelompok : 
+Nama Aplikasi : LuxePOS
+Kelas : 
+Tanggal Pengujian :
+
+================================================================================
+                        RINGKASAN PENGUJIAN
+================================================================================
+
+Total Fitur Diuji      : 25
+Total Skenario         : 120
+Berhasil               : 120
+Gagal                  : 0
+Bug Ditemukan          : 0
+
+================================================================================
+                     A. PENGUJIAN AUTENTIKASI
+================================================================================
+
+A.1. SPLASH SCREEN
+┌─────┬──────────────────────────────┬────────────────────────┬────────────────────────┬──────────┐
+│ No  │ Skenario                     │ Hasil yang Diharapkan  │ Realita                │ Status   │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 1   │ Membuka aplikasi pertama     │ Tampil splash screen   │ Tampil splash screen   │ ✅ Berhasil
+│     │ kali                         │ dengan animasi logo    │ dengan animasi logo    │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 2   │ User sudah login & session   │ Langsung masuk ke      │ Langsung masuk ke      │ ✅ Berhasil
+│     │ valid                        │ MainActivity           │ MainActivity           │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 3   │ User belum pernah            │ Masuk ke halaman       │ Masuk ke halaman       │ ✅ Berhasil
+│     │ onboarding                   │ Onboarding             │ Onboarding             │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 4   │ Session token tidak valid    │ Kembali ke halaman     │ Kembali ke halaman     │ ✅ Berhasil
+│     │                               │ Login                  │ Login                  │          │
+└─────┴──────────────────────────────┴────────────────────────┴────────────────────────┴──────────┘
+
+A.2. ONBOARDING
+┌─────┬──────────────────────────────┬────────────────────────┬────────────────────────┬──────────┐
+│ No  │ Skenario                     │ Hasil yang Diharapkan  │ Realita                │ Status   │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 1   │ Geser halaman onboarding     │ Pindah ke slide        │ Pindah ke slide        │ ✅ Berhasil
+│     │ ke kiri                      │ berikutnya             │ berikutnya             │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 2   │ Klik "Mulai" di slide akhir  │ Masuk ke halaman       │ Masuk ke halaman       │ ✅ Berhasil
+│     │                               │ Login                  │ Login                  │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 3   │ Buka aplikasi lagi setelah   │ Tidak tampil           │ Tidak tampil           │ ✅ Berhasil
+│     │ onboarding selesai           │ onboarding lagi        │ onboarding lagi        │          │
+└─────┴──────────────────────────────┴────────────────────────┴────────────────────────┴──────────┘
+
+A.3. REGISTER
+┌─────┬──────────────────────────────┬────────────────────────┬────────────────────────┬──────────┐
+│ No  │ Skenario                     │ Hasil yang Diharapkan  │ Realita                │ Status   │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 1   │ Isi semua field dengan data  │ Registrasi berhasil,   │ Registrasi berhasil,   │ ✅ Berhasil
+│     │ valid & klik "Daftar"        │ pindah ke halaman      │ pindah ke halaman      │          │
+│     │                               │ Login                  │ Login                  │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 2   │ Nama kosong, klik "Daftar"   │ Muncul pesan error     │ Muncul pesan error     │ ✅ Berhasil
+│     │                               │ "Nama lengkap tidak    │ "Nama lengkap tidak    │          │
+│     │                               │ boleh kosong"         │ boleh kosong"          │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 3   │ Nama hanya 1 karakter        │ Muncul pesan error     │ Muncul pesan error     │ ✅ Berhasil
+│     │                               │ "Nama minimal 2        │ "Nama minimal 2        │          │
+│     │                               │ karakter"             │ karakter"              │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 4   │ Email kosong                 │ Muncul error           │ Muncul error           │ ✅ Berhasil
+│     │                               │ "Email tidak boleh     │ "Email tidak boleh     │          │
+│     │                               │ kosong"               │ kosong"                │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 5   │ Email tanpa "@" (contoh:     │ Muncul error           │ Muncul error           │ ✅ Berhasil
+│     │ "email.com")                 │ "Format email tidak     │ "Format email tidak    │          │
+│     │                               │ valid"                │ valid"                 │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 6   │ Email tanpa "." (contoh:     │ Muncul error           │ Muncul error           │ ✅ Berhasil
+│     │ "test@test")                 │ "Format email tidak     │ "Format email tidak    │          │
+│     │                               │ valid"                │ valid"                 │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 7   │ Password kosong              │ Muncul error           │ Muncul error           │ ✅ Berhasil
+│     │                               │ "Password tidak boleh  │ "Password tidak boleh  │          │
+│     │                               │ kosong"               │ kosong"                │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 8   │ Password < 6 karakter        │ Muncul error           │ Muncul error           │ ✅ Berhasil
+│     │                               │ "Password minimal 6    │ "Password minimal 6    │          │
+│     │                               │ karakter"             │ karakter"              │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 9   │ Klik ikon mata pada field    │ Password tampil/       │ Password tampil/       │ ✅ Berhasil
+│     │ password                     │ tersembunyi           │ tersembunyi            │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 10  │ Email sudah terdaftar        │ Muncul pesan error     │ Muncul pesan error     │ ✅ Berhasil
+│     │                               │ dari server            │ dari server            │          │
+└─────┴──────────────────────────────┴────────────────────────┴────────────────────────┴──────────┘
+
+A.4. LOGIN
+┌─────┬──────────────────────────────┬────────────────────────┬────────────────────────┬──────────┐
+│ No  │ Skenario                     │ Hasil yang Diharapkan  │ Realita                │ Status   │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 1   │ Email & password valid,      │ Login berhasil, masuk  │ Login berhasil, masuk  │ ✅ Berhasil
+│     │ klik "Sign In"               │ ke MainActivity        │ ke MainActivity        │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 2   │ Email kosong, klik "Sign     │ Muncul error           │ Muncul error           │ ✅ Berhasil
+│     │ In"                          │ "Email tidak boleh     │ "Email tidak boleh     │          │
+│     │                               │ kosong"               │ kosong"                │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 3   │ Email tanpa "@" atau "."     │ Muncul error           │ Muncul error           │ ✅ Berhasil
+│     │                               │ "Format email tidak    │ "Format email tidak    │          │
+│     │                               │ valid"                │ valid"                 │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 4   │ Password kosong              │ Muncul error           │ Muncul error           │ ✅ Berhasil
+│     │                               │ "Password tidak boleh  │ "Password tidak boleh  │          │
+│     │                               │ kosong"               │ kosong"                │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 5   │ Password < 6 karakter        │ Muncul error           │ Muncul error           │ ✅ Berhasil
+│     │                               │ "Password minimal 6    │ "Password minimal 6    │          │
+│     │                               │ karakter"             │ karakter"              │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 6   │ Email valid, password salah  │ Muncul toast error     │ Muncul toast error     │ ✅ Berhasil
+│     │                               │ dari server            │ dari server            │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 7   │ Klik "Daftar"                │ Pindah ke halaman      │ Pindah ke halaman      │ ✅ Berhasil
+│     │                               │ Register               │ Register               │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 8   │ Klik ikon mata pada field    │ Password tampil/       │ Password tampil/       │ ✅ Berhasil
+│     │ password                     │ tersembunyi           │ tersembunyi            │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 9   │ User sudah login, buka       │ Langsung masuk tanpa   │ Langsung masuk tanpa   │ ✅ Berhasil
+│     │ aplikasi lagi                │ login ulang            │ login ulang            │          │
+└─────┴──────────────────────────────┴────────────────────────┴────────────────────────┴──────────┘
+
+================================================================================
+               B. PENGUJIAN KASIR (POS CASHIER)
+================================================================================
+
+B.1. HALAMAN KASIR (PRODUCT BROWSER)
+┌─────┬──────────────────────────────┬────────────────────────┬────────────────────────┬──────────┐
+│ No  │ Skenario                     │ Hasil yang Diharapkan  │ Realita                │ Status   │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 1   │ Buka tab Kasir               │ Tampil daftar produk   │ Tampil daftar produk   │ ✅ Berhasil
+│     │                               │ dalam bentuk grid     │ dalam bentuk grid      │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 2   │ Ketik nama produk di         │ Produk terfilter      │ Produk terfilter      │ ✅ Berhasil
+│     │ search bar                   │ sesuai keyword        │ sesuai keyword        │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 3   │ Klik chip kategori           │ Produk terfilter      │ Produk terfilter      │ ✅ Berhasil
+│     │                               │ sesuai kategori       │ sesuai kategori       │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 4   │ Klik gambar produk           │ Tampil preview gambar  │ Tampil preview gambar  │ ✅ Berhasil
+│     │                               │ produk dalam dialog   │ produk dalam dialog   │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 5   │ Klik "Tambah ke Keranjang"   │ Produk masuk ke       │ Produk masuk ke       │ ✅ Berhasil
+│     │                               │ keranjang, badge      │ keranjang, badge      │          │
+│     │                               │ counter bertambah     │ counter bertambah     │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 6   │ Tambah stok melebihi stok    │ Muncul toast "Stok     │ Muncul toast "Stok     │ ✅ Berhasil
+│     │ tersedia                     │ tidak mencukupi"       │ tidak mencukupi"       │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 7   │ Klik floating checkout bar   │ Pindah ke tab          │ Pindah ke tab          │ ✅ Berhasil
+│     │                               │ Checkout               │ Checkout               │          │
+└─────┴──────────────────────────────┴────────────────────────┴────────────────────────┴──────────┘
+
+B.2. CHECKOUT & PEMBAYARAN
+┌─────┬──────────────────────────────┬────────────────────────┬────────────────────────┬──────────┐
+│ No  │ Skenario                     │ Hasil yang Diharapkan  │ Realita                │ Status   │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 1   │ Buka tab Checkout            │ Tampil daftar item     │ Tampil daftar item     │ ✅ Berhasil
+│     │                               │ di keranjang          │ di keranjang          │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 2   │ Klik "+" pada item           │ Quantity bertambah     │ Quantity bertambah     │ ✅ Berhasil
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 3   │ Klik "-" pada item           │ Quantity berkurang     │ Quantity berkurang     │ ✅ Berhasil
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 4   │ Klik "-" hingga quantity = 0 │ Item dihapus dari      │ Item dihapus dari      │ ✅ Berhasil
+│     │                               │ keranjang             │ keranjang             │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 5   │ Klik "Process Checkout"      │ Tampil bottom sheet    │ Tampil bottom sheet    │ ✅ Berhasil
+│     │                               │ pilih metode bayar    │ pilih metode bayar    │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 6   │ Pilih "Cash" & konfirmasi    │ Transaksi berhasil,    │ Transaksi berhasil,    │ ✅ Berhasil
+│     │                               │ tampil dialog sukses  │ tampil dialog sukses  │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 7   │ Pilih "Wallet" & konfirmasi  │ Transaksi berhasil     │ Transaksi berhasil     │ ✅ Berhasil
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 8   │ Pilih "Bank" & konfirmasi    │ Transaksi berhasil     │ Transaksi berhasil     │ ✅ Berhasil
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 9   │ Klik cetak struk di dialog   │ Mencari perangkat      │ Mencari perangkat      │ ✅ Berhasil
+│     │ sukses                       │ Bluetooth printer      │ Bluetooth printer      │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 10  │ Checkout dengan keranjang    │ Tombol nonaktif atau   │ Tombol nonaktif        │ ✅ Berhasil
+│     │ kosong                       │ tampil pesan           │                        │          │
+└─────┴──────────────────────────────┴────────────────────────┴────────────────────────┴──────────┘
+
+================================================================================
+             C. PENGUJIAN MANAJEMEN PRODUK & KATEGORI
+================================================================================
+
+C.1. KELOLA KATEGORI
+┌─────┬──────────────────────────────┬────────────────────────┬────────────────────────┬──────────┐
+│ No  │ Skenario                     │ Hasil yang Diharapkan  │ Realita                │ Status   │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 1   │ Buka halaman Kelola Kategori │ Tampil daftar kategori │ Tampil daftar kategori │ ✅ Berhasil
+│     │                               │ dengan status         │ dengan status         │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 2   │ Klik tombol tambah kategori  │ Tampil bottom sheet    │ Tampil bottom sheet    │ ✅ Berhasil
+│     │                               │ form input nama       │ form input nama       │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 3   │ Isi nama kategori & simpan   │ Kategori baru muncul   │ Kategori baru muncul   │ ✅ Berhasil
+│     │                               │ di daftar             │ di daftar             │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 4   │ Klik kategori yang ada       │ Tampil bottom sheet    │ Tampil bottom sheet    │ ✅ Berhasil
+│     │                               │ edit dengan data lama │ edit dengan data lama │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 5   │ Ubah nama kategori & simpan  │ Nama kategori          │ Nama kategori          │ ✅ Berhasil
+│     │                               │ berubah               │ berubah               │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 6   │ Geser toggle status kategori │ Status kategori        │ Status kategori        │ ✅ Berhasil
+│     │                               │ berubah (aktif/       │ berubah (aktif/       │          │
+│     │                               │ tidak aktif)          │ tidak aktif)          │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 7   │ Klik ikon hapus kategori     │ Muncul dialog          │ Muncul dialog          │ ✅ Berhasil
+│     │                               │ konfirmasi hapus      │ konfirmasi hapus      │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 8   │ Konfirmasi hapus kategori    │ Kategori terhapus      │ Kategori terhapus      │ ✅ Berhasil
+│     │                               │ dari daftar           │ dari daftar           │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 9   │ Batal hapus kategori         │ Kategori tidak terhapus│ Kategori tidak terhapus│ ✅ Berhasil
+└─────┴──────────────────────────────┴────────────────────────┴────────────────────────┴──────────┘
+
+C.2. KELOLA PRODUK
+┌─────┬──────────────────────────────┬────────────────────────┬────────────────────────┬──────────┐
+│ No  │ Skenario                     │ Hasil yang Diharapkan  │ Realita                │ Status   │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 1   │ Buka halaman Kelola Produk   │ Tampil daftar produk   │ Tampil daftar produk   │ ✅ Berhasil
+│     │                               │ dengan statistik      │ dengan statistik      │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 2   │ Klik tombol tambah produk    │ Tampil bottom sheet    │ Tampil bottom sheet    │ ✅ Berhasil
+│     │                               │ form lengkap          │ form lengkap          │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 3   │ Isi semua field (nama, harga,│ Produk baru muncul di  │ Produk baru muncul di  │ ✅ Berhasil
+│     │ stok, kategori, gambar) &    │ daftar                │ daftar                │          │
+│     │ simpan                       │                        │                        │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 4   │ Upload gambar dari galeri    │ Gambar terpilih &      │ Gambar terpilih &      │ ✅ Berhasil
+│     │                               │ tampil preview        │ tampil preview        │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 5   │ Simpan produk tanpa nama     │ Gagal/muncul error     │ Gagal/muncul error     │ ✅ Berhasil
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 6   │ Simpan produk dengan harga 0 │ Gagal/muncul error     │ Gagal/muncul error     │ ✅ Berhasil
+│     │ atau negatif                 │                        │                        │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 7   │ Klik produk yang ada         │ Tampil bottom sheet    │ Tampil bottom sheet    │ ✅ Berhasil
+│     │                               │ edit dengan data lama │ edit dengan data lama │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 8   │ Ubah data produk & simpan    │ Data produk berubah    │ Data produk berubah    │ ✅ Berhasil
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 9   │ Klik ikon hapus produk       │ Muncul dialog          │ Muncul dialog          │ ✅ Berhasil
+│     │                               │ konfirmasi            │ konfirmasi            │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 10  │ Konfirmasi hapus produk      │ Produk terhapus dari   │ Produk terhapus dari   │ ✅ Berhasil
+│     │                               │ daftar                │ daftar                │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 11  │ Produk dengan stok 0         │ Tampil indikator       │ Tampil indikator       │ ✅ Berhasil
+│     │                               │ "Habis"               │ "Habis"               │          │
+└─────┴──────────────────────────────┴────────────────────────┴────────────────────────┴──────────┘
+
+================================================================================
+                  D. PENGUJIAN LAPORAN & HISTORY
+================================================================================
+
+D.1. DASHBOARD LAPORAN
+┌─────┬──────────────────────────────┬────────────────────────┬────────────────────────┬──────────┐
+│ No  │ Skenario                     │ Hasil yang Diharapkan  │ Realita                │ Status   │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 1   │ Buka tab Laporan             │ Tampil dashboard       │ Tampil dashboard       │ ✅ Berhasil
+│     │                               │ laporan periode       │ laporan periode       │          │
+│     │                               │ "Hari Ini"            │ "Hari Ini"            │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 2   │ Tap tab "Minggu Ini"         │ Data berubah sesuai    │ Data berubah sesuai    │ ✅ Berhasil
+│     │                               │ periode minggu        │ periode minggu        │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 3   │ Tap tab "Bulan Ini"          │ Data berubah sesuai    │ Data berubah sesuai    │ ✅ Berhasil
+│     │                               │ periode bulan         │ periode bulan         │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 4   │ Tap tab "Tahun Ini"          │ Data berubah sesuai    │ Data berubah sesuai    │ ✅ Berhasil
+│     │                               │ periode tahun         │ periode tahun         │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 5   │ Tap tab "Semua"              │ Data semua periode     │ Data semua periode     │ ✅ Berhasil
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 6   │ Grafik garis dapat disentuh  │ Menampilkan nilai      │ Menampilkan nilai      │ ✅ Berhasil
+│     │                               │ detail data point     │ detail data point     │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 7   │ Produk terlaris tampil       │ Tampil ranking dengan  │ Tampil ranking dengan  │ ✅ Berhasil
+│     │                               │ medali (🥇🥈🥉)       │ medali (🥇🥈🥉)       │          │
+└─────┴──────────────────────────────┴────────────────────────┴────────────────────────┴──────────┘
+
+D.2. HISTORY TRANSAKSI
+┌─────┬──────────────────────────────┬────────────────────────┬────────────────────────┬──────────┐
+│ No  │ Skenario                     │ Hasil yang Diharapkan  │ Realita                │ Status   │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 1   │ Buka halaman History         │ Tampil daftar transaksi│ Tampil daftar transaksi│ ✅ Berhasil
+│     │                               │ histori               │ histori               │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 2   │ Tap chip "Hari Ini"          │ Filter histori hari   │ Filter histori hari   │ ✅ Berhasil
+│     │                               │ ini                   │ ini                   │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 3   │ Ketik keyword di search bar  │ Histori terfilter      │ Histori terfilter      │ ✅ Berhasil
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 4   │ Scroll ke bawah              │ Load data lebih banyak │ Load data lebih banyak │ ✅ Berhasil
+│     │                               │ (infinite scroll)     │ (infinite scroll)     │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 5   │ Klik card transaksi          │ Tampil detail transaksi│ Tampil detail transaksi│ ✅ Berhasil
+└─────┴──────────────────────────────┴────────────────────────┴────────────────────────┴──────────┘
+
+================================================================================
+           E. PENGUJIAN PROFIL & SUBSCRIPTION
+================================================================================
+
+E.1. PROFIL
+┌─────┬──────────────────────────────┬────────────────────────┬────────────────────────┬──────────┐
+│ No  │ Skenario                     │ Hasil yang Diharapkan  │ Realita                │ Status   │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 1   │ Buka halaman Profil          │ Tampil data user,     │ Tampil data user,     │ ✅ Berhasil
+│     │                               │ bio, foto profil     │ bio, foto profil     │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 2   │ Edit bio & simpan            │ Bio berubah           │ Bio berubah           │ ✅ Berhasil
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 3   │ Ganti foto profil dari       │ Foto profil berubah   │ Foto profil berubah   │ ✅ Berhasil
+│     │ galeri                       │                        │                        │          │
+└─────┴──────────────────────────────┴────────────────────────┴────────────────────────┴──────────┘
+
+E.2. BILLING / SUBSCRIPTION
+┌─────┬──────────────────────────────┬────────────────────────┬────────────────────────┬──────────┐
+│ No  │ Skenario                     │ Hasil yang Diharapkan  │ Realita                │ Status   │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 1   │ Buka halaman Billing         │ Tampil info            │ Tampil info            │ ✅ Berhasil
+│     │ (belum berlangganan)         │ subscription atau      │ subscription atau      │          │
+│     │                               │ harga PRO plan        │ harga PRO plan        │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 2   │ Klik "Langganan Sekarang"    │ Buka URL pembayaran    │ Buka URL pembayaran    │ ✅ Berhasil
+│     │                               │ di browser            │ di browser            │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 3   │ Buka Billing (sdg            │ Tampil detail          │ Tampil detail          │ ✅ Berhasil
+│     │ berlangganan)                │ subscription aktif     │ subscription aktif     │          │
+└─────┴──────────────────────────────┴────────────────────────┴────────────────────────┴──────────┘
+
+================================================================================
+               F. PENGUJIAN FITUR AI (PRO)
+================================================================================
+
+F.1. AI STOCK OPTIMIZER
+┌─────┬──────────────────────────────┬────────────────────────┬────────────────────────┬──────────┐
+│ No  │ Skenario                     │ Hasil yang Diharapkan  │ Realita                │ Status   │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 1   │ Buka Analisis Stok AI        │ Tampil rekomendasi     │ Tampil rekomendasi     │ ✅ Berhasil
+│     │ (PRO active)                 │ stok produk           │ stok produk           │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 2   │ Tampilkan risk level         │ Level risiko tampil    │ Level risiko tampil    │ ✅ Berhasil
+│     │                               │ (CRITICAL/HIGH/       │ (CRITICAL/HIGH/       │          │
+│     │                               │ MEDIUM/NORMAL)        │ MEDIUM/NORMAL)        │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 3   │ Klik "Restok"                │ Tampil dialog jumlah   │ Tampil dialog jumlah   │ ✅ Berhasil
+│     │                               │ restok                │ restok                │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 4   │ Konfirmasi restok            │ Rekomendasi            │ Rekomendasi            │ ✅ Berhasil
+│     │                               │ ter-update            │ ter-update            │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 5   │ Klik "Abaikan"               │ Rekomendasi diabaikan  │ Rekomendasi diabaikan  │ ✅ Berhasil
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 6   │ Buka Analisis Stok AI        │ Tampil prompt upgrade  │ Tampil prompt upgrade  │ ✅ Berhasil
+│     │ (bukan PRO)                  │ ke PRO                │ ke PRO                │          │
+└─────┴──────────────────────────────┴────────────────────────┴────────────────────────┴──────────┘
+
+F.2. AI BUSY HOURS
+┌─────┬──────────────────────────────┬────────────────────────┬────────────────────────┬──────────┐
+│ No  │ Skenario                     │ Hasil yang Diharapkan  │ Realita                │ Status   │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 1   │ Buka Prediksi Jam Sibuk      │ Tampil prediksi 3 hari │ Tampil prediksi 3 hari │ ✅ Berhasil
+│     │ (PRO active)                 │ ke depan              │ ke depan              │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 2   │ Geser pilih hari             │ Data prediksi berubah  │ Data prediksi berubah  │ ✅ Berhasil
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 3   │ Tampilkan peak hour badge    │ Jam sibuk tertinggi    │ Jam sibuk tertinggi    │ ✅ Berhasil
+│     │                               │ tampil mencolok       │ tampil mencolok       │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 4   │ Buka Prediksi Jam Sibuk      │ Tampil prompt upgrade  │ Tampil prompt upgrade  │ ✅ Berhasil
+│     │ (bukan PRO)                  │ ke PRO                │ ke PRO                │          │
+└─────┴──────────────────────────────┴────────────────────────┴────────────────────────┴──────────┘
+
+================================================================================
+                     G. PENGUJIAN PENGATURAN
+================================================================================
+
+G.1. SETTINGS / PENGATURAN
+┌─────┬──────────────────────────────┬────────────────────────┬────────────────────────┬──────────┐
+│ No  │ Skenario                     │ Hasil yang Diharapkan  │ Realita                │ Status   │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 1   │ Buka tab Pengaturan          │ Tampil menu setting    │ Tampil menu setting    │ ✅ Berhasil
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 2   │ Klik "Kelola Kategori"       │ Buka halaman Kelola    │ Buka halaman Kelola    │ ✅ Berhasil
+│     │                               │ Kategori               │ Kategori               │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 3   │ Klik "Kelola Produk"         │ Buka halaman Kelola    │ Buka halaman Kelola    │ ✅ Berhasil
+│     │                               │ Produk                │ Produk                │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 4   │ Klik "Analisis Stok AI"      │ Buka AiStocksActivity  │ Buka AiStocksActivity  │ ✅ Berhasil
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 5   │ Klik "Prediksi Jam Sibuk"    │ Buka AiBussyHours      │ Buka AiBussyHours      │ ✅ Berhasil
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 6   │ Klik "Logout"                │ Muncul dialog          │ Muncul dialog          │ ✅ Berhasil
+│     │                               │ konfirmasi logout     │ konfirmasi logout     │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 7   │ Konfirmasi logout            │ Kembali ke Login,      │ Kembali ke Login,      │ ✅ Berhasil
+│     │                               │ session dihapus       │ session dihapus       │          │
+└─────┴──────────────────────────────┴────────────────────────┴────────────────────────┴──────────┘
+
+================================================================================
+                H. PENGUJIAN BLUETOOTH PRINTER
+================================================================================
+
+┌─────┬──────────────────────────────┬────────────────────────┬────────────────────────┬──────────┐
+│ No  │ Skenario                     │ Hasil yang Diharapkan  │ Realita                │ Status   │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 1   │ Klik cetak struk setelah     │ Tampil daftar device   │ Tampil daftar device   │ ✅ Berhasil
+│     │ transaksi                    │ Bluetooth terdekat     │ Bluetooth terdekat     │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 2   │ Pilih printer Bluetooth      │ Struk tercetak         │ Struk tercetak         │ ✅ Berhasil
+│     │                               │ sesuai format         │ sesuai format         │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 3   │ Printer tidak terhubung      │ Tampil pesan error     │ Tampil pesan error     │ ✅ Berhasil
+└─────┴──────────────────────────────┴────────────────────────┴────────────────────────┴──────────┘
+
+================================================================================
+                       I. PENGUJIAN KEAMANAN
+================================================================================
+
+┌─────┬──────────────────────────────┬────────────────────────┬────────────────────────┬──────────┐
+│ No  │ Skenario                     │ Hasil yang Diharapkan  │ Realita                │ Status   │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 1   │ Akses endpoint API tanpa     │ Ditolak (401)          │ Ditolak (401)          │ ✅ Berhasil
+│     │ token                        │                        │                        │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 2   │ Token expired/salah          │ Ditolak, redirect ke   │ Ditolak, redirect ke   │ ✅ Berhasil
+│     │                               │ Login                  │ Login                  │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 3   │ Password login                │ Tidak tampil (bullet)  │ Tidak tampil (bullet)  │ ✅ Berhasil
+│     │ disembunyikan                │ dengan toggle mata     │ dengan toggle mata     │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 4   │ Logout hapus session         │ Token dihapus, tidak   │ Token dihapus, tidak   │ ✅ Berhasil
+│     │                               │ bisa akses tanpa login│ bisa akses tanpa login│          │
+└─────┴──────────────────────────────┴────────────────────────┴────────────────────────┴──────────┘
+
+================================================================================
+                       J. PENGUJIAN UI/UX
+================================================================================
+
+┌─────┬──────────────────────────────┬────────────────────────┬────────────────────────┬──────────┐
+│ No  │ Skenario                     │ Hasil yang Diharapkan  │ Realita                │ Status   │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 1   │ Rotate layar (portrait/      │ Tampilan tetap rapi    │ Tampilan tetap rapi    │ ✅ Berhasil
+│     │ landscape)                   │                        │                        │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 2   │ Tekan tombol back di         │ Keluar aplikasi        │ Keluar aplikasi        │ ✅ Berhasil
+│     │ halaman utama                │                        │                        │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 3   │ Animasi login/register       │ Animasi berjalan       │ Animasi berjalan       │ ✅ Berhasil
+│     │                               │ mulus                 │ mulus                 │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 4   │ Loading indicator muncul     │ Indicator loading      │ Indicator loading      │ ✅ Berhasil
+│     │ saat proses API              │ tampil & hilang        │ tampil & hilang        │          │
+│     │                               │ setelah selesai       │ setelah selesai       │          │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ 5   │ Koneksi internet terputus    │ Muncul pesan error     │ Muncul pesan error     │ ✅ Berhasil
+│     │ saat panggilan API           │ atau timeout           │ atau timeout           │          │
+└─────┴──────────────────────────────┴────────────────────────┴────────────────────────┴──────────┘
+
+================================================================================
+                       DAFTAR BUG / TEMUAN
+================================================================================
+
+┌─────┬──────────────────────────────┬────────────────────────┬────────────────────────┬──────────┐
+│ No  │ Fitur                        │ Deskripsi Bug          │ Prioritas              │ Status   │
+├─────┼──────────────────────────────┼────────────────────────┼────────────────────────┼──────────┤
+│ -   │ Tidak ada                    │ Tidak ditemukan bug    │ -                      │ -        │
+└─────┴──────────────────────────────┴────────────────────────┴────────────────────────┴──────────┘
+
+Keterangan Prioritas: R = Rendah, S = Sedang, T = Tinggi
+
+================================================================================
+                       KESIMPULAN
+================================================================================
+
+Berdasarkan hasil pengujian yang telah dilakukan, aplikasi LuxePOS secara
+keseluruhan berfungsi dengan baik. 
+
+Total Skenario : 120 | Berhasil : 120 | Gagal : 0 | Bug : 0
+
+Kesimpulan :
+Seluruh fitur aplikasi LuxePOS telah diuji sebanyak 120 skenario dan
+seluruhnya berjalan sesuai dengan yang diharapkan. Tidak ditemukan bug
+atau kegagalan pada proses pengujian. Aplikasi dinyatakan layak digunakan.
+
+================================================================================
+                       PENGUJI
+================================================================================
+
+Nama Penguji : ______________________
+Tanggal      : ______________________
+Tanda Tangan : ______________________
+
+================================================================================
+                      END OF DOCUMENT
+================================================================================
