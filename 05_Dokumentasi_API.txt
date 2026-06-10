@@ -1,0 +1,300 @@
+================================================================================
+
+                      DOKUMENTASI API APLIKASI
+
+                           LUXEPOS
+
+                    Point of Sale System
+
+================================================================================
+
+                                                                                 
+                                                                                 
+                                                                                 
+                                                                                 
+                                                                                 
+                                                                                 
+                                                                                 
+                                                                                 
+                                                                                 
+                                                                                 
+                                                                                 
+                                                                                 
+                                                                                 
+                                                                                 
+                                                                                 
+                                                                                 
+================================================================================
+                    LEMBAR PENGESAHAN
+================================================================================
+
+Judul Dokumen    : Dokumentasi API Aplikasi LuxePOS
+Nama Aplikasi    : LuxePOS (KasirPAS)
+Base URL API     : https://paskelompok2.online/api/
+Format Data      : JSON
+Metode Auth      : Bearer Token
+
+Disusun Oleh :
+Kelompok         : ______________________
+Kelas            : ______________________
+Tanggal          : ______________________
+
+Mengetahui,
+Pengembang,
+
+(______________________)
+
+================================================================================
+                    KATA PENGANTAR
+================================================================================
+
+Puji syukur kehadirat Tuhan Yang Maha Esa atas terselesaikannya
+dokumentasi API aplikasi LuxePOS. Dokumen ini disusun sebagai panduan
+teknis penggunaan API pada aplikasi Point of Sale berbasis Android.
+
+Dokumentasi ini mencakup seluruh endpoint API yang digunakan dalam
+aplikasi LuxePOS, mulai dari autentikasi pengguna, manajemen produk
+dan kategori, transaksi penjualan, laporan keuangan, profil pengguna,
+langganan (subscription), hingga fitur kecerdasan buatan (AI).
+
+Setiap endpoint dilengkapi dengan metode HTTP, URL, serta keterangan
+agar memudahkan pengembang dalam melakukan integrasi dan pengujian.
+
+Semoga dokumentasi ini dapat bermanfaat bagi seluruh pihak yang
+berkepentingan.
+
+Jakarta, ______________________
+
+Tim Pengembang
+
+================================================================================
+                    DAFTAR ISI
+================================================================================
+
+LEMBAR PENGESAHAN ...................................................... ii
+KATA PENGANTAR ......................................................... iii
+DAFTAR ISI ............................................................. iv
+
+BAB I   PENDAHULUAN .................................................... 1
+  1.1  Latar Belakang ................................................... 1
+  1.2  Ruang Lingkup ................................................... 1
+  1.3  Teknologi yang Digunakan ......................................... 1
+
+BAB II  STRUKTUR API ................................................... 2
+  2.1  Base URL ........................................................ 2
+  2.2  Autentikasi ..................................................... 2
+  2.3  Format Request dan Response ...................................... 2
+  2.4  Kode Status ..................................................... 2
+
+BAB III  DAFTAR ENDPOINT .............................................. 3
+  3.1  Authentication API .............................................. 3
+  3.2  User API ........................................................ 3
+  3.3  Product API ..................................................... 4
+  3.4  Category API .................................................... 4
+  3.5  Transaction API ................................................. 5
+  3.6  Billing API ..................................................... 5
+  3.7  Report API ...................................................... 6
+  3.8  Profile API ..................................................... 6
+  3.9  AI API .......................................................... 7
+
+BAB IV  PENUTUP ........................................................ 8
+
+================================================================================
+BAB I
+PENDAHULUAN
+================================================================================
+
+1.1  Latar Belakang
+
+    LuxePOS merupakan aplikasi Point of Sale (POS) berbasis Android
+    yang dikembangkan untuk membantu pengusaha dalam mengelola bisnis
+    mereka secara efisien. Aplikasi ini terintegrasi dengan backend
+    server melalui RESTful API yang memungkinkan sinkronisasi data
+    secara real-time.
+
+    Dokumentasi API ini dibuat sebagai referensi teknis bagi
+    pengembang yang ingin memahami, menguji, atau mengembangkan
+    lebih lanjut sistem yang sudah ada.
+
+1.2  Ruang Lingkup
+
+    Dokumentasi ini mencakup seluruh layanan API yang digunakan oleh
+    aplikasi LuxePOS, yaitu:
+
+    1.  Authentication API     - Login, Register, Session
+    2.  User API               - Data pengguna
+    3.  Product API            - Manajemen produk
+    4.  Category API           - Manajemen kategori
+    5.  Transaction API        - Transaksi penjualan
+    6.  Billing API            - Langganan PRO
+    7.  Report API             - Laporan dan histori
+    8.  Profile API            - Profil pengguna
+    9.  AI API                 - Prediksi stok dan jam sibuk
+
+
+1.3  Teknologi yang Digunakan
+
+    - Bahasa Pemrograman    : Kotlin (Android), PHP (Laravel)
+    - Format Data           : JSON
+    - HTTP Client           : Retrofit 2 + OkHttp
+    - Autentikasi           : Bearer Token
+    - File Upload           : Multipart Form Data
+    - Base URL              : https://paskelompok2.online/api/
+
+================================================================================
+BAB II
+STRUKTUR API
+================================================================================
+
+2.1  Base URL
+
+    Seluruh endpoint API menggunakan base URL sebagai berikut:
+
+        https://paskelompok2.online/api/
+
+    Contoh:
+        POST https://paskelompok2.online/api/auth/login
+        GET  https://paskelompok2.online/api/products
+
+2.2  Autentikasi
+
+    Sebagian besar endpoint memerlukan autentikasi menggunakan
+    Bearer Token. Token didapatkan setelah berhasil login atau
+    register.
+
+    Header yang dikirimkan:
+        Authorization: Bearer 1|abc123def456...
+
+    Endpoint yang TIDAK memerlukan autentikasi:
+        - POST /auth/login
+        - POST /auth/register
+
+2.3  Format Request dan Response
+
+    Request dan response menggunakan format JSON, kecuali untuk
+    upload file yang menggunakan Multipart Form Data.
+
+2.4  Kode Status HTTP
+
+    200 : Request berhasil
+    201 : Data berhasil dibuat
+    400 : Bad Request / input tidak valid
+    401 : Unauthorized / token tidak valid
+    404 : Data tidak ditemukan
+    422 : Validation error
+    500 : Internal server error
+
+================================================================================
+BAB III
+DAFTAR ENDPOINT
+================================================================================
+
+3.1  Authentication API
+
+    No  Method  Endpoint              Auth          Keterangan
+    --- ------- -------------------- ------------- ----------------------------
+    1   POST    auth/login            Tidak         Login user
+    2   POST    auth/register         Tidak         Registrasi user baru
+    3   GET     auth/session          Bearer Token  Cek validitas session
+
+3.2  User API
+
+    No  Method  Endpoint              Auth          Keterangan
+    --- ------- -------------------- ------------- ----------------------------
+    4   GET     users/{id}            Tidak         Ambil data user by ID
+
+3.3  Product API
+
+    No  Method  Endpoint              Auth          Keterangan
+    --- ------- -------------------- ------------- ----------------------------
+    5   GET     products              Bearer Token  Lihat semua produk
+    6   POST    products              Bearer Token  Tambah produk baru
+    7   POST    products/{id}         Bearer Token  Update produk
+    8   DELETE  products/{id}         Bearer Token  Hapus produk
+
+3.4  Category API
+
+    No  Method  Endpoint              Auth          Keterangan
+    --- ------- -------------------- ------------- ----------------------------
+    9   GET     categories            Bearer Token  Lihat semua kategori
+    10  PATCH   categories/products   Bearer Token  Lihat kategori + produk
+    11  POST    categories            Bearer Token  Tambah kategori
+    12  GET     categories/{id}       Bearer Token  Lihat detail kategori
+    13  PUT     categories/{id}       Bearer Token  Update kategori
+    14  DELETE  categories/{id}       Bearer Token  Hapus kategori
+    15  PATCH   categories/{id}/status Bearer Token Ubah status kategori
+
+3.5  Transaction API
+
+    No  Method  Endpoint              Auth          Keterangan
+    --- ------- -------------------- ------------- ----------------------------
+    16  POST    transactions          Bearer Token  Buat transaksi penjualan
+
+3.6  Billing API
+
+    No  Method  Endpoint              Auth          Keterangan
+    --- ------- -------------------- ------------- ----------------------------
+    17  POST    billing/subscribe     Bearer Token  Subscribe PRO plan
+    18  GET     billing/active        Bearer Token  Cek subscription aktif
+
+3.7  Report API
+
+    No  Method  Endpoint              Auth          Keterangan
+    --- ------- -------------------- ------------- ----------------------------
+    19  GET     reports/sales-history Bearer Token  Riwayat penjualan
+    20  GET     reports               Bearer Token  Dashboard laporan
+
+3.8  Profile API
+
+    No  Method  Endpoint              Auth          Keterangan
+    --- ------- -------------------- ------------- ----------------------------
+    21  GET     profile               Bearer Token  Lihat profil user
+    22  POST    profile               Bearer Token  Buat/Update profil
+    23  DELETE  profile               Bearer Token  Reset profil
+
+3.9  AI API
+
+    No  Method  Endpoint                               Auth          Keterangan
+    --- ------- ------------------------------------- ------------- ----------------------------
+    24  GET     ai/runs/latest/busy-hours              Bearer Token  Lihat prediksi jam sibuk
+    25  GET     ai/runs/latest/stocks                  Bearer Token  Lihat rekomendasi stok AI
+    26  PATCH   ai/recommendations/{id}/action         Bearer Token  Aksi rekomendasi AI
+
+================================================================================
+                  RINGKASAN ENDPOINT
+================================================================================
+
+    Total endpoint : 26
+
+    Interface           Jumlah Endpoint
+    ------------------- ----------------
+    AuthApi             3
+    UserApi             1
+    ProductApi          4
+    CategoryApi         7
+    TransactionApi      1
+    BillingApi          2
+    ReportApiService    2
+    ProfileApi          3
+    AiApi               3
+                        ---- +
+    Total               26
+
+================================================================================
+BAB IV
+PENUTUP
+================================================================================
+
+    Demikian dokumentasi API aplikasi LuxePOS ini disusun. Seluruh
+    endpoint yang tercantum telah diimplementasikan dan digunakan
+    secara langsung oleh aplikasi Android LuxePOS.
+
+    Dengan adanya dokumentasi ini, diharapkan dapat memudahkan
+    pengembang dalam melakukan pengembangan, integrasi, serta
+    pemeliharaan sistem di masa mendatang.
+
+    Terima kasih.
+
+================================================================================
+                      END OF DOCUMENTATION
+================================================================================
